@@ -311,17 +311,27 @@ body.drop #viewer{outline:4px dashed var(--accent);outline-offset:-12px}
     </div>
     <div id="paneSet" hidden>
       <section>
-        <h3>API 金鑰</h3>
+        <h3>翻譯引擎</h3>
+        <select id="engine" aria-label="翻譯引擎">
+          <option value="gemini">Google Gemini（免費方案）</option>
+          <option value="claude">Claude（需要儲值）</option>
+        </select>
+      </section>
+      <section id="gemSec">
+        <h3>Gemini 金鑰</h3>
+        <input id="gkey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza...">
+        <div class="row"><button class="primary" id="gkeySave">儲存並測試</button><span id="gkeyMsg" class="hintline" role="status"></span></div>
+        <p class="hintline">到 <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a> 左下角的鑰匙圖示建立，不需要綁信用卡。免費方案傳送的內容會被 Google 用來改進產品，未發表的研究請斟酌。金鑰只存在這台裝置上。</p>
+      </section>
+      <section id="claSec">
+        <h3>Claude 金鑰</h3>
         <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-...">
         <div class="row"><button class="primary" id="keySave">儲存並測試</button><span id="keyMsg" class="hintline" role="status"></span></div>
-        <p class="hintline">到 <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> 的 API Keys 頁面建立。金鑰只存在這台裝置上，只會傳給 Anthropic。</p>
-      </section>
-      <section>
-        <h3>翻譯模型</h3>
-        <select id="model">
+        <select id="model" aria-label="Claude 模型" style="margin-top:10px">
           <option value="claude-haiku-5-5">Claude Haiku（最省、最快，建議）</option>
           <option value="claude-sonnet-5-5">Claude Sonnet（較精準、約貴 20 倍）</option>
         </select>
+        <p class="hintline">到 <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> 的 API Keys 頁面建立，需要先儲值。金鑰只存在這台裝置上，只會傳給 Anthropic。</p>
       </section>
       <section>
         <h3>網址讀取方式</h3>
@@ -379,8 +389,20 @@ try{ if(window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.c
 if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
 
 /* ================= Settings ================= */
-const S={key:store.get("yidu:key")||"",model:store.get("yidu:model")||"claude-haiku-5-5",reader:store.get("yidu:reader")||"jina",proxy:store.get("yidu:proxy")||""};
-function refreshKeyBanner(){ $("#keyBanner").hidden=!!S.key; }
+const S={engine:store.get("yidu:engine")||"gemini",gkey:store.get("yidu:gkey")||"",key:store.get("yidu:key")||"",model:store.get("yidu:model")||"claude-haiku-5-5",reader:store.get("yidu:reader")||"jina",proxy:store.get("yidu:proxy")||""};
+const activeKey=()=>S.engine==="gemini"?S.gkey:S.key;
+function refreshKeyBanner(){ $("#keyBanner").hidden=!!activeKey(); }
+function showEngine(){ $("#engine").value=S.engine; $("#gemSec").hidden=S.engine!=="gemini"; $("#claSec").hidden=S.engine!=="claude"; refreshKeyBanner(); }
+$("#gkey").value=S.gkey; showEngine();
+$("#engine").onchange=()=>{ S.engine=$("#engine").value; store.set("yidu:engine",S.engine); showEngine(); };
+$("#gkeySave").onclick=async()=>{
+  const k=$("#gkey").value.trim(), m=$("#gkeyMsg");
+  S.gkey=k; store.set("yidu:gkey",k); refreshKeyBanner();
+  if(!k){ m.className="hintline"; m.textContent="已清除金鑰。"; return; }
+  m.className="hintline"; m.textContent="測試中…";
+  try{ await gemini("只回覆「連線成功」四個字。",{max:20}); m.className="hintline ok"; m.textContent="連線成功，可以開始使用了。"; }
+  catch(e){ m.className="hintline err"; m.textContent=errMsg(e); }
+};
 $("#key").value=S.key; $("#model").value=S.model; $("#reader").value=S.reader; $("#proxy").value=S.proxy; $("#proxy").hidden=S.reader!=="proxy";
 $("#model").onchange=()=>{ S.model=$("#model").value; store.set("yidu:model",S.model); };
 $("#reader").onchange=()=>{ S.reader=$("#reader").value; store.set("yidu:reader",S.reader); $("#proxy").hidden=S.reader!=="proxy"; };
@@ -391,12 +413,41 @@ $("#keySave").onclick=async()=>{
   S.key=k; store.set("yidu:key",k); refreshKeyBanner();
   if(!k){ m.className="hintline"; m.textContent="已清除金鑰。"; return; }
   m.className="hintline"; m.textContent="測試中…";
-  try{ await claude("回覆「連線成功」四個字就好。",{max:20}); m.className="hintline ok"; m.textContent="連線成功，可以開始使用了。"; }
+  try{ await claudeCall("回覆「連線成功」四個字就好。",{max:20}); m.className="hintline ok"; m.textContent="連線成功，可以開始使用了。"; }
   catch(e){ m.className="hintline err"; m.textContent=errMsg(e); }
 };
 
-/* ================= Claude API ================= */
-async function claude(prompt,{max=2000,onText,signal}={}){
+/* ================= AI engines ================= */
+function claude(prompt,opts){ return S.engine==="gemini"?gemini(prompt,opts):claudeCall(prompt,opts); }
+const GEM_MODEL="gemini-2.5-flash-lite";
+async function gemini(prompt,{max=2000,onText,signal}={}){
+  if(!S.gkey) throw {code:"no_key"};
+  const url="https://generativelanguage.googleapis.com/v1beta/models/"+GEM_MODEL+(onText?":streamGenerateContent?alt=sse":":generateContent");
+  const body=JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:max,temperature:0.3}});
+  let res;
+  try{ res=await fetch(url,{method:"POST",signal,headers:{"content-type":"application/json","x-goog-api-key":S.gkey},body}); }
+  catch(e){ throw {code:e&&e.name==="AbortError"?"cancelled":"net"}; }
+  if(!res.ok){ let d=null; try{ d=await res.json(); }catch(e){} const er=d&&(Array.isArray(d)?d[0]:d)&&(Array.isArray(d)?d[0]:d).error; throw {code:"http",gem:true,status:res.status,message:er&&er.message||"",reason:er&&er.status||""}; }
+  const pick=d=>{ const c=d&&d.candidates&&d.candidates[0]; return c&&c.content&&c.content.parts?c.content.parts.map(p=>p.text||"").join(""):""; };
+  if(!onText){ const t=pick(await res.json()).trim(); if(!t) throw {code:"http",gem:true,status:0,message:"empty"}; return t; }
+  const rd=res.body.getReader(), dec=new TextDecoder(); let buf="",text="";
+  try{
+    for(;;){
+      const {done,value}=await rd.read(); if(done) break;
+      buf+=dec.decode(value,{stream:true}); let i;
+      while((i=buf.indexOf("\n"))>=0){
+        const line=buf.slice(0,i).trim(); buf=buf.slice(i+1);
+        if(!line.startsWith("data:")) continue;
+        let ev; try{ ev=JSON.parse(line.slice(5).trim()); }catch(e){ continue; }
+        if(ev.error) throw {code:"http",gem:true,status:ev.error.code||500,message:ev.error.message||"",text};
+        const piece=pick(ev); if(piece){ text+=piece; onText(text); }
+      }
+    }
+  }catch(e){ if(e&&e.code) throw e; throw {code:e&&e.name==="AbortError"?"cancelled":"net",text}; }
+  if(!text.trim()) throw {code:"http",gem:true,status:0,message:"empty"};
+  return text.trim();
+}
+async function claudeCall(prompt,{max=2000,onText,signal}={}){
   if(!S.key) throw {code:"no_key"};
   let res;
   try{
@@ -425,6 +476,14 @@ function errMsg(e){
   const c=e&&e.code, s=e&&e.status, m=(e&&e.message)||"";
   if(c==="no_key") return "請先到「設定」貼上 API 金鑰。";
   if(c==="net") return "連不上網路，請檢查連線後再試。";
+  if(e&&e.gem){
+    if(s===400&&/key/i.test(m)) return "Gemini 金鑰無效，請到「設定」重新貼上。";
+    if(s===403) return "這把 Gemini 金鑰沒有權限，或你所在的地區暫不支援。";
+    if(s===429) return "Gemini 免費額度暫時用完或太頻繁，請稍等一下再試，或到「設定」換成 Claude。";
+    if(s===0) return "Gemini 沒有回應這段內容，換一段試試。";
+    if(s>=500) return "Gemini 服務忙碌中，請稍後再試。";
+    return "翻譯失敗："+(m||("錯誤 "+(s||"")));
+  }
   if(s===401) return "API 金鑰無效，請到「設定」重新貼上。";
   if(s===429) return "使用太頻繁，請稍等一下再試。";
   if(s===400&&/credit|balance/i.test(m)) return "API 帳戶餘額不足，請到 Claude Console 儲值。";
