@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>譯讀</title>
+<meta name="description" content="英文論文與網頁的翻譯閱讀器：保留原版面，點句子浮窗翻譯、查單字。">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#2A54C4">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="譯讀">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+/* Layout: app shell — toolbar, scrolling desk (home library / PDF pages / article), floating translation card, right drawer for summary & settings. */
+:root{
+  --chrome:#FFFFFF; --desk:#E6E9EF; --ink:#172031; --muted:#5A6477; --line:#D8DEE8;
+  --accent:#2A54C4; --accent-ink:#FFFFFF; --soft:#EDF2FC; --hl:rgba(255,206,48,.36); --sel:rgba(42,84,196,.28);
+  --warn-bg:#FFF4D6; --warn-ink:#6B4B00; --err:#B3261E;
+  --shadow:0 1px 3px rgba(20,30,50,.12),0 6px 20px rgba(20,30,50,.08);
+  --f-ui:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-en:"Source Serif 4",Georgia,"Times New Roman",serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --chrome:#161B23; --desk:#0D1117; --ink:#E5E9F1; --muted:#9AA4B6; --line:#2A313D;
+  --accent:#7FA1FF; --accent-ink:#0C1222; --soft:#1A2335; --hl:rgba(255,206,48,.32); --sel:rgba(127,161,255,.32);
+  --warn-bg:#3A2F12; --warn-ink:#FFE2A0; --err:#FF8A80;
+  --shadow:0 1px 3px rgba(0,0,0,.5),0 8px 28px rgba(0,0,0,.4); color-scheme:dark}}
+
+html{box-sizing:border-box;height:100%}
+*,*::before,*::after{box-sizing:inherit}
+html,body{margin:0;background:var(--desk);color:var(--ink)}
+body{height:100%;display:flex;flex-direction:column;font-family:var(--f-ui);font-size:14px;overflow:hidden;padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+
+/* toolbar */
+.tb{flex:none;display:flex;align-items:center;gap:8px;background:var(--chrome);border-bottom:1px solid var(--line);padding-block:8px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));z-index:5}
+.brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;padding:0}
+.logo{width:30px;height:30px;border-radius:7px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:16px;flex:none}
+.title{min-width:0}
+.title b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.title small{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.grp{display:flex;align-items:center;gap:6px;flex:none}
+.tb button:not(.brand),.tb .btn{font:inherit;font-size:13.5px;height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--chrome);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.tb .sq{width:34px;padding:0!important;justify-content:center;font-size:17px}
+.tb .primary{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-ink)!important;font-weight:500}
+.tb button:not(.brand):hover,.tb .btn:hover{border-color:var(--accent)}
+.zoomv{font-size:12px;color:var(--muted);min-width:38px;text-align:center;font-variant-numeric:tabular-nums}
+@media (max-width:600px){ .zoomv,.hide-s{display:none} .tb button:not(.brand),.tb .btn{padding:0 9px} }
+button:focus-visible,.btn:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* desk */
+#viewer{flex:1;overflow:auto;position:relative;-webkit-overflow-scrolling:touch;padding-block:20px 120px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#pages{display:flex;flex-direction:column;align-items:center;gap:18px;width:max-content;min-width:100%;margin:0 auto}
+.page{position:relative;background:#fff;box-shadow:var(--shadow);flex:none}
+.page canvas{position:absolute;inset:0;width:100%;height:100%}
+.page .num{position:absolute;right:0;bottom:-17px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.tl{position:absolute;inset:0;font-size:1px;line-height:1;overflow:hidden}
+.tl span{position:absolute;white-space:pre;color:transparent;transform-origin:0 0;cursor:pointer;border-radius:1px}
+.tl span::selection{background:var(--sel)}
+.tl span.hl{background:var(--hl)}
+#article{max-width:720px;margin:0 auto;background:var(--chrome);box-shadow:var(--shadow);padding:36px clamp(20px,6vw,56px);font-family:var(--f-en);font-size:18px;line-height:1.75}
+#article .src{font-family:var(--f-ui);font-size:12.5px;color:var(--muted);margin:0 0 18px;overflow-wrap:anywhere}
+#article .ap{margin:0 0 1em;cursor:pointer;border-radius:4px}
+#article .ap.h{font-weight:600;font-size:1.2em;line-height:1.35}
+#article .ap.hl{background:var(--hl)}
+#loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;background:var(--desk);z-index:2}
+
+/* home */
+#home{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.hello h1{font-size:26px;margin:6px 0 4px;letter-spacing:.04em}
+.hello p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
+.banner{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;line-height:1.6}
+.banner button{font:inherit;font-size:13.5px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;padding:6px 12px;cursor:pointer}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+@media (max-width:620px){.tiles{grid-template-columns:minmax(0,1fr)}}
+.tile{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--chrome);border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;color:var(--ink);font:inherit}
+.tile:hover{border-color:var(--accent)}
+.tile b{font-size:15px}
+.tile span{font-size:12.5px;color:var(--muted);line-height:1.6}
+.tile.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.tile.main span{color:var(--accent-ink);opacity:.85}
+.sect h2{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500;margin:0 0 8px}
+.recent{background:var(--chrome);border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.rrow{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--line);cursor:pointer}
+.rrow:first-child{border-top:0}
+.rrow:hover{background:var(--soft)}
+.kind{flex:none;font-size:10.5px;letter-spacing:.06em;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--muted);min-width:38px;text-align:center}
+.rname{flex:1;min-width:0}
+.rname b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rname small{color:var(--muted);font-size:11.5px}
+.rdel{flex:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;padding:4px 6px;border-radius:6px}
+.rdel:hover{color:var(--err)}
+.empty{padding:16px;color:var(--muted);font-size:13.5px}
+.lnk{border:0;background:none;color:var(--accent);font:inherit;cursor:pointer;padding:0}
+
+/* floating card */
+#pop{position:fixed;z-index:20;width:380px;max-width:calc(100vw - 24px);max-height:min(60vh,520px);overflow:auto;background:var(--chrome);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 40px rgba(10,20,40,.28);padding:12px 14px 14px}
+#pop.sheet{left:0!important;right:0;bottom:0;top:auto!important;width:auto;max-width:none;max-height:58vh;border-radius:16px 16px 0 0;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#pop.sheet::before{content:"";display:block;width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 8px}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
+.pl{font-size:11.5px;letter-spacing:.08em;color:var(--muted)}
+.pa{display:flex;gap:6px;align-items:center}
+#pop button{font:inherit;cursor:pointer}
+.x{border:0;background:transparent;color:var(--muted);font-size:16px;width:30px;height:30px;border-radius:6px;cursor:pointer}
+.x:hover{background:var(--soft)}
+.chipbtn{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:3px 10px;font-size:12.5px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.lk{border:0;background:transparent;color:var(--accent);padding:2px 0;font-size:13px}
+.zh{font-size:16px;line-height:1.85;white-space:pre-wrap;overflow-wrap:anywhere}
+.muted{color:var(--muted)!important;font-size:14px}
+.err{color:var(--err)!important;font-size:14px}
+.pf{display:flex;gap:14px;margin-top:8px}
+.wh{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:2px 0 6px}
+.ww{font-family:var(--f-en);font-size:24px;font-weight:600}
+.wm{font-family:var(--f-en);color:var(--muted);font-size:13px}
+.chip{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px}
+.senses{margin:4px 0 8px;padding-left:1.3em;font-size:15px;line-height:1.7}
+.lab{display:block;font-size:11px;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
+.note{font-size:14px;line-height:1.7}
+.here{background:var(--soft);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:15px}
+.hb{margin-top:8px;border:1px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:13.5px}
+.foot{font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);margin-top:10px;padding-top:7px}
+#selBtn{position:fixed;z-index:19;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:500 13.5px var(--f-ui);padding:7px 14px;box-shadow:0 4px 14px rgba(10,20,40,.3);cursor:pointer}
+
+/* drawer */
+#drawer{position:fixed;z-index:30;top:0;right:0;bottom:0;width:min(440px,100vw);background:var(--chrome);border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(10,20,40,.18);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.dh{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
+.dh b{font-size:15px}
+.db{flex:1;overflow:auto;padding:16px;padding-right:max(16px,env(safe-area-inset-right,0px))}
+.db h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:500}
+.db section+section{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
+.db button,.db select,.db input{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:8px;padding:7px 12px}
+.db button{cursor:pointer}
+.db input,.db select{width:100%;background:var(--desk)}
+.db .primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.db p{margin:6px 0;line-height:1.7;font-size:13.5px}
+.db .hintline{font-size:12.5px;color:var(--muted)}
+#sumOut{font-size:15px;line-height:1.8;margin-top:10px}
+#sumOut h4{font-size:13.5px;color:var(--accent);margin:16px 0 4px}
+#sumOut ul{margin:4px 0;padding-left:1.25em}
+#sumOut p{margin:4px 0;font-size:15px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
+.ok{color:#1E7A46} @media (prefers-color-scheme:dark){.ok{color:#6FD39A}}
+
+/* dialogs */
+.dlg{position:fixed;inset:0;z-index:40;background:rgba(10,15,25,.45);display:grid;place-items:center;padding:16px}
+.dlgc{background:var(--chrome);border-radius:14px;width:min(640px,100%);padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.dlgc h2{font-size:16px;margin:0 0 4px}
+.dlgc p{margin:0 0 10px;color:var(--muted);font-size:13px;line-height:1.6}
+.dlgc textarea{width:100%;min-height:220px;max-height:55vh;font:15px/1.6 var(--f-en);border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--desk);color:var(--ink);resize:vertical}
+.dlgc input{width:100%;font:15px var(--f-ui);border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--desk);color:var(--ink)}
+.dlgc .row{margin-top:12px;justify-content:flex-end}
+.dlgc button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:8px;padding:8px 14px;cursor:pointer}
+.dlgc .primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--ink);color:var(--chrome);padding:9px 14px;border-radius:10px;font-size:13.5px;max-width:min(90vw,460px);text-align:center}
+body.drop #viewer{outline:3px dashed var(--accent);outline-offset:-10px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="tb">
+  <button class="brand" id="homeBtn" aria-label="回到首頁">
+    <span class="logo" aria-hidden="true">譯</span>
+    <span class="title"><b id="docTitle">譯讀</b><small id="docSub">首頁</small></span>
+  </button>
+  <div class="grp" id="zoomGrp" hidden>
+    <button class="sq" id="zoomOut" aria-label="縮小">−</button>
+    <span class="zoomv" id="zoomVal">100%</span>
+    <button class="sq" id="zoomIn" aria-label="放大">+</button>
+  </div>
+  <div class="grp">
+    <label class="btn primary" for="file" id="fileLabel" tabindex="0">開啟</label>
+    <input type="file" id="file" accept=".pdf,.docx,.txt,.md,application/pdf" hidden>
+    <button id="urlBtn">網址</button>
+    <button id="sumBtn" hidden>摘要</button>
+    <button id="setBtn">設定</button>
+  </div>
+</header>
+
+<div id="viewer" tabindex="-1">
+  <div id="loading" hidden>正在開啟…</div>
+
+  <div id="home">
+    <div class="hello">
+      <h1>譯讀</h1>
+      <p>開啟英文論文或網頁文章，點一下句子就有中文翻譯，點單字看釋義。</p>
+    </div>
+    <div class="banner" id="keyBanner" hidden>
+      <span>還沒設定 API 金鑰，翻譯功能需要它才能運作。</span>
+      <button id="keyBannerBtn">前往設定</button>
+    </div>
+    <div class="tiles">
+      <button class="tile main" id="tileFile"><b>開啟檔案</b><span>PDF、Word 或純文字檔，PDF 保留原版面</span></button>
+      <button class="tile" id="tileUrl"><b>從網址匯入</b><span>期刊、新聞或部落格文章的網址</span></button>
+      <button class="tile" id="tilePaste"><b>貼上文字</b><span>從任何地方複製的英文內容</span></button>
+    </div>
+    <div class="sect">
+      <h2>最近開啟</h2>
+      <div class="recent" id="recent"><div class="empty">還沒有開過文件。也可以先<button class="lnk" id="sampleBtn">試試示範論文</button>。</div></div>
+    </div>
+  </div>
+
+  <div id="pages" hidden></div>
+  <div id="article" hidden></div>
+</div>
+
+<div id="pop" role="dialog" aria-label="翻譯" hidden></div>
+<button id="selBtn" hidden>翻譯選取</button>
+
+<aside id="drawer" hidden>
+  <div class="dh"><b id="drawerTitle">設定</b><button class="x" id="drawerClose" aria-label="關閉">✕</button></div>
+  <div class="db">
+    <div id="paneSum" hidden>
+      <section>
+        <div class="row" style="margin-top:0"><button class="primary" id="sumGo">產生摘要</button><button id="sumStop" hidden>停止</button></div>
+        <div id="sumOut"></div>
+      </section>
+    </div>
+    <div id="paneSet" hidden>
+      <section>
+        <h3>API 金鑰</h3>
+        <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-...">
+        <div class="row"><button class="primary" id="keySave">儲存並測試</button><span id="keyMsg" class="hintline" role="status"></span></div>
+        <p class="hintline">到 <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> 的 API Keys 頁面建立。金鑰只存在這台裝置上，只會傳給 Anthropic。</p>
+      </section>
+      <section>
+        <h3>翻譯模型</h3>
+        <select id="model">
+          <option value="claude-haiku-5-5">Claude Haiku（最省、最快，建議）</option>
+          <option value="claude-sonnet-5-5">Claude Sonnet（較精準、約貴 20 倍）</option>
+        </select>
+      </section>
+      <section>
+        <h3>網址讀取方式</h3>
+        <select id="reader">
+          <option value="jina">公開讀取服務 r.jina.ai（免設定）</option>
+          <option value="proxy">我自己的 Cloudflare 中繼（較私密，可讀 PDF 網址）</option>
+        </select>
+        <input id="proxy" type="url" placeholder="https://yidu-proxy.你的帳號.workers.dev" style="margin-top:8px" hidden>
+        <p class="hintline">使用公開服務時，你貼的網址會經過該服務。需要登入才能看的付費全文無法讀取。</p>
+      </section>
+      <section>
+        <h3>個人字典與資料</h3>
+        <p>字典已收錄 <b id="dictCount">0</b> 個字。查過的字存在這台裝置上，再遇到時直接顯示，不耗用額度。</p>
+        <div class="row"><button id="wipe">清除翻譯紀錄與最近開啟</button><span id="wipeMsg" class="hintline"></span></div>
+      </section>
+      <section>
+        <h3>怎麼用</h3>
+        <p>點一下句子：浮窗翻譯整段，並標出段落範圍。<br>浮窗裡點「查某某字」：看單字釋義。<br>拖曳或長按選取文字：按「翻譯選取」只翻那部分。</p>
+      </section>
+    </div>
+  </div>
+</aside>
+
+<div class="dlg" id="dlgPaste" hidden>
+  <div class="dlgc" role="dialog" aria-label="貼上文字">
+    <h2>貼上英文文章</h2>
+    <p>網頁、新聞或期刊的內容都可以。段落之間空一行效果最好。</p>
+    <textarea id="pasteText" placeholder="在這裡貼上英文內容…"></textarea>
+    <div class="row"><button data-close>取消</button><button class="primary" id="pasteGo">開始閱讀</button></div>
+  </div>
+</div>
+<div class="dlg" id="dlgUrl" hidden>
+  <div class="dlgc" role="dialog" aria-label="從網址匯入">
+    <h2>從網址匯入</h2>
+    <p>貼上文章網址，譯讀會抓下內文讓你點選翻譯。</p>
+    <input id="urlInput" type="url" inputmode="url" autocomplete="off" placeholder="https://…">
+    <div class="row"><button data-close>取消</button><button class="primary" id="urlGo">匯入</button></div>
+  </div>
+</div>
+<div id="toast" role="status" aria-live="polite" hidden></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+<script>
+(function(){
+"use strict";
+const SAMPLE_B64="JVBERi0xLjQKJZOMi54gUmVwb3J0TGFiIEdlbmVyYXRlZCBQREYgZG9jdW1lbnQgKG9wZW5zb3VyY2UpCjEgMCBvYmoKPDwKL0YxIDIgMCBSIC9GMiAzIDAgUiAvRjMgNCAwIFIgL0Y0IDUgMCBSCj4+CmVuZG9iagoyIDAgb2JqCjw8Ci9CYXNlRm9udCAvSGVsdmV0aWNhIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMSAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjMgMCBvYmoKPDwKL0Jhc2VGb250IC9UaW1lcy1Cb2xkIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GMiAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjQgMCBvYmoKPDwKL0Jhc2VGb250IC9UaW1lcy1JdGFsaWMgL0VuY29kaW5nIC9XaW5BbnNpRW5jb2RpbmcgL05hbWUgL0YzIC9TdWJ0eXBlIC9UeXBlMSAvVHlwZSAvRm9udAo+PgplbmRvYmoKNSAwIG9iago8PAovQmFzZUZvbnQgL1RpbWVzLVJvbWFuIC9FbmNvZGluZyAvV2luQW5zaUVuY29kaW5nIC9OYW1lIC9GNCAvU3VidHlwZSAvVHlwZTEgL1R5cGUgL0ZvbnQKPj4KZW5kb2JqCjYgMCBvYmoKPDwKL0NvbnRlbnRzIDEwIDAgUiAvTWVkaWFCb3ggWyAwIDAgNjEyIDc5MiBdIC9QYXJlbnQgOSAwIFIgL1Jlc291cmNlcyA8PAovRm9udCAxIDAgUiAvUHJvY1NldCBbIC9QREYgL1RleHQgL0ltYWdlQiAvSW1hZ2VDIC9JbWFnZUkgXQo+PiAvUm90YXRlIDAgL1RyYW5zIDw8Cgo+PiAKICAvVHlwZSAvUGFnZQo+PgplbmRvYmoKNyAwIG9iago8PAovUGFnZU1vZGUgL1VzZU5vbmUgL1BhZ2VzIDkgMCBSIC9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iago4IDAgb2JqCjw8Ci9BdXRob3IgKFNhbXBsZSkgL0NyZWF0aW9uRGF0ZSAoRDoyMDI2MTExMTExNTIzNSswOCcwMCcpIC9DcmVhdG9yIChcKHVuc3BlY2lmaWVkXCkpIC9LZXl3b3JkcyAoKSAvTW9kRGF0ZSAoRDoyMDI2MTExMTExNTIzNSswOCcwMCcpIC9Qcm9kdWNlciAoUmVwb3J0TGFiIFBERiBMaWJyYXJ5IC0gXChvcGVuc291cmNlXCkpIAogIC9TdWJqZWN0IChcKHVuc3BlY2lmaWVkXCkpIC9UaXRsZSAoVHJ1c3QsIERpc3RhbmNlLCBhbmQgRGVsZWdhdGlvbikgL1RyYXBwZWQgL0ZhbHNlCj4+CmVuZG9iago5IDAgb2JqCjw8Ci9Db3VudCAxIC9LaWRzIFsgNiAwIFIgXSAvVHlwZSAvUGFnZXMKPj4KZW5kb2JqCjEwIDAgb2JqCjw8Ci9GaWx0ZXIgWyAvQVNDSUk4NURlY29kZSAvRmxhdGVEZWNvZGUgXSAvTGVuZ3RoIDI1MDIKPj4Kc3RyZWFtCkdhdFU0PyciJFUmVV4zWGQ7U09ZKmolVkJiRUtGJW1PWVMtJWEhZnAzIT9gLVJWWVgwVGgnJGFaSWVqOkstaG4qbT9xckhhaWUvRU9CXV1oV3A2R2hhPD88X3JbVSdcTnVSbGBWMT46bmJtb1YiW1hjV1tpLE5pNG1CLjp1PmllY3UiaiQtImdLYmpiVVpWIikjKVo/VSJgLTZwbj4xZjRqc2pyWTI2ciJNPlhBbz4iZ1xYSTUwVnVscC1EZjtFdERCZ0IvSjdzVFVsI2hyKyJAdC9gR2xkbWk7U2EzSiw6IXBoRzYoQEdqWlImJFlqPTJMZ0pZcjJmREprM2YuWlQuW0NPKm0uXGhYK1ttNCwqKytTKGktRCNaYXEna3JbYlk7KzomPFgpTjdjYk1hL1spJylYZkZCdXUwYSFVNERjKWguYkUiUmBxTFMpQjBaQ21qNFBUck4tODdVMCooLlo2XyFSZmFAOVtVYSZGLnQ7MzxLQllXVHFzMmY8JmkrImZgPzJmRlZGUDUzUENYU1ZEO2ZJV2Y7I1M+QUA4YjpjUj1LSkdoQUVNTC1ZckFIbFQ9KVAxWjNKR1xuYkhLOXBrdEw3UGNpOSROLDxtQnQ5OyxOZktEYmM1dHBlLjtLT0N0IS1LQExwNTM6MFtAMEJURmc+XEVqT1MtZUVMcEhVYXEqKmlWRjk0KicwI2omVitscE9cPj4qU1BIOVRaSEQwXFIkcDZKQm9KTmcsQGs/cGpyLWAiPThYOkNFQ2lXajFXSnI+M04zRiwoVTdLVFYnKyYrZVQ/YkJKSGtiY20pLTNIVzkxMCNtNHEqbkotXldcTDgqbSchWF04S2EhXmRca1ltTltyXidoMmFKOW5FPVZjVzJhVV5aO0AhLl4+NW9zMEJPZURkLzolaUNKUCU3VCY0OitPbCM+XVpyUXBhcT1MZ1tPZ0gpMiRLcTVcQFw2UTA5SjN1cFdNTmVEdV9jYCw8PHVdNVsrZmJRQ3JDK0UwPElcO00oRyUwaj09MlhhPWUuTyInUCo1c0Q4Om5jOFxyVSQpKnUhZTRVQ00zJU1dOEgyOUtRbShJWyVTImNGci5CdV1GLWxOYmFuM2pgKSEtZTpUQiVaKyI6W3FLa0tmRXVBSFtiPFdAOWVQYykjZ2hybi0lalghT1ZEY0g5NTQuXUlSPXUucHNCWyRMZFcxN2w7Y006bUdSMWdsM3JASktqS3IhVSdEOTkpKDhwJWwmQ0goWGdmcGliX2wpIWsmKTJJQW9zcFFSbmVWUXBHQGldN2VfRUkoLjpOR0h0NyhJLlYzYjouK2JNJWtUXlBuVVtgQzoqZitNc1grbnA/IlJmVlwpIXFHJjEyLGA2ZmN0VCo/KyszY2lvQWRENSIsdSNQZWlKOSomWVRIWyxJbG9YODplKWYyUyQ7WDQ6bi5JcG4tcmlcJEUjIihALyk/PidMczlkXiFUM2QzQT46OUY3aTxOSzkmPExvcENrcFJqREc5J3VvWGtRLSNSJU9vVkVVIVloXmY/MVNqQWYyK1s8PSpnUWxoP2BgK1NSIWpbXWY+ZTVRckFVIWJeL1E6Il1TTVhlYjRXbiVWSyFHUlYiR3JvRkMqLT5rZithNDMvcixBbW1vdTgjYW82dVlebDkmZUhsVTtZXlVSQiRuKGwnOkEqciI9W1htbDEyS1txL01hbzZEM14lUWJmJmgqIlVUITFYRkk8PGFaTHFaQUZTO1dhMUVocCZXRkcuPThiZ2U5Z1BuM08+K2cnPilLVHJTU1BFJThtUz1qSzBqTjRhLTEhTCRPZERzPkBSITdWVUI/UzUybEBNPzNWZlpvMkhULiRTKChqWC9BbkxPKk10U1dnUUFdOVZLaTdNIV4kaWxxQjE+WmxVKUpqOixTQ0I5U0k6OW5mOEZSYlglPz4sWUkscWZQPG0xcGBWKnQ5ZlBpaj5mTlclbz8tLWFUOmxTPGdCYztCUzAiTyVTMk0rbVo0bSRER04wWkw7bE1SLjVBcHAxO0dlO04hbyJVZjxBSG5jUD5AO0sjYDZeUixEblZvSmhxWDAvaz5JVkw6LW5hYkpnLDNtVjU4Q11UU2NaWS8nKWlNT1BoOFRrV3M2MjBfclN1VVNSY0xiTFxpXiclUUhSNDBaXEM1ZFhBTTczNTYvazJkZT5eQ1BGUyxQaDJzPC8hSj1LZjZfUU87QDMwJVlddGxSWyw5ZWhuL1pGTE9gRTJTJGdJQGpmKVdbVktdSmIkb1RdUzFcKS90SExpR2s3Nk85LktTUVtBaXRvRzlSUVIlcDRYIi9eTzxec1g3Wi9cRlIhZE1yUGlbJW0uKzkrM3BdUWVFUDUnPSpjLFhmZGFCNEteYiswSVdTdWsnazw2YHRPQHA4RExuIUc8RyFQQCs+b1BlbGtoMlw/Xj47K1RsUCxAUypUL3N0TGcnOTRfRGhNaV5tW1FXKGhcSyt1PXIxKkM3J2IqIkNYSXBJKFA/Z14lPFQ2SUVcYnM+cVJbRlE0Kk4hSUVjbTZTRDVIUUMiJzEmNV9kYTFOXzBPYFs0Pi8nKiNoZWJnOSIyYnVcKHI3L1BDJCV0W1dHUjczL2ZXZjcqYl0sRkYpZGdxOFNaMUJvRy1YbSZsNUpRYCc5M0RNTCFPS1sqIiIqJVFMUU8pYzcxNjgqM11RTkhxPyNjIzwtQiVRQDwiNm8zO1dcWEBEWGpYWSc1Rm5nW0pBb0crJlBraHJeTmZkTkJBR2VaJVsqZmErVllubFlIN0Vsb1QkIWdsaTApRSNmNWlIbENGNlgjJzVJLSVONTUoazRuQTFqNEopXG1uTiE+YmExU182XT09OUEmKV9EXWI1JSlnN25FLklvNydNS2MuZldYXEpeWl5uaCMkSTcvR09KWGdSMl5BNjxmRjBcXjckUDBeO1BBcGdRTGAyOTVtZ2s0KFgtVXFNRVFwTGouR2BNclQ6Y2lmbjQ3b2VORXEmVltdKisiLTAnTzhxLDNxZ2Ypbz5daE5yJC1lRVVYPl1lLmwqIytxRU5CKDM4Xk8wTyhdO21MZkU+RVs2aEVrU1FwJ2IqPThhVV1fV0c4JmcqN2EjZHFBai1vSGoicUhTMmhZN3BFKVEnUWJNc1FeUS5uPUBHPmNPITdrSmwpaTlUZ21CKXQhLHJsOD0sR2JwME8/YiU+IScpRlU6ZFFITmUqSDA1Oi9EbXVYRmxSQT1YWCJWWycnKDVlWDQldCE4NkZhVzY3XCpPMnJmKGA9WFImYWFzQVxFRy1ETDtYc1RJTjdlPnUuYHJvYlhKaSxdLkcjOnRSVmZiJzo+PDpUSj9KdDgvO1FoQDh+PmVuZHN0cmVhbQplbmRvYmoKeHJlZgowIDExCjAwMDAwMDAwMDAgNjU1MzUgZiAKMDAwMDAwMDA2MSAwMDAwMCBuIAowMDAwMDAwMTIyIDAwMDAwIG4gCjAwMDAwMDAyMjkgMDAwMDAgbiAKMDAwMDAwMDMzNyAwMDAwMCBuIAowMDAwMDAwNDQ3IDAwMDAwIG4gCjAwMDAwMDA1NTYgMDAwMDAgbiAKMDAwMDAwMDc1MCAwMDAwMCBuIAowMDAwMDAwODE4IDAwMDAwIG4gCjAwMDAwMDExMDkgMDAwMDAgbiAKMDAwMDAwMTE2OCAwMDAwMCBuIAp0cmFpbGVyCjw8Ci9JRCAKWzw3OWM1MWJmZTUxMjI2ZjViNDlmOTNhZDg4MjZmNTAxNT48NzljNTFiZmU1MTIyNmY1YjQ5ZjkzYWQ4ODI2ZjUwMTU+XQolIFJlcG9ydExhYiBnZW5lcmF0ZWQgUERGIGRvY3VtZW50IC0tIGRpZ2VzdCAob3BlbnNvdXJjZSkKCi9JbmZvIDggMCBSCi9Sb290IDcgMCBSCi9TaXplIDExCj4+CnN0YXJ0eHJlZgozNzYyCiUlRU9GCg==";
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}},del(k){try{localStorage.removeItem(k)}catch(e){}}};
+const WORD=/^[A-Za-z][A-Za-z'’-]*$/;
+const viewer=$("#viewer"), pagesEl=$("#pages"), articleEl=$("#article"), homeEl=$("#home");
+try{ if(window.pdfjsLib) pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"; }catch(e){}
+if("serviceWorker" in navigator && location.protocol==="https:") navigator.serviceWorker.register("sw.js").catch(()=>{});
+
+/* ================= Settings ================= */
+const S={key:store.get("yidu:key")||"",model:store.get("yidu:model")||"claude-haiku-5-5",reader:store.get("yidu:reader")||"jina",proxy:store.get("yidu:proxy")||""};
+function refreshKeyBanner(){ $("#keyBanner").hidden=!!S.key; }
+$("#key").value=S.key; $("#model").value=S.model; $("#reader").value=S.reader; $("#proxy").value=S.proxy; $("#proxy").hidden=S.reader!=="proxy";
+$("#model").onchange=()=>{ S.model=$("#model").value; store.set("yidu:model",S.model); };
+$("#reader").onchange=()=>{ S.reader=$("#reader").value; store.set("yidu:reader",S.reader); $("#proxy").hidden=S.reader!=="proxy"; };
+$("#proxy").onchange=()=>{ S.proxy=$("#proxy").value.trim(); store.set("yidu:proxy",S.proxy); };
+$("#keySave").onclick=async()=>{
+  const k=$("#key").value.trim(), m=$("#keyMsg");
+  if(k&&!k.startsWith("sk-ant-")){ m.className="hintline err"; m.textContent="格式不對，金鑰應以 sk-ant- 開頭。"; return; }
+  S.key=k; store.set("yidu:key",k); refreshKeyBanner();
+  if(!k){ m.className="hintline"; m.textContent="已清除金鑰。"; return; }
+  m.className="hintline"; m.textContent="測試中…";
+  try{ await claude("回覆「連線成功」四個字就好。",{max:20}); m.className="hintline ok"; m.textContent="連線成功，可以開始使用了。"; }
+  catch(e){ m.className="hintline err"; m.textContent=errMsg(e); }
+};
+
+/* ================= Claude API ================= */
+async function claude(prompt,{max=2000,onText,signal}={}){
+  if(!S.key) throw {code:"no_key"};
+  let res;
+  try{
+    res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal,headers:{"content-type":"application/json","x-api-key":S.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+      body:JSON.stringify({model:S.model,max_tokens:max,stream:!!onText,messages:[{role:"user",content:prompt}]})});
+  }catch(e){ throw {code:e&&e.name==="AbortError"?"cancelled":"net"}; }
+  if(!res.ok){ let d=null; try{ d=await res.json(); }catch(e){} throw {code:"http",status:res.status,message:d&&d.error&&d.error.message||""}; }
+  if(!onText){ const d=await res.json(); return (d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("").trim(); }
+  const rd=res.body.getReader(), dec=new TextDecoder(); let buf="",text="";
+  try{
+    for(;;){
+      const {done,value}=await rd.read(); if(done) break;
+      buf+=dec.decode(value,{stream:true}); let i;
+      while((i=buf.indexOf("\n"))>=0){
+        const line=buf.slice(0,i).trim(); buf=buf.slice(i+1);
+        if(!line.startsWith("data:")) continue;
+        let ev; try{ ev=JSON.parse(line.slice(5).trim()); }catch(e){ continue; }
+        if(ev.type==="content_block_delta"&&ev.delta&&ev.delta.type==="text_delta"){ text+=ev.delta.text; onText(text); }
+        else if(ev.type==="error") throw {code:"http",status:529,message:ev.error&&ev.error.message||"",text};
+      }
+    }
+  }catch(e){ if(e&&e.code) throw e; throw {code:e&&e.name==="AbortError"?"cancelled":"net",text}; }
+  return text.trim();
+}
+function errMsg(e){
+  const c=e&&e.code, s=e&&e.status, m=(e&&e.message)||"";
+  if(c==="no_key") return "請先到「設定」貼上 API 金鑰。";
+  if(c==="net") return "連不上網路，請檢查連線後再試。";
+  if(s===401) return "API 金鑰無效，請到「設定」重新貼上。";
+  if(s===429) return "使用太頻繁，請稍等一下再試。";
+  if(s===400&&/credit|balance/i.test(m)) return "API 帳戶餘額不足，請到 Claude Console 儲值。";
+  if(s===404&&/model/i.test(m)) return "找不到這個模型，請到「設定」換一個模型。";
+  if(s>=500) return "Claude 服務忙碌中，請稍後再試。";
+  return "翻譯失敗："+(m||("錯誤 "+(s||"")));
+}
+function handleErr(e){ if(e&&e.code==="cancelled") return; toast(errMsg(e)); }
+const P_PARA="請把下面這段英文學術文字翻成通順、精確的台灣繁體中文（使用台灣學術慣用譯名）。重要專有名詞或術語第一次出現時，在中文後用括號保留英文原文。只輸出譯文，不要任何前言或說明。\n\n英文：\n";
+const P_SEL="請把下面這段英文翻成通順、精確的台灣繁體中文（台灣慣用譯名）。只輸出譯文，不要任何說明。\n\n英文：\n";
+const P_DICT=w=>"你是給台灣大學生用的英漢學術字典。請解釋英文單字「"+w+"」。只回傳 JSON，不要其他文字，格式：{\"lemma\":\"原形\",\"ipa\":\"音標\",\"pos\":\"詞性（中文，如 名詞）\",\"senses\":[\"最多3個常見中文釋義，台灣繁體\"],\"note\":\"學術用法或常見搭配的簡短提醒，沒有就給空字串\"}";
+const P_HERE=(w,s)=>"英文單字「"+w+"」在下面這個句子裡是什麼意思？只輸出一行台灣繁體中文解釋，30 字以內，不要其他文字。\n句子："+s;
+const P_SUM="請用台灣繁體中文整理以下英文文章，讓大學生能快速掌握重點。依序使用這些小標題（每個小標題一行，以 ## 開頭），內容用條列（- 開頭）或短句：\n## 一句話重點\n## 研究問題\n## 方法與資料\n## 主要發現\n## 結論與限制\n## 關鍵術語（每條格式：英文｜中文｜一句說明）\n如果文章不是研究論文，省略不適用的小標題。不要開場白、不要結語。\n\n文章：\n";
+function parseJSON(t){ const a=t.indexOf("{"), b=t.lastIndexOf("}"); if(a<0||b<a) throw {code:"http",message:"字典回傳格式有誤，請再試一次"}; return JSON.parse(t.slice(a,b+1)); }
+
+let dict={}; try{ dict=JSON.parse(store.get("yidu:dict")||"{}")||{}; }catch(e){ dict={}; }
+const saveDict=()=>{ store.set("yidu:dict",JSON.stringify(dict)); $("#dictCount").textContent=Object.keys(dict).length; };
+$("#dictCount").textContent=Object.keys(dict).length;
+
+/* ================= Recent documents (IndexedDB) ================= */
+const DB={
+  _db:null,
+  open(){ if(this._db) return this._db; this._db=new Promise((res,rej)=>{ try{ const r=indexedDB.open("yidu",1); r.onupgradeneeded=()=>r.result.createObjectStore("docs",{keyPath:"id"}); r.onsuccess=()=>res(r.result); r.onerror=()=>rej(r.error); }catch(e){ rej(e); } }); return this._db; },
+  async run(mode,fn){ const db=await this.open(); return new Promise((res,rej)=>{ const t=db.transaction("docs",mode), s=t.objectStore("docs"); const req=fn(s); t.oncomplete=()=>res(req&&req.result); t.onerror=()=>rej(t.error); t.onabort=()=>rej(t.error); }); },
+  put(r){ return this.run("readwrite",s=>s.put(r)); },
+  get(id){ return this.run("readonly",s=>s.get(id)); },
+  all(){ return this.run("readonly",s=>s.getAll()); },
+  del(id){ return this.run("readwrite",s=>s.delete(id)); },
+  clear(){ return this.run("readwrite",s=>s.clear()); }
+};
+async function saveRecent(rec){
+  try{
+    rec.time=Date.now(); await DB.put(rec);
+    const all=(await DB.all()).sort((a,b)=>b.time-a.time);
+    for(const r of all.slice(12)) await DB.del(r.id);
+  }catch(e){}
+}
+async function renderRecent(){
+  const box=$("#recent"); let all=[];
+  try{ all=(await DB.all()).sort((a,b)=>b.time-a.time); }catch(e){}
+  if(!all.length){ box.innerHTML='<div class="empty">還沒有開過文件。也可以先<button class="lnk" id="sampleBtn">試試示範論文</button>。</div>'; $("#sampleBtn").onclick=openSample; return; }
+  const kindName={pdf:"PDF",url:"網頁",text:"文字"};
+  box.innerHTML=all.map(r=>'<div class="rrow" data-id="'+esc(r.id)+'" tabindex="0"><span class="kind">'+(kindName[r.kind]||"文字")+'</span><span class="rname"><b>'+esc(r.name)+'</b><small>'+new Date(r.time).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+(r.src?" · "+esc(hostOf(r.src)):"")+'</small></span><button class="rdel" data-del="'+esc(r.id)+'" aria-label="從清單移除">移除</button></div>').join("")
+    +'<div class="empty" style="border-top:1px solid var(--line)"><button class="lnk" id="sampleBtn">開啟示範論文</button></div>';
+  $("#sampleBtn").onclick=openSample;
+}
+$("#recent").addEventListener("click",async e=>{
+  const d=e.target.closest("[data-del]");
+  if(d){ e.stopPropagation(); try{ await DB.del(d.dataset.del); }catch(err){} renderRecent(); return; }
+  const row=e.target.closest(".rrow"); if(row) openRecent(row.dataset.id);
+});
+$("#recent").addEventListener("keydown",e=>{ const row=e.target.closest(".rrow"); if(row&&e.key==="Enter") openRecent(row.dataset.id); });
+async function openRecent(id){
+  let r=null; try{ r=await DB.get(id); }catch(e){}
+  if(!r){ toast("找不到這份文件，可能已被清除。"); renderRecent(); return; }
+  try{
+    if(r.kind==="pdf"&&r.data) await openPdf(r.data.slice(0),r.name,{id:r.id,src:r.src});
+    else if(r.paras) openText(r.name,r.paras,{id:r.id,src:r.src,kind:r.kind});
+  }catch(e){ hideLoading(); toast("開啟失敗："+((e&&e.message)||"")); }
+}
+const hostOf=u=>{ try{ return new URL(u).host; }catch(e){ return ""; } };
+
+/* ================= Views ================= */
+let doc=null, zoom=1, scale=1, io=null, gen=0;
+const measure=document.createElement("canvas").getContext("2d");
+function setTitle(name,sub){ $("#docTitle").textContent=name; $("#docSub").textContent=sub||"\u00a0"; document.title=name==="譯讀"?"譯讀":name+" · 譯讀"; }
+function showView(v){
+  homeEl.hidden=v!=="home"; pagesEl.hidden=v!=="pdf"; articleEl.hidden=v!=="text";
+  $("#zoomGrp").hidden=v==="home"; $("#sumBtn").hidden=v==="home";
+}
+function goHome(){
+  ++gen; resetUI(); io&&io.disconnect(); doc=null;
+  pagesEl.replaceChildren(); articleEl.replaceChildren(); hideLoading();
+  showView("home"); setTitle("譯讀","首頁"); viewer.scrollTop=0; renderRecent(); refreshKeyBanner();
+}
+$("#homeBtn").onclick=goHome;
+function save(){ if(doc) store.set(doc.key, JSON.stringify(doc.paras.map(p=>p.zh||""))); }
+function restore(){ try{ const s=JSON.parse(store.get(doc.key)||"null"); if(Array.isArray(s)) s.forEach((z,i)=>{ if(doc.paras[i]&&z) doc.paras[i].zh=z; }); }catch(e){} }
+function resetUI(){ closePop(); hideSel(); sumCtl&&sumCtl.abort(); $("#sumOut").innerHTML=""; $("#sumGo").textContent="產生摘要"; $("#drawer").hidden=true; }
+function showLoading(t){ const l=$("#loading"); l.textContent=t; l.hidden=false; }
+function hideLoading(){ $("#loading").hidden=true; }
+
+/* ---- PDF paragraph building ---- */
+function joinLines(parts){
+  let s="";
+  for(const p of parts){ if(!s) s=p; else if(/[A-Za-z]-$/.test(s)&&/^[a-z]/.test(p)) s=s.slice(0,-1)+p; else s+=" "+p; }
+  return s.replace(/\s+/g," ").trim();
+}
+function groupParas(g){
+  g=g.slice().sort((a,b)=>(b.y-a.y)||(a.x-b.x));
+  const lines=[];
+  for(const it of g){ const L=lines[lines.length-1];
+    if(L&&Math.abs(L.y-it.y)<Math.max(L.z,it.z)*0.5){ L.items.push(it); L.z=Math.max(L.z,it.z); }
+    else lines.push({y:it.y,z:it.z,items:[it]}); }
+  for(const L of lines){
+    L.items.sort((a,b)=>a.x-b.x); let t="",end=null;
+    for(const it of L.items){ if(end!==null&&it.x-end>L.z*0.12&&!/\s$/.test(t)&&!/^\s/.test(it.s)) t+=" "; t+=it.s; end=Math.max(end===null?-1e9:end,it.x+it.w); }
+    L.t=t.replace(/\s+/g," ").trim(); L.x0=L.items[0].x; L.x1=end;
+  }
+  const gaps=[]; for(let k=1;k<lines.length;k++){ const d=lines[k-1].y-lines[k].y; if(d>0&&Math.abs(lines[k].z-lines[k-1].z)<0.5) gaps.push(d); }
+  gaps.sort((a,b)=>a-b); const lg=gaps.length?gaps[Math.floor(gaps.length/2)]:12;
+  let minX=Infinity,maxX=-Infinity; for(const L of lines){ minX=Math.min(minX,L.x0); maxX=Math.max(maxX,L.x1); }
+  const width=Math.max(1,maxX-minX), out=[]; let cur=null,prev=null;
+  for(const L of lines){
+    if(!L.t) continue;
+    let brk=!cur;
+    if(cur&&prev){ const d=prev.y-L.y;
+      if(d>lg*1.4||d<0) brk=true;
+      if(Math.abs(L.z-prev.z)>1) brk=true;
+      if(L.x0-minX>L.z*0.9&&/[.?!:"”)]$/.test(prev.t)) brk=true;
+      if((prev.x1-minX)<width*0.7&&/[.?!:"”]$/.test(prev.t)) brk=true; }
+    if(brk){ cur={parts:[L.t],z:L.z,items:L.items.slice()}; out.push(cur); } else { cur.parts.push(L.t); cur.items.push(...L.items); }
+    prev=L;
+  }
+  return out.map(c=>({t:joinLines(c.parts),z:c.z,items:c.items}));
+}
+function mergeInto(all,next){
+  if(all.length&&next.length){ const a=all[all.length-1], b=next[0];
+    if(!/[.?!:"”)]$/.test(a.t)&&/^[a-z(]/.test(b.t)&&Math.abs(a.z-b.z)<0.6){ a.t=joinLines([a.t,b.t]); a.items=a.items.concat(b.items); next=next.slice(1); } }
+  return all.concat(next);
+}
+
+async function openPdf(buf,name,meta){
+  meta=meta||{};
+  if(!window.pdfjsLib) throw new Error("PDF 元件沒有載入，請確認網路後重新開啟");
+  const myGen=++gen; resetUI(); showView("pdf"); pagesEl.replaceChildren(); showLoading("正在開啟…");
+  const keep=buf.slice(0);
+  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;
+  const pages=[]; let all=[];
+  for(let n=1;n<=pdf.numPages;n++){
+    if(myGen!==gen) return;
+    showLoading("正在讀取第 "+n+" / "+pdf.numPages+" 頁…");
+    const page=await pdf.getPage(n), vp=page.getViewport({scale:1}), tc=await page.getTextContent();
+    const items=[];
+    tc.items.forEach(it=>{ if(it.str&&it.str.trim()) items.push({s:it.str,x:it.transform[4],y:it.transform[5],w:it.width||0,z:Math.abs(it.transform[3])||Math.abs(it.transform[0])||it.height||10,tr:it.transform,para:-1,el:null,r:null}); });
+    const pg={n:n-1,page,w:vp.width,h:vp.height,items,el:null,task:null,rendered:false};
+    pages.push(pg);
+    if(!items.length) continue;
+    const mid=vp.width/2; let lc=0,rc=0,tot=0;
+    for(const it of items){ tot+=it.s.length; if(it.x+it.w<mid+6) lc+=it.s.length; else if(it.x>mid-6) rc+=it.s.length; }
+    let groups=[items];
+    if(lc>tot*0.25&&rc>tot*0.25){
+      const L=[],R=[],Sp=[];
+      for(const it of items){ if(it.x+it.w<mid+6) L.push(it); else if(it.x>mid-6) R.push(it); else Sp.push(it); }
+      let top=-Infinity; for(const it of L) top=Math.max(top,it.y); for(const it of R) top=Math.max(top,it.y);
+      groups=[Sp.filter(i=>i.y>top),L,R,Sp.filter(i=>i.y<=top)];
+    }
+    for(const g of groups) if(g.length) all=mergeInto(all,groupParas(g));
+  }
+  if(myGen!==gen) return;
+  const count={}; all.forEach(p=>{ if(p.t.length<100) count[p.t]=(count[p.t]||0)+1; });
+  all=all.filter(p=>!(count[p.t]>=3)&&!/^\d{1,4}$/.test(p.t)&&p.t.length>1);
+  const paras=all.map((p,i)=>{ p.items.forEach(it=>it.para=i); return {t:p.t,zh:"",busy:false}; });
+  doc={type:"pdf",name,src:meta.src||"",key:"yidu:doc:"+(meta.src||name)+":"+paras.length,paras,pages,maxW:Math.max(...pages.map(p=>p.w))};
+  restore();
+  buildPages(); hideLoading(); viewer.scrollTop=0;
+  setTitle(name, pdf.numPages+" 頁"); updatePageNum();
+  if(!meta.sample) saveRecent({id:meta.id||("pdf:"+name+":"+keep.byteLength),kind:"pdf",name,src:meta.src||"",data:keep.byteLength<60e6?keep:null});
+  if(!paras.length) toast("這份 PDF 讀不到文字，可能是掃描的圖片檔，目前無法點選翻譯。");
+}
+function buildPages(){
+  io&&io.disconnect();
+  const avail=Math.max(240,viewer.clientWidth-32);
+  scale=Math.min(avail/doc.maxW,1.6)*zoom;
+  $("#zoomVal").textContent=Math.round(zoom*100)+"%";
+  pagesEl.replaceChildren();
+  for(const pg of doc.pages){
+    if(pg.task){ try{pg.task.cancel()}catch(e){} pg.task=null; }
+    pg.rendered=false; pg.items.forEach(it=>{it.el=null;it.r=null;});
+    const el=document.createElement("div"); el.className="page"; el.dataset.p=pg.n;
+    el.style.width=Math.floor(pg.w*scale)+"px"; el.style.height=Math.floor(pg.h*scale)+"px";
+    el.innerHTML='<span class="num">'+(pg.n+1)+"</span>";
+    pg.el=el; pagesEl.appendChild(el);
+  }
+  io=new IntersectionObserver(es=>{ for(const e of es){ const pg=doc&&doc.pages[+e.target.dataset.p]; if(!pg) continue; if(e.isIntersecting) renderPage(pg); else unrenderPage(pg); } },{root:viewer,rootMargin:"1200px 0px"});
+  doc.pages.forEach(pg=>io.observe(pg.el));
+}
+function unrenderPage(pg){
+  if(pg.task){ try{pg.task.cancel()}catch(e){} pg.task=null; }
+  if(!pg.rendered) return;
+  pg.rendered=false; pg.el.querySelectorAll("canvas,.tl").forEach(x=>x.remove()); pg.items.forEach(it=>it.el=null);
+}
+async function renderPage(pg){
+  if(pg.rendered||pg.task) return;
+  const d=doc, vp=pg.page.getViewport({scale}), dpr=Math.min(window.devicePixelRatio||1,2);
+  const c=document.createElement("canvas"); c.width=Math.floor(vp.width*dpr); c.height=Math.floor(vp.height*dpr);
+  const task=pg.task=pg.page.render({canvasContext:c.getContext("2d"),viewport:vp,transform:dpr!==1?[dpr,0,0,dpr,0,0]:null});
+  try{ await task.promise; }catch(e){ if(pg.task===task) pg.task=null; return; }
+  if(d!==doc||pg.task!==task) return;
+  pg.task=null; pg.rendered=true;
+  const tl=document.createElement("div"); tl.className="tl"; tl.dataset.p=pg.n;
+  const frag=document.createDocumentFragment();
+  pg.items.forEach((it,k)=>{
+    const tx=pdfjsLib.Util.transform(vp.transform,it.tr), fh=Math.hypot(tx[2],tx[3])||it.z*scale;
+    const left=tx[4], top=tx[5]-fh, tw=it.w*scale;
+    const sp=document.createElement("span"); sp.textContent=it.s; sp.dataset.i=k;
+    sp.style.left=left+"px"; sp.style.top=top+"px"; sp.style.fontSize=fh+"px"; sp.style.fontFamily="sans-serif";
+    measure.font=fh+"px sans-serif"; const mw=measure.measureText(it.s).width;
+    if(mw>0&&tw>0) sp.style.transform="scaleX("+(tw/mw)+")";
+    if(it.para>=0&&pop&&pop.kind==="para"&&pop.pid===it.para) sp.className="hl";
+    it.el=sp; it.r={l:left,t:top,w:tw,h:fh};
+    frag.appendChild(sp); frag.appendChild(document.createTextNode(" "));
+  });
+  tl.appendChild(frag); pg.el.prepend(c); pg.el.appendChild(tl);
+}
+function hitItem(pageEl,cx,cy){
+  const pg=doc.pages[+pageEl.dataset.p]; if(!pg||!pg.rendered) return null;
+  const b=pageEl.getBoundingClientRect(), x=cx-b.left, y=cy-b.top; let best=null,bd=9;
+  for(const it of pg.items){ if(!it.r||it.para<0) continue;
+    const dx=Math.max(it.r.l-x,0,x-(it.r.l+it.r.w)), dy=Math.max(it.r.t-y,0,y-(it.r.t+it.r.h)), dd=Math.hypot(dx,dy);
+    if(dd<bd){ bd=dd; best=it; } }
+  return best;
+}
+
+/* ---- text documents ---- */
+function textParas(s){
+  s=String(s||"").replace(/\r/g,"");
+  let blocks=s.split(/\n\s*\n/); if(blocks.length<=1) blocks=s.split("\n");
+  return blocks.map(b=>joinLines(b.split("\n").map(x=>x.trim()).filter(Boolean))).filter(t=>t.length>1)
+    .map(t=>({t,h:t.length<100&&t.split(" ").length<=14&&!/[.?!:;,"”]$/.test(t)}));
+}
+function openText(name,ps,meta){
+  meta=meta||{};
+  ++gen; resetUI(); io&&io.disconnect();
+  doc={type:"text",name,src:meta.src||"",key:"yidu:doc:"+(meta.src||name)+":"+ps.length,paras:ps.map(p=>({t:p.t,h:!!p.h,zh:"",busy:false})),pages:[]};
+  restore(); showView("text"); pagesEl.replaceChildren();
+  articleEl.style.fontSize=(18*zoom)+"px"; $("#zoomVal").textContent=Math.round(zoom*100)+"%";
+  articleEl.innerHTML=(meta.src?'<p class="src">來源：'+esc(meta.src)+"</p>":"")+doc.paras.map((p,i)=>'<p class="ap'+(p.h?" h":"")+'" data-p="'+i+'" lang="en">'+esc(p.t)+"</p>").join("");
+  hideLoading(); viewer.scrollTop=0;
+  setTitle(name, meta.src?hostOf(meta.src):ps.length+" 段");
+  saveRecent({id:meta.id||((meta.src?"url:":"text:")+(meta.src||name)),kind:meta.kind||(meta.src?"url":"text"),name,src:meta.src||"",paras:ps});
+}
+
+/* ---- page number / zoom ---- */
+function updatePageNum(){
+  if(!doc||doc.type!=="pdf") return;
+  const y=viewer.scrollTop+viewer.clientHeight*0.35; let cur=1;
+  for(const pg of doc.pages){ if(pg.el.offsetTop<=y) cur=pg.n+1; else break; }
+  $("#docSub").textContent="第 "+cur+" / "+doc.pages.length+" 頁";
+}
+function setZoom(z){
+  zoom=Math.min(3,Math.max(0.5,Math.round(z*10)/10));
+  if(!doc) return;
+  closePop(); hideSel();
+  if(doc.type==="pdf"){ const r=viewer.scrollTop/Math.max(1,viewer.scrollHeight); buildPages(); viewer.scrollTop=r*viewer.scrollHeight; }
+  else { articleEl.style.fontSize=(18*zoom)+"px"; $("#zoomVal").textContent=Math.round(zoom*100)+"%"; }
+}
+$("#zoomIn").onclick=()=>setZoom(zoom+0.1);
+$("#zoomOut").onclick=()=>setZoom(zoom-0.1);
+let lastW=viewer.clientWidth, rzT=null;
+addEventListener("resize",()=>{ clearTimeout(rzT); rzT=setTimeout(()=>{ if(doc&&doc.type==="pdf"&&Math.abs(viewer.clientWidth-lastW)>40){ lastW=viewer.clientWidth; setZoom(zoom); } placePop(); },200); });
+
+/* ================= URL import ================= */
+function mdToParas(md){
+  let title=""; const tm=md.match(/^Title:\s*(.+)$/m); if(tm) title=tm[1].trim();
+  const ci=md.indexOf("Markdown Content:"); if(ci>=0) md=md.slice(ci+17);
+  md=md.replace(/!\[[^\]]*\]\([^)]*\)/g,"").replace(/\[([^\]]*)\]\([^)]*\)/g,"$1").replace(/<[^>]+>/g,"");
+  const out=[]; let cur=[];
+  const flush=()=>{ if(cur.length){ const t=joinLines(cur); if(/[A-Za-z]/.test(t)&&t.split(" ").length>=3) out.push({t,h:false}); cur=[]; } };
+  for(let l of md.split("\n")){
+    l=l.trim();
+    if(!l||/^[-=_*]{3,}$/.test(l)||/^\|/.test(l)){ flush(); continue; }
+    const h=l.match(/^#{1,6}\s+(.*)$/);
+    if(h){ flush(); const t=h[1].replace(/[*_`]/g,"").trim(); if(/[A-Za-z]/.test(t)) out.push({t,h:true}); continue; }
+    if(/^([-*+]|\d+\.)\s+/.test(l)){ flush(); cur.push(l.replace(/^([-*+]|\d+\.)\s+/,"")); flush(); continue; }
+    cur.push(l.replace(/^>\s?/,"").replace(/[*_`]/g,""));
+  }
+  flush();
+  return {title,paras:out};
+}
+function htmlToParas(html){
+  const d=new DOMParser().parseFromString(html,"text/html");
+  d.querySelectorAll("script,style,noscript,nav,header,footer,aside,form,svg,button,iframe,figure img").forEach(x=>x.remove());
+  const root=d.querySelector("article")||d.querySelector("main")||d.body;
+  const out=[];
+  if(root) root.querySelectorAll("h1,h2,h3,h4,p,li,blockquote").forEach(el=>{
+    if(el.matches("li,blockquote")&&el.querySelector("p")) return;
+    if(el.closest("li p, blockquote p")&&!el.matches("p")) return;
+    const t=el.textContent.replace(/\s+/g," ").trim();
+    if(!/[A-Za-z]/.test(t)) return;
+    const h=/^H\d$/.test(el.tagName);
+    if(!h&&t.split(" ").length<3) return;
+    out.push({t,h});
+  });
+  return {title:(d.title||"").trim(),paras:out};
+}
+async function importUrl(raw){
+  let u=raw.trim(); if(!u) return;
+  if(!/^https?:\/\//i.test(u)) u="https://"+u;
+  try{ new URL(u); }catch(e){ toast("這看起來不是有效的網址。"); return; }
+  const myGen=++gen; resetUI(); showView("text"); articleEl.replaceChildren(); showLoading("正在讀取網頁…"); setTitle("讀取中…",hostOf(u));
+  try{
+    if(S.reader==="proxy"){
+      if(!S.proxy) throw new Error("請先在「設定」填入你的 Cloudflare 中繼網址");
+      const r=await fetch(S.proxy.replace(/\/+$/,"")+"/?url="+encodeURIComponent(u));
+      if(!r.ok) throw new Error("網站回應錯誤（"+r.status+"）");
+      const ct=r.headers.get("content-type")||"";
+      if(myGen!==gen) return;
+      if(/pdf/i.test(ct)){ const buf=await r.arrayBuffer(); await openPdf(buf,decodeURIComponent(new URL(u).pathname.split("/").pop()||hostOf(u)),{src:u,id:"url:"+u}); return; }
+      const {title,paras}=htmlToParas(await r.text());
+      if(myGen!==gen) return;
+      if(!paras.length) throw new Error("這個網頁找不到可讀的英文內文");
+      openText(title||hostOf(u),paras,{src:u});
+    } else {
+      const r=await fetch("https://r.jina.ai/"+u,{headers:{"Accept":"text/plain"}});
+      if(!r.ok) throw new Error(r.status===429?"公開讀取服務暫時忙碌，請稍後再試":"讀取失敗（"+r.status+"）");
+      const {title,paras}=mdToParas(await r.text());
+      if(myGen!==gen) return;
+      if(!paras.length) throw new Error("這個網頁找不到可讀的英文內文，可能需要登入");
+      openText(title||hostOf(u),paras,{src:u});
+    }
+  }catch(e){
+    if(myGen!==gen) return;
+    hideLoading(); goHome();
+    toast("匯入失敗："+((e&&e.message)||"請確認網址或網路")+"。也可以複製文章內容改用「貼上文字」。");
+  }
+}
+
+/* ================= Popup ================= */
+let pop=null;
+function sentenceIn(t,w){
+  const re=/[^.!?]+(?:[.!?]+["”’)]*|$)\s*/g, wr=new RegExp("\\b"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","i"); let m;
+  while((m=re.exec(t))) if(wr.test(m[0])) return m[0].trim().slice(0,600);
+  return t.slice(0,400);
+}
+function wordAt(x,y){
+  let node=null,off=0;
+  if(document.caretRangeFromPoint){ const r=document.caretRangeFromPoint(x,y); if(r){ node=r.startContainer; off=r.startOffset; } }
+  else if(document.caretPositionFromPoint){ const p=document.caretPositionFromPoint(x,y); if(p){ node=p.offsetNode; off=p.offset; } }
+  if(!node||node.nodeType!==3) return "";
+  const t=node.textContent; let a=off,b=off;
+  while(a>0&&/[A-Za-z'’-]/.test(t[a-1])) a--;
+  while(b<t.length&&/[A-Za-z'’-]/.test(t[b])) b++;
+  const w=t.slice(a,b).replace(/^[-'’]+|[-'’]+$/g,"");
+  return WORD.test(w)&&w.length>1?w:"";
+}
+function setHL(pid){
+  document.querySelectorAll(".hl").forEach(x=>x.classList.remove("hl"));
+  if(pid<0||!doc) return;
+  if(doc.type==="pdf"){ for(const pg of doc.pages) for(const it of pg.items) if(it.para===pid&&it.el) it.el.classList.add("hl"); }
+  else { const p=articleEl.querySelector('.ap[data-p="'+pid+'"]'); p&&p.classList.add("hl"); }
+}
+function openPara(pid,word,x,y){
+  hideSel();
+  if(pop&&pop.kind==="para"&&pop.pid===pid&&!word&&pop.view==="main"){ closePop(); return; }
+  pop={kind:"para",pid,word,view:"main",ax:x,ay:y,st:viewer.scrollTop,sentence:word?sentenceIn(doc.paras[pid].t,word):""};
+  setHL(pid); drawPop(true);
+  const p=doc.paras[pid]; if(!p.zh&&!p.busy) translatePara(pid);
+}
+let selCtl=null;
+function openSel(text,rect,ctx){
+  hideSel(); setHL(-1);
+  const single=WORD.test(text);
+  pop={kind:"sel",text,word:single?text:"",view:single?"word":"main",ax:rect.left+rect.width/2,ay:rect.bottom,st:viewer.scrollTop,sentence:single?sentenceIn(ctx||text,text):"",zh:"",busy:false};
+  drawPop(true);
+  if(single) startWord(); else translateSel();
+}
+function closePop(){ selCtl&&selCtl.abort(); pop=null; $("#pop").hidden=true; setHL(-1); }
+function errBlock(e){ return '<div class="err">'+esc(errMsg(e))+"</div>"+(e&&e.code==="no_key"?'<div class="pf"><button class="lk" data-a="settings">開啟設定</button></div>':""); }
+
+function drawPop(fresh){
+  const el=$("#pop"); if(!pop){ el.hidden=true; return; }
+  let h="";
+  if(pop.view==="word"){
+    const e=pop.entry;
+    h+='<div class="ph">'+(pop.kind==="para"?'<button class="lk" data-a="back">‹ 回到段落翻譯</button>':'<span class="pl">單字</span>')+'<button class="x" data-a="close" aria-label="關閉">✕</button></div>';
+    h+='<div class="wh"><span class="ww" lang="en">'+esc(pop.word)+"</span>";
+    if(e){ if(e.ipa) h+='<span class="wm">'+esc(e.ipa)+"</span>"; if(e.lemma&&e.lemma.toLowerCase()!==pop.word.toLowerCase()) h+='<span class="wm">原形 '+esc(e.lemma)+"</span>"; if(e.pos) h+='<span class="chip">'+esc(e.pos)+"</span>"; }
+    h+="</div>";
+    if(!e) h+=pop.wordErr?errBlock(pop.wordErr):'<p class="muted" style="margin:6px 0">第一次查這個字，查詢中…</p>';
+    else{
+      if(e.senses.length) h+='<ol class="senses">'+e.senses.map(s=>"<li>"+esc(s)+"</li>").join("")+"</ol>";
+      if(e.note) h+='<div class="note"><span class="lab">用法提醒</span>'+esc(e.note)+"</div>";
+      if(pop.here||pop.hereBusy) h+='<div class="here"><span class="lab">在這句裡的意思</span>'+(pop.here?esc(pop.here):'<span class="muted">查詢中…</span>')+"</div>";
+      else if(pop.sentence) h+='<button class="hb" data-a="here">看它在這句裡的意思</button>';
+      h+='<div class="foot">'+(pop.saved?"來自你的字典，未耗用額度":"已存進你的字典")+" · 共 "+Object.keys(dict).length+" 字</div>";
+    }
+  } else if(pop.kind==="para"){
+    const p=doc.paras[pop.pid];
+    h+='<div class="ph"><span class="pl">段落翻譯</span><div class="pa">'+(pop.word?'<button class="chipbtn" data-a="word">查「'+esc(pop.word)+"」</button>":"")+'<button class="x" data-a="close" aria-label="關閉">✕</button></div></div>';
+    if(p.zh) h+='<div class="zh" lang="zh-Hant">'+esc(p.zh)+"</div>";
+    else if(p.busy) h+='<div class="zh muted">翻譯中…</div>';
+    else if(p.err) h+=errBlock(p.err)+(p.err.code!=="no_key"?'<div class="pf"><button class="lk" data-a="retry">再試一次</button></div>':"");
+    else h+='<div class="zh muted">翻譯中…</div>';
+    if(p.zh&&!p.busy) h+='<div class="pf"><button class="lk" data-a="copy">複製譯文</button></div>';
+  } else {
+    h+='<div class="ph"><span class="pl">選取內容翻譯</span><button class="x" data-a="close" aria-label="關閉">✕</button></div>';
+    if(pop.zh) h+='<div class="zh" lang="zh-Hant">'+esc(pop.zh)+"</div>";
+    else if(pop.err) h+=errBlock(pop.err);
+    else h+='<div class="zh muted">翻譯中…</div>';
+  }
+  el.innerHTML=h; el.hidden=false; placePop(fresh);
+}
+function placePop(fresh){
+  const el=$("#pop"); if(!pop||el.hidden) return;
+  if(innerWidth<700){ el.classList.add("sheet"); el.style.left=""; el.style.top=""; return; }
+  el.classList.remove("sheet");
+  const w=el.offsetWidth, h=el.offsetHeight, ay=pop.ay-(viewer.scrollTop-pop.st), tbB=$(".tb").getBoundingClientRect().bottom;
+  if(ay<tbB-10||ay>innerHeight+10){ closePop(); return; }
+  if(fresh||pop.below===undefined) pop.below = ay+18+h<=innerHeight-12 || ay-18-h<tbB+8;
+  let top=pop.below?ay+18:ay-18-h;
+  top=Math.min(Math.max(tbB+8,top),innerHeight-h-12);
+  el.style.left=Math.min(Math.max(12,pop.ax-w/2),innerWidth-w-12)+"px"; el.style.top=top+"px";
+}
+$("#pop").addEventListener("click",e=>{
+  const b=e.target.closest("[data-a]"); if(!b||!pop) return;
+  const a=b.dataset.a;
+  if(a==="close") closePop();
+  else if(a==="back"){ pop.view="main"; drawPop(); }
+  else if(a==="word"){ pop.view="word"; drawPop(); startWord(); }
+  else if(a==="here") askHere();
+  else if(a==="retry") translatePara(pop.pid);
+  else if(a==="settings"){ closePop(); openDrawer("set"); }
+  else if(a==="copy"){ const t=doc.paras[pop.pid].zh; try{ navigator.clipboard.writeText(t).then(()=>toast("已複製譯文"),()=>toast("無法複製，請長按譯文手動選取。")); }catch(err){ toast("無法複製，請長按譯文手動選取。"); } }
+});
+
+async function translatePara(pid){
+  const p=doc.paras[pid]; if(p.busy) return;
+  const d=doc; p.busy=true; p.err=null; drawPop();
+  const live=()=>doc===d&&pop&&pop.kind==="para"&&pop.pid===pid&&pop.view==="main";
+  try{ p.zh=await claude(P_PARA+p.t,{max:3000,onText:t=>{ p.zh=t; if(live()) drawPop(); }}); if(doc===d) save(); }
+  catch(e){ p.zh=(e&&e.text)||""; if(!p.zh) p.err=e; if(e&&e.code!=="no_key") handleErr(e); }
+  finally{ p.busy=false; if(live()) drawPop(); }
+}
+async function translateSel(){
+  const cur=pop; selCtl&&selCtl.abort(); const ctl=selCtl=new AbortController();
+  try{ cur.zh=await claude(P_SEL+cur.text,{max:3000,signal:ctl.signal,onText:t=>{ cur.zh=t; if(pop===cur) drawPop(); }}); }
+  catch(e){ if(!cur.zh){ cur.err=e; } if(e&&e.code!=="no_key") handleErr(e); }
+  if(pop===cur) drawPop();
+}
+async function startWord(){
+  const cur=pop, key=cur.word.toLowerCase();
+  if(cur.entry) return;
+  if(dict[key]){ cur.entry=dict[key]; cur.saved=true; drawPop(); return; }
+  cur.wordErr=null; drawPop();
+  try{
+    const r=parseJSON(await claude(P_DICT(cur.word),{max:400}));
+    const e={lemma:String(r.lemma||""),ipa:String(r.ipa||""),pos:String(r.pos||""),senses:Array.isArray(r.senses)?r.senses.slice(0,3).map(String):[],note:String(r.note||"")};
+    if(e.senses.length){ dict[key]=e; const lk=e.lemma.toLowerCase(); if(lk&&!dict[lk]) dict[lk]=e; saveDict(); }
+    cur.entry=e; cur.saved=false;
+  }catch(err){ cur.wordErr=err; }
+  if(pop===cur) drawPop();
+}
+async function askHere(){
+  const cur=pop; if(!cur||cur.hereBusy) return;
+  cur.hereBusy=true; drawPop();
+  try{ cur.here=await claude(P_HERE(cur.word,cur.sentence),{max:150,onText:t=>{ cur.here=t; if(pop===cur) drawPop(); }}); }
+  catch(e){ handleErr(e); }
+  finally{ cur.hereBusy=false; if(pop===cur) drawPop(); }
+}
+
+/* ================= Interaction ================= */
+viewer.addEventListener("click",e=>{
+  if(!doc) return;
+  if(String(getSelection()).trim().length>1) return;
+  let pid=-1;
+  const sp=e.target.closest(".tl span");
+  if(sp){ const pg=doc.pages[+sp.parentNode.dataset.p]; const it=pg&&pg.items[+sp.dataset.i]; pid=it?it.para:-1; }
+  else if(doc.type==="pdf"){ const pe=e.target.closest(".page"); const it=pe&&hitItem(pe,e.clientX,e.clientY); pid=it?it.para:-1; }
+  else { const ap=e.target.closest(".ap"); if(ap) pid=+ap.dataset.p; }
+  if(pid<0){ closePop(); return; }
+  openPara(pid,wordAt(e.clientX,e.clientY),e.clientX,e.clientY);
+});
+let scT=null;
+viewer.addEventListener("scroll",()=>{ hideSel(); if(scT) return; scT=requestAnimationFrame(()=>{ scT=null; updatePageNum(); placePop(); }); },{passive:true});
+
+let selPending=null, selT=null;
+const selBtn=$("#selBtn");
+function hideSel(){ selBtn.hidden=true; selPending=null; }
+document.addEventListener("selectionchange",()=>{ clearTimeout(selT); selT=setTimeout(checkSel,350); });
+function checkSel(){
+  if(!doc) return;
+  const s=getSelection(), t=String(s).replace(/\s+/g," ").trim();
+  if(!t||t.length<2||t.length>3000||!/[A-Za-z]/.test(t)||!s.rangeCount||!viewer.contains(s.anchorNode)){ hideSel(); return; }
+  const r=s.getRangeAt(0).getBoundingClientRect(); if(!r.width&&!r.height){ hideSel(); return; }
+  let ctx=""; const an=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);
+  if(an){ const sp=an.closest(".tl span"); if(sp){ const it=doc.pages[+sp.parentNode.dataset.p].items[+sp.dataset.i]; if(it&&it.para>=0) ctx=doc.paras[it.para].t; } const ap=an.closest(".ap"); if(ap) ctx=doc.paras[+ap.dataset.p].t; }
+  selPending={t,r,ctx};
+  selBtn.textContent=WORD.test(t)?"查這個字":"翻譯選取";
+  selBtn.hidden=false;
+  const bw=selBtn.offsetWidth, tbB=$(".tb").getBoundingClientRect().bottom;
+  let top=r.bottom+12; if(top+40>innerHeight-10) top=Math.max(tbB+8,r.top-48);
+  selBtn.style.top=top+"px"; selBtn.style.left=Math.min(Math.max(12,r.left+r.width/2-bw/2),innerWidth-bw-12)+"px";
+}
+selBtn.addEventListener("mousedown",e=>e.preventDefault());
+selBtn.addEventListener("click",()=>{ if(!selPending) return; const p=selPending; openSel(p.t,p.r,p.ctx); try{getSelection().removeAllRanges()}catch(e){} });
+
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closePop(); hideSel(); $("#drawer").hidden=true; document.querySelectorAll(".dlg").forEach(d=>d.hidden=true); } });
+
+/* ================= Drawer ================= */
+function openDrawer(which){
+  $("#paneSum").hidden=which!=="sum"; $("#paneSet").hidden=which!=="set";
+  $("#drawerTitle").textContent=which==="sum"?"全文摘要":"設定";
+  $("#drawer").hidden=false;
+}
+$("#drawerClose").onclick=()=>{ $("#drawer").hidden=true; };
+$("#setBtn").onclick=()=>{ closePop(); openDrawer("set"); };
+$("#keyBannerBtn").onclick=()=>openDrawer("set");
+let sumCtl=null;
+function md(t){
+  let out="",inList=false; const inl=s=>esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>");
+  for(let l of t.split("\n")){ l=l.trim();
+    if(/^[-*•]\s+/.test(l)){ if(!inList){out+="<ul>";inList=true;} out+="<li>"+inl(l.replace(/^[-*•]\s+/,""))+"</li>"; continue; }
+    if(inList){ out+="</ul>"; inList=false; }
+    if(/^#{1,4}\s+/.test(l)) out+="<h4>"+inl(l.replace(/^#{1,4}\s+/,""))+"</h4>"; else if(l) out+="<p>"+inl(l)+"</p>";
+  }
+  return out+(inList?"</ul>":"");
+}
+async function summarize(){
+  if(sumCtl||!doc) return;
+  const out=$("#sumOut"); out.innerHTML='<p class="muted">正在閱讀全文，約需半分鐘…</p>';
+  const full=doc.paras.map(p=>p.t).join("\n\n").slice(0,90000);
+  if(!full){ out.innerHTML='<p class="muted">這份文件讀不到文字。</p>'; return; }
+  const ctl=sumCtl=new AbortController(), d=doc; $("#sumStop").hidden=false; $("#sumGo").disabled=true;
+  try{ await claude(P_SUM+full,{max:2500,signal:ctl.signal,onText:t=>{ if(doc===d) out.innerHTML=md(t); }}); $("#sumGo").textContent="重新產生"; }
+  catch(e){ if(e&&e.text) out.innerHTML=md(e.text); else if(e&&e.code==="cancelled") out.innerHTML=""; else out.innerHTML=errBlock(e); }
+  finally{ sumCtl=null; $("#sumStop").hidden=true; $("#sumGo").disabled=false; }
+}
+$("#sumBtn").onclick=()=>{ closePop(); openDrawer("sum"); if(!$("#sumOut").innerHTML) summarize(); };
+$("#sumGo").onclick=summarize;
+$("#sumStop").onclick=()=>sumCtl&&sumCtl.abort();
+$("#paneSet").addEventListener("click",e=>{ if(e.target.closest('[data-a="settings"]')) $("#key").focus(); });
+$("#paneSum").addEventListener("click",e=>{ if(e.target.closest('[data-a="settings"]')) openDrawer("set"); });
+let wipeArmed=false;
+$("#wipe").onclick=async()=>{
+  if(!wipeArmed){ wipeArmed=true; $("#wipeMsg").textContent="再按一次確認清除（字典和金鑰會保留）。"; setTimeout(()=>{ wipeArmed=false; $("#wipeMsg").textContent=""; },4000); return; }
+  wipeArmed=false;
+  try{ Object.keys(localStorage).filter(k=>k.startsWith("yidu:doc:")).forEach(k=>store.del(k)); }catch(e){}
+  try{ await DB.clear(); }catch(e){}
+  $("#wipeMsg").textContent="已清除。"; if(!doc) renderRecent();
+};
+
+/* ================= Open files / paste / URL ================= */
+async function openFile(f){
+  if(!f) return;
+  const ext=(f.name.split(".").pop()||"").toLowerCase();
+  try{
+    if(ext==="pdf") await openPdf(await f.arrayBuffer(),f.name);
+    else if(ext==="docx"){ if(!window.mammoth) throw new Error("Word 元件沒有載入"); showLoading("正在開啟…"); const r=await mammoth.extractRawText({arrayBuffer:await f.arrayBuffer()}); const ps=textParas(r.value); if(!ps.length) throw new Error("讀不到文字"); openText(f.name,ps); }
+    else if(ext==="txt"||ext==="md"){ const ps=textParas(await f.text()); if(!ps.length) throw new Error("讀不到文字"); openText(f.name,ps); }
+    else toast("目前支援 PDF、Word（.docx）和純文字檔。");
+  }catch(e){ hideLoading(); toast("開啟失敗："+((e&&e.message)||"檔案可能有密碼或已損壞")); }
+}
+$("#file").addEventListener("change",e=>{ openFile(e.target.files[0]); e.target.value=""; });
+$("#fileLabel").addEventListener("keydown",e=>{ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); $("#file").click(); } });
+$("#tileFile").onclick=()=>$("#file").click();
+document.addEventListener("dragover",e=>{ e.preventDefault(); document.body.classList.add("drop"); });
+document.addEventListener("dragleave",e=>{ if(!e.relatedTarget) document.body.classList.remove("drop"); });
+document.addEventListener("drop",e=>{ e.preventDefault(); document.body.classList.remove("drop"); const f=e.dataTransfer&&e.dataTransfer.files[0]; if(f) openFile(f); });
+
+document.querySelectorAll(".dlg").forEach(d=>{ d.addEventListener("click",e=>{ if(e.target===d||e.target.closest("[data-close]")) d.hidden=true; }); });
+function openPaste(){ closePop(); $("#dlgPaste").hidden=false; $("#pasteText").focus(); }
+$("#tilePaste").onclick=openPaste;
+$("#pasteGo").onclick=()=>{
+  const ps=textParas($("#pasteText").value);
+  if(!ps.length){ toast("請先貼上一些英文文字。"); return; }
+  $("#dlgPaste").hidden=true; $("#pasteText").value="";
+  openText(ps[0].t.slice(0,48)+(ps[0].t.length>48?"…":""),ps);
+};
+function openUrl(){ closePop(); $("#dlgUrl").hidden=false; $("#urlInput").focus(); }
+$("#urlBtn").onclick=openUrl; $("#tileUrl").onclick=openUrl;
+$("#urlGo").onclick=()=>{ const v=$("#urlInput").value; if(!v.trim()){ toast("請先貼上網址。"); return; } $("#dlgUrl").hidden=true; $("#urlInput").value=""; importUrl(v); };
+$("#urlInput").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#urlGo").click(); });
+
+async function openSample(){
+  try{ const bin=atob(SAMPLE_B64), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); await openPdf(u.buffer,"示範論文（虛構內容）.pdf",{sample:true}); }
+  catch(e){ hideLoading(); goHome(); toast("示範論文開啟失敗，請確認網路後再試。"); }
+}
+
+let tt=null;
+function toast(m){ const t=$("#toast"); t.textContent=m; t.hidden=false; clearTimeout(tt); tt=setTimeout(()=>t.hidden=true,4200); }
+
+goHome();
+if(!S.key) setTimeout(()=>openDrawer("set"),400);
+// Windows：在檔案總管對 PDF 按右鍵「開啟檔案 → 譯讀」時，直接打開那個檔案
+if("launchQueue" in window){ try{ window.launchQueue.setConsumer(async p=>{ if(p.files&&p.files.length){ const f=await p.files[0].getFile(); $("#drawer").hidden=true; openFile(f); } }); }catch(e){} }
+})();
+</script>
+</body>
+</html>
