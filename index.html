@@ -3,172 +3,234 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>譯讀</title>
+<title>Pip</title>
 <meta name="description" content="英文論文與網頁的翻譯閱讀器：保留原版面，點句子浮窗翻譯、查單字。">
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#2A54C4">
+<meta name="theme-color" content="#FFF2DA">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="譯讀">
+<meta name="apple-mobile-web-app-title" content="Pip">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="icon" href="icon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <style>
-/* Layout: app shell — toolbar, scrolling desk (home library / PDF pages / article), floating translation card, right drawer for summary & settings. */
+/* Layout: doodle sticker-book shell — cream grainy desk, thick hand-drawn outlines on chrome only (pages stay quiet), greeting + big open-file card with Pip standing on it, bottom tab bar; landscape iPad pins translations in a right column. */
 :root{
-  --chrome:#FFFFFF; --desk:#E6E9EF; --ink:#172031; --muted:#5A6477; --line:#D8DEE8;
-  --accent:#2A54C4; --accent-ink:#FFFFFF; --soft:#EDF2FC; --hl:rgba(255,206,48,.36); --sel:rgba(42,84,196,.28);
-  --warn-bg:#FFF4D6; --warn-ink:#6B4B00; --err:#B3261E;
-  --shadow:0 1px 3px rgba(20,30,50,.12),0 6px 20px rgba(20,30,50,.08);
-  --f-ui:"Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --desk:#FFF2DA; --chrome:#FFFBF1; --ink:#1E1A17; --muted:#6E6155; --line:#1E1A17;
+  --accent:#E8452C; --accent-ink:#1E1A17; --mustard:#F6D23E; --leaf:#5DB35E; --sky:#7DA0BE;
+  --soft:#FFE3D6; --hl:rgba(246,210,62,.6); --sel:rgba(232,69,44,.25);
+  --warn-bg:#FFE07A; --warn-ink:#1E1A17; --err:#B5281A;
+  --hard:3px 3px 0 var(--line); --hard-lg:5px 5px 0 var(--line);
+  --f-ui:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-hand:"LXGW WenKai TC","Kaiti TC","DFKai-SB","BiauKai",serif;
   --f-en:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --r1:20px 16px 22px 18px; --r2:14px 18px 12px 16px;
+  --sideW:min(400px,34vw);
   color-scheme:light;
 }
 @media (prefers-color-scheme: dark){:root{
-  --chrome:#161B23; --desk:#0D1117; --ink:#E5E9F1; --muted:#9AA4B6; --line:#2A313D;
-  --accent:#7FA1FF; --accent-ink:#0C1222; --soft:#1A2335; --hl:rgba(255,206,48,.32); --sel:rgba(127,161,255,.32);
-  --warn-bg:#3A2F12; --warn-ink:#FFE2A0; --err:#FF8A80;
-  --shadow:0 1px 3px rgba(0,0,0,.5),0 8px 28px rgba(0,0,0,.4); color-scheme:dark}}
+  --desk:#221C17; --chrome:#2F2720; --ink:#FFF2DA; --muted:#CDBEAC; --line:#FFF2DA;
+  --accent:#FF6A4D; --accent-ink:#1E1A17; --mustard:#F6D23E; --leaf:#7CCB7D; --sky:#9AB9D3;
+  --soft:#4A2A22; --hl:rgba(246,210,62,.38); --sel:rgba(255,106,77,.32);
+  --warn-bg:#5A4712; --warn-ink:#FFF2DA; --err:#FF8A73; color-scheme:dark}}
 
 html{box-sizing:border-box;height:100%}
 *,*::before,*::after{box-sizing:inherit}
 html,body{margin:0;background:var(--desk);color:var(--ink)}
-body{height:100%;display:flex;flex-direction:column;font-family:var(--f-ui);font-size:14px;overflow:hidden;padding-top:env(safe-area-inset-top,0px)}
+body{height:100%;display:flex;flex-direction:column;font-family:var(--f-ui);font-size:15px;overflow:hidden;padding-top:env(safe-area-inset-top,0px);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.22 0 0 0 0 0.1 0 0 0 .55 0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E")}
 [hidden]{display:none!important}
+.hand{font-family:var(--f-hand)}
 
 /* toolbar */
-.tb{flex:none;display:flex;align-items:center;gap:8px;background:var(--chrome);border-bottom:1px solid var(--line);padding-block:8px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));z-index:5}
+.tb{flex:none;display:flex;align-items:center;gap:8px;background:var(--chrome);border-bottom:2.5px solid var(--line);padding-block:8px;padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));z-index:5}
 .brand{display:flex;align-items:center;gap:10px;min-width:0;flex:1;background:none;border:0;color:inherit;font:inherit;text-align:left;cursor:pointer;padding:0}
-.logo{width:30px;height:30px;border-radius:7px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:700;font-size:16px;flex:none}
+.logo{width:38px;height:38px;border-radius:10px;flex:none;display:block;border:2.5px solid var(--line)}
 .title{min-width:0}
-.title b{display:block;font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.title small{display:block;font-size:11.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
-.grp{display:flex;align-items:center;gap:6px;flex:none}
-.tb button:not(.brand),.tb .btn{font:inherit;font-size:13.5px;height:34px;padding:0 12px;border-radius:8px;border:1px solid var(--line);background:var(--chrome);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
-.tb .sq{width:34px;padding:0!important;justify-content:center;font-size:17px}
-.tb .primary{background:var(--accent)!important;border-color:var(--accent)!important;color:var(--accent-ink)!important;font-weight:500}
-.tb button:not(.brand):hover,.tb .btn:hover{border-color:var(--accent)}
-.zoomv{font-size:12px;color:var(--muted);min-width:38px;text-align:center;font-variant-numeric:tabular-nums}
-@media (max-width:600px){ .zoomv,.hide-s{display:none} .tb button:not(.brand),.tb .btn{padding:0 9px} }
-button:focus-visible,.btn:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.title b{display:block;font-family:var(--f-hand);font-size:20px;font-weight:700;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.title small{display:block;font-size:12.5px;color:var(--muted);white-space:nowrap;font-variant-numeric:tabular-nums}
+.grp{display:flex;align-items:center;gap:8px;flex:none}
+.tb button:not(.brand),.tb .btn{font:inherit;font-size:14.5px;font-weight:700;height:38px;padding:0 14px;border-radius:var(--r2);border:2.5px solid var(--line);background:var(--chrome);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:var(--hard);transition:transform .08s,box-shadow .08s}
+.tb button:not(.brand):active,.tb .btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+.tb .sq{width:38px;padding:0!important;justify-content:center;font-size:19px}
+.tb .primary{background:var(--accent)!important;color:var(--accent-ink)!important}
+.zoomv{font-size:13px;color:var(--muted);min-width:40px;text-align:center;font-variant-numeric:tabular-nums}
+@media (max-width:600px){ .zoomv,.hide-s{display:none} .tb button:not(.brand),.tb .btn{padding:0 10px} }
+button:focus-visible,.btn:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible,.card:focus-visible{outline:3px dashed var(--accent);outline-offset:3px}
 
-/* desk */
-#viewer{flex:1;overflow:auto;position:relative;-webkit-overflow-scrolling:touch;padding-block:20px 120px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-#pages{display:flex;flex-direction:column;align-items:center;gap:18px;width:max-content;min-width:100%;margin:0 auto}
-.page{position:relative;background:#fff;box-shadow:var(--shadow);flex:none}
+/* desk — reading pages stay quiet */
+#viewer{flex:1;overflow:auto;position:relative;-webkit-overflow-scrolling:touch;padding-block:24px 150px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body.side #viewer{margin-right:calc(var(--sideW) + 20px)}
+#pages{display:flex;flex-direction:column;align-items:center;gap:20px;width:max-content;min-width:100%;margin:0 auto}
+.page{position:relative;background:#fff;box-shadow:0 1px 3px rgba(60,40,20,.14),0 6px 18px rgba(60,40,20,.08);flex:none}
 .page canvas{position:absolute;inset:0;width:100%;height:100%}
-.page .num{position:absolute;right:0;bottom:-17px;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+.page .num{position:absolute;right:0;bottom:-20px;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums}
 .tl{position:absolute;inset:0;font-size:1px;line-height:1;overflow:hidden}
 .tl span{position:absolute;white-space:pre;color:transparent;transform-origin:0 0;cursor:pointer;border-radius:1px}
 .tl span::selection{background:var(--sel)}
 .tl span.hl{background:var(--hl)}
-#article{max-width:720px;margin:0 auto;background:var(--chrome);box-shadow:var(--shadow);padding:36px clamp(20px,6vw,56px);font-family:var(--f-en);font-size:18px;line-height:1.75}
-#article .src{font-family:var(--f-ui);font-size:12.5px;color:var(--muted);margin:0 0 18px;overflow-wrap:anywhere}
+#article{max-width:720px;margin:0 auto;background:var(--chrome);border-radius:6px;box-shadow:0 1px 3px rgba(60,40,20,.14),0 6px 18px rgba(60,40,20,.08);padding:36px clamp(20px,6vw,56px);font-family:var(--f-en);font-size:18px;line-height:1.75}
+#article .src{font-family:var(--f-ui);font-size:13px;color:var(--muted);margin:0 0 18px;overflow-wrap:anywhere}
 #article .ap{margin:0 0 1em;cursor:pointer;border-radius:4px}
 #article .ap.h{font-weight:600;font-size:1.2em;line-height:1.35}
 #article .ap.hl{background:var(--hl)}
-#loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:14px;background:var(--desk);z-index:2}
+#loading{position:absolute;inset:0;display:grid;place-items:center;color:var(--muted);font-size:16px;background:var(--desk);z-index:2}
 
 /* home */
-#home{max-width:760px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
-.hello h1{font-size:26px;margin:6px 0 4px;letter-spacing:.04em}
-.hello p{margin:0;color:var(--muted);font-size:14px;line-height:1.7}
-.banner{background:var(--warn-bg);color:var(--warn-ink);border-radius:10px;padding:12px 14px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;line-height:1.6}
-.banner button{font:inherit;font-size:13.5px;border-radius:8px;border:1px solid currentColor;background:transparent;color:inherit;padding:6px 12px;cursor:pointer}
-.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-@media (max-width:620px){.tiles{grid-template-columns:minmax(0,1fr)}}
-.tile{display:flex;flex-direction:column;gap:4px;text-align:left;background:var(--chrome);border:1px solid var(--line);border-radius:12px;padding:16px;cursor:pointer;color:var(--ink);font:inherit}
-.tile:hover{border-color:var(--accent)}
-.tile b{font-size:15px}
-.tile span{font-size:12.5px;color:var(--muted);line-height:1.6}
-.tile.main{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.tile.main span{color:var(--accent-ink);opacity:.85}
-.sect h2{font-size:12px;letter-spacing:.08em;color:var(--muted);font-weight:500;margin:0 0 8px}
-.recent{background:var(--chrome);border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.rrow{display:flex;align-items:center;gap:12px;padding:11px 14px;border-top:1px solid var(--line);cursor:pointer}
-.rrow:first-child{border-top:0}
-.rrow:hover{background:var(--soft)}
-.kind{flex:none;font-size:10.5px;letter-spacing:.06em;border:1px solid var(--line);border-radius:5px;padding:1px 6px;color:var(--muted);min-width:38px;text-align:center}
+#home,#dictView{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:30px}
+.greet{padding-top:10px}
+.greet h1{font-family:var(--f-hand);font-size:clamp(32px,4.8vw,46px);line-height:1.2;margin:0 0 6px;font-weight:700;letter-spacing:.03em}
+.greet p{margin:0;font-size:16px;color:var(--muted)}
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:-6px}
+.card{position:relative;display:flex;align-items:center;gap:14px;text-align:left;font:inherit;color:var(--ink);background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r1);box-shadow:var(--hard);padding:16px 18px;cursor:pointer;transition:transform .08s,box-shadow .08s}
+.card:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+.card.big{grid-column:1/-1;background:var(--accent);color:var(--accent-ink);padding:26px 22px;margin-top:84px}
+.card .ico{flex:none;width:46px;height:46px;border-radius:14px 11px 15px 12px;border:2.5px solid #1E1A17;background:var(--chrome);color:#1E1A17;display:grid;place-items:center}
+.card.big .ico{width:56px;height:56px;background:#FFFBF1}
+.card .ico svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.card b{display:block;font-size:18px;font-weight:700}
+.card.big b{font-size:23px}
+.card small{display:block;font-size:13.5px;color:var(--muted);margin-top:2px;line-height:1.5}
+.card.big small{color:#4A120A}
+.card .sit{--pip-book:var(--sky);position:absolute;right:26px;bottom:100%;margin-bottom:-14px;width:96px;height:110px;pointer-events:none}
+@media (max-width:520px){.card .sit{width:78px;height:90px;right:16px}.card.big{margin-top:70px}}
+.banner{background:var(--warn-bg);color:var(--warn-ink);border:2.5px solid var(--line);border-radius:var(--r1);box-shadow:var(--hard);padding:14px 18px;display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;line-height:1.6;font-size:15.5px}
+.banner button{font:inherit;font-weight:700;font-size:14.5px;border-radius:var(--r2);border:2.5px solid var(--line);background:var(--chrome);color:var(--ink);padding:6px 14px;cursor:pointer;box-shadow:2px 2px 0 var(--line)}
+.sect h2{font-family:var(--f-hand);font-size:28px;font-weight:700;margin:0 0 14px;letter-spacing:.03em}
+.recent{display:flex;flex-direction:column;gap:12px}
+.rrow{display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r1);cursor:pointer;box-shadow:var(--hard)}
+.rrow:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
+.rrow:nth-child(3n+1) .kind{background:var(--accent)} .rrow:nth-child(3n+2) .kind{background:var(--mustard)} .rrow:nth-child(3n) .kind{background:var(--sky)}
+.kind{flex:none;width:48px;height:48px;border-radius:14px 12px 16px 10px;border:2.5px solid #1E1A17;color:#1E1A17;display:grid;place-items:center;font-weight:700;font-size:15px}
 .rname{flex:1;min-width:0}
-.rname b{display:block;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.rname small{color:var(--muted);font-size:11.5px}
-.rdel{flex:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:12px;cursor:pointer;padding:4px 6px;border-radius:6px}
+.rname b{display:block;font-size:16.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rname small{color:var(--muted);font-size:13px}
+.chev{flex:none;color:var(--accent);font-size:26px;line-height:1;font-weight:700}
+.rdel{flex:none;border:0;background:transparent;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:4px 6px;border-radius:6px}
 .rdel:hover{color:var(--err)}
-.empty{padding:16px;color:var(--muted);font-size:13.5px}
-.lnk{border:0;background:none;color:var(--accent);font:inherit;cursor:pointer;padding:0}
+.empty{display:flex;align-items:center;gap:14px;padding:14px 18px;color:var(--muted);font-size:15.5px;background:var(--chrome);border:2.5px dashed var(--line);border-radius:var(--r1);line-height:1.8}
+.empty .mini{flex:none;width:52px;height:60px}
+.lnk{border:0;background:none;color:var(--accent);font:inherit;font-weight:700;cursor:pointer;padding:0;text-decoration:underline wavy;text-underline-offset:4px}
 
-/* floating card */
-#pop{position:fixed;z-index:20;width:380px;max-width:calc(100vw - 24px);max-height:min(60vh,520px);overflow:auto;background:var(--chrome);color:var(--ink);border:1px solid var(--line);border-radius:12px;box-shadow:0 12px 40px rgba(10,20,40,.28);padding:12px 14px 14px}
-#pop.sheet{left:0!important;right:0;bottom:0;top:auto!important;width:auto;max-width:none;max-height:58vh;border-radius:16px 16px 0 0;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-#pop.sheet::before{content:"";display:block;width:36px;height:4px;border-radius:2px;background:var(--line);margin:0 auto 8px}
+/* word book */
+.dhead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-top:10px}
+.dhead h1{font-family:var(--f-hand);font-size:38px;font-weight:700;margin:0;letter-spacing:.03em}
+.dsearch{flex:1;max-width:340px;min-width:200px;font:16px var(--f-ui);border:2.5px solid var(--line);border-radius:var(--r2);padding:10px 16px;background:var(--chrome);color:var(--ink);box-shadow:var(--hard)}
+.words{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.wcard{background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r1);box-shadow:var(--hard);padding:14px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.wtop{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.wtop b{font-family:var(--f-en);font-size:23px;font-weight:600;color:var(--accent)}
+.wcard .ms{font-size:16px;line-height:1.7}
+.wcard .nt{font-size:13.5px;color:var(--muted);line-height:1.6}
+.wcard .wdel{align-self:flex-end;border:0;background:none;color:var(--muted);font:inherit;font-size:13px;cursor:pointer;padding:2px 4px}
+.wcard .wdel:hover{color:var(--err)}
+.eyebrow{font-size:13px;letter-spacing:.2em;color:var(--accent);font-weight:700;margin:0 0 6px}
+
+/* bottom tab bar */
+.tabbar{position:fixed;z-index:15;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(540px,calc(100% - 32px));display:grid;grid-template-columns:repeat(4,1fr);gap:6px;padding:6px;background:var(--chrome);border:2.5px solid var(--line);border-radius:26px 22px 28px 24px;box-shadow:var(--hard-lg)}
+.tabbar button{font:inherit;font-size:13.5px;font-weight:700;border:2.5px solid transparent;background:transparent;color:var(--muted);border-radius:18px 14px 20px 16px;padding:6px 4px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.tabbar svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tabbar button[aria-current="page"]{background:var(--accent);color:#1E1A17;border-color:#1E1A17}
+
+/* translation card: floating (portrait) / bottom sheet (phone) / right column (landscape iPad) */
+#pop{position:fixed;z-index:20;width:400px;max-width:calc(100vw - 24px);max-height:min(60vh,520px);overflow:auto;background:var(--chrome);color:var(--ink);border:2.5px solid var(--line);border-radius:22px 18px 24px 20px;box-shadow:var(--hard-lg);padding:14px 16px 16px}
+#pop.sheet{left:0!important;right:0;bottom:0;top:auto!important;width:auto;max-width:none;max-height:58vh;border-radius:24px 24px 0 0;border-bottom:0;padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+#pop.sheet::before{content:"";display:block;width:42px;height:5px;border-radius:3px;background:var(--line);margin:0 auto 10px}
+#pop.side{left:auto!important;right:max(16px,env(safe-area-inset-right,0px));width:var(--sideW);max-width:none;max-height:none;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:14;padding:16px 18px}
+.sidempty{display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;color:var(--muted);font-size:15.5px;line-height:1.7;padding:30px 8px}
+.sidempty svg{width:84px;height:97px}
+.hist{margin-top:16px;border-top:2px dashed var(--line);padding-top:12px;display:flex;flex-direction:column;gap:8px}
+.hist .lab{margin-bottom:0}
+.hi{display:block;width:100%;text-align:left;font:inherit;font-size:14px;line-height:1.6;color:var(--ink);background:var(--desk);border:2px solid var(--line);border-radius:12px 10px 13px 9px;padding:8px 10px;cursor:pointer}
+.hi span{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.hi:hover{background:var(--soft)}
 .ph{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:6px}
-.pl{font-size:11.5px;letter-spacing:.08em;color:var(--muted)}
+.pl{font-size:12.5px;letter-spacing:.14em;color:var(--accent);font-weight:700}
 .pa{display:flex;gap:6px;align-items:center}
 #pop button{font:inherit;cursor:pointer}
-.x{border:0;background:transparent;color:var(--muted);font-size:16px;width:30px;height:30px;border-radius:6px;cursor:pointer}
-.x:hover{background:var(--soft)}
-.chipbtn{border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:3px 10px;font-size:12.5px;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.lk{border:0;background:transparent;color:var(--accent);padding:2px 0;font-size:13px}
-.zh{font-size:16px;line-height:1.85;white-space:pre-wrap;overflow-wrap:anywhere}
-.muted{color:var(--muted)!important;font-size:14px}
-.err{color:var(--err)!important;font-size:14px}
+.x{border:2px solid transparent;background:transparent;color:var(--ink);font-size:17px;width:32px;height:32px;border-radius:10px;cursor:pointer}
+.x:hover{border-color:var(--line);background:var(--soft)}
+.chipbtn{border:2px solid #1E1A17;background:var(--mustard);color:#1E1A17;border-radius:12px 10px 14px 9px;padding:3px 11px;font-size:13.5px;font-weight:700;max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;box-shadow:2px 2px 0 #1E1A17}
+.lk{border:0;background:transparent;color:var(--accent);padding:2px 0;font-size:14.5px;font-weight:700}
+.zh{font-size:17.5px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere}
+.muted{color:var(--muted)!important;font-size:15px}
+.err{color:var(--err)!important;font-size:15px}
 .pf{display:flex;gap:14px;margin-top:8px}
 .wh{display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 8px;margin:2px 0 6px}
-.ww{font-family:var(--f-en);font-size:24px;font-weight:600}
-.wm{font-family:var(--f-en);color:var(--muted);font-size:13px}
-.chip{font-size:11px;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:0 8px}
-.senses{margin:4px 0 8px;padding-left:1.3em;font-size:15px;line-height:1.7}
-.lab{display:block;font-size:11px;letter-spacing:.08em;color:var(--muted);margin-bottom:2px}
-.note{font-size:14px;line-height:1.7}
-.here{background:var(--soft);border-radius:8px;padding:8px 10px;margin-top:8px;font-size:15px}
-.hb{margin-top:8px;border:1px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:8px;padding:6px 12px;font-size:13.5px}
-.foot{font-size:11.5px;color:var(--muted);border-top:1px solid var(--line);margin-top:10px;padding-top:7px}
-#selBtn{position:fixed;z-index:19;border:0;border-radius:999px;background:var(--accent);color:var(--accent-ink);font:500 13.5px var(--f-ui);padding:7px 14px;box-shadow:0 4px 14px rgba(10,20,40,.3);cursor:pointer}
+.ww{font-family:var(--f-en);font-size:26px;font-weight:600;color:var(--accent)}
+.wm{font-family:var(--f-en);color:var(--muted);font-size:14px}
+.chip{font-size:12.5px;color:var(--ink);border:2px solid var(--line);border-radius:999px;padding:0 9px;background:var(--soft)}
+.senses{margin:4px 0 8px;padding-left:1.3em;font-size:16.5px;line-height:1.7}
+.lab{display:block;font-size:12px;letter-spacing:.12em;color:var(--accent);font-weight:700;margin-bottom:2px}
+.note{font-size:14.5px;line-height:1.7}
+.here{background:var(--soft);border:2px dashed var(--line);border-radius:12px;padding:8px 10px;margin-top:8px;font-size:16px}
+.hb{margin-top:8px;border:2.5px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:var(--r2);padding:6px 12px;font-size:14.5px;font-weight:700;box-shadow:2px 2px 0 var(--line)}
+.foot{font-size:12.5px;color:var(--muted);border-top:2px dashed var(--line);margin-top:10px;padding-top:7px}
+#selBtn{position:fixed;z-index:19;border:2.5px solid #1E1A17;border-radius:14px 12px 16px 10px;background:var(--mustard);color:#1E1A17;font:700 14.5px var(--f-ui);padding:7px 14px;box-shadow:3px 3px 0 #1E1A17;cursor:pointer}
 
 /* drawer */
-#drawer{position:fixed;z-index:30;top:0;right:0;bottom:0;width:min(440px,100vw);background:var(--chrome);border-left:1px solid var(--line);box-shadow:-10px 0 30px rgba(10,20,40,.18);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-.dh{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:1px solid var(--line)}
-.dh b{font-size:15px}
+#drawer{position:fixed;z-index:30;top:0;right:0;bottom:0;width:min(440px,100vw);background:var(--chrome);border-left:2.5px solid var(--line);box-shadow:-5px 0 0 var(--line);display:flex;flex-direction:column;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+.dh{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-bottom:2.5px solid var(--line)}
+.dh b{font-family:var(--f-hand);font-size:21px}
 .db{flex:1;overflow:auto;padding:16px;padding-right:max(16px,env(safe-area-inset-right,0px))}
-.db h3{font-size:12px;letter-spacing:.08em;color:var(--muted);margin:0 0 8px;font-weight:500}
-.db section+section{margin-top:22px;padding-top:18px;border-top:1px solid var(--line)}
-.db button,.db select,.db input{font:inherit;font-size:13.5px;border:1px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:8px;padding:7px 12px}
-.db button{cursor:pointer}
+.db h3{font-size:13px;letter-spacing:.14em;color:var(--accent);margin:0 0 8px;font-weight:700}
+.db section+section{margin-top:22px;padding-top:18px;border-top:2px dashed var(--line)}
+.db button,.db select,.db input{font:inherit;font-size:14.5px;border:2.5px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:var(--r2);padding:7px 12px}
+.db button{cursor:pointer;font-weight:700;box-shadow:2px 2px 0 var(--line)}
 .db input,.db select{width:100%;background:var(--desk)}
-.db .primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
-.db p{margin:6px 0;line-height:1.7;font-size:13.5px}
-.db .hintline{font-size:12.5px;color:var(--muted)}
-#sumOut{font-size:15px;line-height:1.8;margin-top:10px}
-#sumOut h4{font-size:13.5px;color:var(--accent);margin:16px 0 4px}
+.db .primary{background:var(--accent);color:var(--accent-ink)}
+.db p{margin:6px 0;line-height:1.7;font-size:14.5px}
+.db .hintline{font-size:13.5px;color:var(--muted)}
+.db a{color:var(--accent);font-weight:700}
+#sumOut{font-size:16.5px;line-height:1.8;margin-top:10px}
+#sumOut h4{font-size:15px;color:var(--accent);margin:16px 0 4px}
 #sumOut ul{margin:4px 0;padding-left:1.25em}
-#sumOut p{margin:4px 0;font-size:15px}
+#sumOut p{margin:4px 0;font-size:16.5px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:8px}
-.ok{color:#1E7A46} @media (prefers-color-scheme:dark){.ok{color:#6FD39A}}
+.ok{color:#2E7D32} @media (prefers-color-scheme:dark){.ok{color:#8CDB8F}}
 
 /* dialogs */
-.dlg{position:fixed;inset:0;z-index:40;background:rgba(10,15,25,.45);display:grid;place-items:center;padding:16px}
-.dlgc{background:var(--chrome);border-radius:14px;width:min(640px,100%);padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.3)}
-.dlgc h2{font-size:16px;margin:0 0 4px}
-.dlgc p{margin:0 0 10px;color:var(--muted);font-size:13px;line-height:1.6}
-.dlgc textarea{width:100%;min-height:220px;max-height:55vh;font:15px/1.6 var(--f-en);border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--desk);color:var(--ink);resize:vertical}
-.dlgc input{width:100%;font:15px var(--f-ui);border:1px solid var(--line);border-radius:8px;padding:10px;background:var(--desk);color:var(--ink)}
-.dlgc .row{margin-top:12px;justify-content:flex-end}
-.dlgc button{font:inherit;font-size:14px;border:1px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:8px;padding:8px 14px;cursor:pointer}
-.dlgc .primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.dlg{position:fixed;inset:0;z-index:40;background:rgba(30,26,23,.45);display:grid;place-items:center;padding:16px}
+.dlgc{background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r1);width:min(640px,100%);padding:18px;box-shadow:6px 6px 0 var(--line)}
+.dlgc h2{font-family:var(--f-hand);font-size:23px;margin:0 0 4px}
+.dlgc p{margin:0 0 10px;color:var(--muted);font-size:14.5px;line-height:1.6}
+.dlgc textarea{width:100%;min-height:220px;max-height:55vh;font:16px/1.6 var(--f-en);border:2.5px solid var(--line);border-radius:12px;padding:10px;background:var(--desk);color:var(--ink);resize:vertical}
+.dlgc input{width:100%;font:16px var(--f-ui);border:2.5px solid var(--line);border-radius:12px;padding:10px;background:var(--desk);color:var(--ink)}
+.dlgc .row{margin-top:14px;justify-content:flex-end}
+.dlgc button{font:inherit;font-size:15.5px;font-weight:700;border:2.5px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:var(--r2);padding:8px 16px;cursor:pointer;box-shadow:var(--hard)}
+.dlgc .primary{background:var(--accent);color:var(--accent-ink)}
 
-#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(22px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--ink);color:var(--chrome);padding:9px 14px;border-radius:10px;font-size:13.5px;max-width:min(90vw,460px);text-align:center}
-body.drop #viewer{outline:3px dashed var(--accent);outline-offset:-10px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--ink);color:var(--desk);border:2.5px solid var(--line);padding:9px 16px;border-radius:16px 12px 18px 14px;font-size:14.5px;max-width:min(90vw,460px);text-align:center}
+body.drop #viewer{outline:4px dashed var(--accent);outline-offset:-12px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs><filter id="wob" x="-6%" y="-6%" width="112%" height="112%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="2" seed="7"/><feDisplacementMap in="SourceGraphic" scale="5"/></filter></defs>
+  <symbol id="pip" viewBox="0 0 200 240">
+    <g filter="url(#wob)" stroke="#1E1A17" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+      <ellipse cx="82" cy="214" rx="13" ry="7" fill="#FBF0D6"/><ellipse cx="118" cy="214" rx="13" ry="7" fill="#FBF0D6"/>
+      <path d="M100 32 C120 54 158 94 160 138 C162 184 134 206 98 207 C62 208 38 182 40 138 C42 96 78 56 100 32 Z" fill="#FBF0D6"/>
+      <path d="M94 131 L106 131" fill="none" stroke-width="4"/>
+      <path transform="translate(102 24) rotate(12) scale(1.5)" d="M0 -14 L4 -4.5 L14 -4 L6.5 2.5 L9 12.5 L0 7 L-9 12.5 L-6.5 2.5 L-14 -4 L-4 -4.5 Z" fill="#F6D23E" stroke-width="3.3"/>
+      <path d="M48 152 Q55 164 68 165 M152 152 Q146 164 132 165" fill="none"/>
+      <path d="M58 162 Q80 155 100 167 Q121 155 143 163 L142 195 Q121 188 100 199 Q79 188 58 195 Z" style="fill:var(--pip-book,#F6D23E)"/>
+      <path d="M100 167 L100 199" fill="none" stroke-width="3.5"/>
+      <path d="M68 173 Q80 169 90 175 M68 183 Q80 179 90 185 M110 175 Q122 169 132 173 M110 185 Q122 179 132 183" fill="none" stroke-width="3"/>
+    </g>
+    <circle cx="80" cy="114" r="4.5" fill="#1E1A17"/><circle cx="121" cy="116" r="4.5" fill="#1E1A17"/>
+  </symbol>
+</svg>
 <header class="tb">
   <button class="brand" id="homeBtn" aria-label="回到首頁">
-    <span class="logo" aria-hidden="true">譯</span>
-    <span class="title"><b id="docTitle">譯讀</b><small id="docSub">首頁</small></span>
+    <img class="logo" src="icon-192.png" alt="" width="34" height="34">
+    <span class="title"><b id="docTitle" lang="en">Pip</b><small id="docSub">首頁</small></span>
   </button>
   <div class="grp" id="zoomGrp" hidden>
     <button class="sq" id="zoomOut" aria-label="縮小">−</button>
@@ -176,11 +238,10 @@ body.drop #viewer{outline:3px dashed var(--accent);outline-offset:-10px}
     <button class="sq" id="zoomIn" aria-label="放大">+</button>
   </div>
   <div class="grp">
-    <label class="btn primary" for="file" id="fileLabel" tabindex="0">開啟</label>
+    <label class="btn primary rtool" for="file" id="fileLabel" tabindex="0" hidden>開啟</label>
     <input type="file" id="file" accept=".pdf,.docx,.txt,.md,application/pdf" hidden>
-    <button id="urlBtn">網址</button>
+    <button id="urlBtn" class="rtool" hidden>網址</button>
     <button id="sumBtn" hidden>摘要</button>
-    <button id="setBtn">設定</button>
   </div>
 </header>
 
@@ -188,28 +249,53 @@ body.drop #viewer{outline:3px dashed var(--accent);outline-offset:-10px}
   <div id="loading" hidden>正在開啟…</div>
 
   <div id="home">
-    <div class="hello">
-      <h1>譯讀</h1>
-      <p>開啟英文論文或網頁文章，點一下句子就有中文翻譯，點單字看釋義。</p>
+    <div class="greet">
+      <h1>今天想讀什麼？</h1>
+      <p>點一下句子就有中文，查過的字會收進生字本。</p>
+    </div>
+    <div class="cards">
+      <button class="card big" id="tileFile">
+        <svg class="sit" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg>
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+        <span><b>開啟檔案</b><small>PDF、Word 或純文字檔，PDF 保留原版面</small></span>
+      </button>
+      <button class="card" id="tileUrl">
+        <span class="ico" style="background:var(--mustard)"><svg viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></span>
+        <span><b>網址匯入</b><small>期刊、新聞文章</small></span>
+      </button>
+      <button class="card" id="tilePaste">
+        <span class="ico" style="background:var(--sky)"><svg viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4h6v3H9zM9 12h6M9 16h4"/></svg></span>
+        <span><b>貼上文字</b><small>複製的英文內容</small></span>
+      </button>
     </div>
     <div class="banner" id="keyBanner" hidden>
       <span>還沒設定 API 金鑰，翻譯功能需要它才能運作。</span>
       <button id="keyBannerBtn">前往設定</button>
     </div>
-    <div class="tiles">
-      <button class="tile main" id="tileFile"><b>開啟檔案</b><span>PDF、Word 或純文字檔，PDF 保留原版面</span></button>
-      <button class="tile" id="tileUrl"><b>從網址匯入</b><span>期刊、新聞或部落格文章的網址</span></button>
-      <button class="tile" id="tilePaste"><b>貼上文字</b><span>從任何地方複製的英文內容</span></button>
+    <section class="sect">
+      <h2>最近閱讀</h2>
+      <div class="recent" id="recent"></div>
+    </section>
+  </div>
+
+  <div id="dictView" hidden>
+    <div class="dhead">
+      <div><h1>生字本</h1></div>
+      <input class="dsearch" id="dictSearch" type="search" placeholder="搜尋英文或中文…" aria-label="搜尋生字">
     </div>
-    <div class="sect">
-      <h2>最近開啟</h2>
-      <div class="recent" id="recent"><div class="empty">還沒有開過文件。也可以先<button class="lnk" id="sampleBtn">試試示範論文</button>。</div></div>
-    </div>
+    <div class="words" id="words"></div>
   </div>
 
   <div id="pages" hidden></div>
   <div id="article" hidden></div>
 </div>
+
+<nav class="tabbar" aria-label="主要分頁">
+  <button data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>首頁</button>
+  <button data-tab="read"><svg viewBox="0 0 24 24"><path d="M12 6c-2-1.3-4.7-2-8-2v14c3.3 0 6 .7 8 2 2-1.3 4.7-2 8-2V4c-3.3 0-6 .7-8 2z"/><path d="M12 6v14"/></svg>閱讀</button>
+  <button data-tab="dict"><svg viewBox="0 0 24 24"><path d="M6 3h11a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2V5a2 2 0 0 1 1-2z"/><path d="M5 19a2 2 0 0 0 2 2h11v-4"/><path d="M9 8h6M9 11h4"/></svg>生字本</button>
+  <button data-tab="set"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>設定</button>
+</nav>
 
 <div id="pop" role="dialog" aria-label="翻譯" hidden></div>
 <button id="selBtn" hidden>翻譯選取</button>
@@ -270,7 +356,7 @@ body.drop #viewer{outline:3px dashed var(--accent);outline-offset:-10px}
 <div class="dlg" id="dlgUrl" hidden>
   <div class="dlgc" role="dialog" aria-label="從網址匯入">
     <h2>從網址匯入</h2>
-    <p>貼上文章網址，譯讀會抓下內文讓你點選翻譯。</p>
+    <p>貼上文章網址，Pip會抓下內文讓你點選翻譯。</p>
     <input id="urlInput" type="url" inputmode="url" autocomplete="off" placeholder="https://…">
     <div class="row"><button data-close>取消</button><button class="primary" id="urlGo">匯入</button></div>
   </div>
@@ -379,10 +465,10 @@ async function saveRecent(rec){
 async function renderRecent(){
   const box=$("#recent"); let all=[];
   try{ all=(await DB.all()).sort((a,b)=>b.time-a.time); }catch(e){}
-  if(!all.length){ box.innerHTML='<div class="empty">還沒有開過文件。也可以先<button class="lnk" id="sampleBtn">試試示範論文</button>。</div>'; $("#sampleBtn").onclick=openSample; return; }
-  const kindName={pdf:"PDF",url:"網頁",text:"文字"};
-  box.innerHTML=all.map(r=>'<div class="rrow" data-id="'+esc(r.id)+'" tabindex="0"><span class="kind">'+(kindName[r.kind]||"文字")+'</span><span class="rname"><b>'+esc(r.name)+'</b><small>'+new Date(r.time).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+(r.src?" · "+esc(hostOf(r.src)):"")+'</small></span><button class="rdel" data-del="'+esc(r.id)+'" aria-label="從清單移除">移除</button></div>').join("")
-    +'<div class="empty" style="border-top:1px solid var(--line)"><button class="lnk" id="sampleBtn">開啟示範論文</button></div>';
+  if(!all.length){ box.innerHTML='<div class="empty"><svg class="mini" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span>還沒有讀過文件。按上面的「開啟檔案」開始，或先<button class="lnk" id="sampleBtn">試試示範論文</button>。</span></div>'; $("#sampleBtn").onclick=openSample; return; }
+  const badge={pdf:"PDF",url:"網",text:"文"}, kindName={pdf:"PDF 論文",url:"網頁",text:"文字"};
+  box.innerHTML=all.map(r=>'<div class="rrow" data-id="'+esc(r.id)+'" tabindex="0"><span class="kind">'+(badge[r.kind]||"文")+'</span><span class="rname"><b>'+esc(r.name)+'</b><small>'+(kindName[r.kind]||"文字")+" · "+new Date(r.time).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"})+(r.src?" · "+esc(hostOf(r.src)):"")+'</small></span><button class="rdel" data-del="'+esc(r.id)+'" aria-label="從清單移除">移除</button><span class="chev" aria-hidden="true">›</span></div>').join("")
+    +'<div style="text-align:center;font-size:14px"><button class="lnk" id="sampleBtn">開啟示範論文</button></div>';
   $("#sampleBtn").onclick=openSample;
 }
 $("#recent").addEventListener("click",async e=>{
@@ -404,17 +490,84 @@ const hostOf=u=>{ try{ return new URL(u).host; }catch(e){ return ""; } };
 /* ================= Views ================= */
 let doc=null, zoom=1, scale=1, io=null, gen=0;
 const measure=document.createElement("canvas").getContext("2d");
-function setTitle(name,sub){ $("#docTitle").textContent=name; $("#docSub").textContent=sub||"\u00a0"; document.title=name==="譯讀"?"譯讀":name+" · 譯讀"; }
-function showView(v){
-  homeEl.hidden=v!=="home"; pagesEl.hidden=v!=="pdf"; articleEl.hidden=v!=="text";
-  $("#zoomGrp").hidden=v==="home"; $("#sumBtn").hidden=v==="home";
+function setTitle(name,sub){ $("#docTitle").textContent=name; $("#docSub").textContent=sub||"\u00a0"; document.title=name==="Pip"?"Pip":name+" · Pip"; }
+let view="home";
+const reading=()=>view==="pdf"||view==="text";
+const sideMQ=matchMedia("(orientation: landscape) and (min-width: 900px)");
+const sideOn=()=>reading()&&sideMQ.matches;
+function placeSide(el){ el.classList.add("side"); el.classList.remove("sheet"); el.style.left=""; el.style.top=($(".tb").getBoundingClientRect().bottom+14)+"px"; }
+function updateSide(){
+  const on=sideOn(), el=$("#pop");
+  document.body.classList.toggle("side",on);
+  if(on) drawPop(true);
+  else { el.classList.remove("side"); el.style.top=""; if(!pop) el.hidden=true; else placePop(true); }
 }
+function onSideChange(){ updateSide(); if(doc&&doc.type==="pdf"&&reading()) setZoom(zoom); }
+if(sideMQ.addEventListener) sideMQ.addEventListener("change",onSideChange); else if(sideMQ.addListener) sideMQ.addListener(onSideChange);
+function pushHist(pid){ if(!doc) return; doc.hist=(doc.hist||[]).filter(i=>i!==pid); doc.hist.unshift(pid); if(doc.hist.length>20) doc.hist.length=20; }
+function histHTML(){
+  if(!doc||!doc.hist) return "";
+  const cur=pop&&pop.kind==="para"?pop.pid:-1;
+  const items=doc.hist.filter(i=>i!==cur&&doc.paras[i]&&doc.paras[i].zh).slice(0,10);
+  if(!items.length) return "";
+  return '<div class="hist"><span class="lab">剛才翻過</span>'+items.map(i=>'<button class="hi" data-a="hist" data-pid="'+i+'"><span>'+esc(doc.paras[i].zh)+"</span></button>").join("")+"</div>";
+}
+function scrollToPara(pid){
+  let y=null;
+  if(doc.type==="pdf"){ for(const pg of doc.pages){ const it=pg.items.find(i=>i.para===pid); if(it){ y=pg.el.offsetTop+(it.r?it.r.t:0); break; } } }
+  else { const ap=articleEl.querySelector('.ap[data-p="'+pid+'"]'); if(ap) y=ap.offsetTop; }
+  if(y!==null) viewer.scrollTo({top:Math.max(0,y-140),behavior:"smooth"});
+}
+function showView(v){
+  if(reading()&&doc) doc.scroll=viewer.scrollTop;
+  view=v;
+  homeEl.hidden=v!=="home"; $("#dictView").hidden=v!=="dict"; pagesEl.hidden=v!=="pdf"; articleEl.hidden=v!=="text";
+  const r=reading();
+  $("#zoomGrp").hidden=!r; $("#sumBtn").hidden=!r; document.querySelectorAll(".rtool").forEach(x=>x.hidden=!r);
+  document.querySelectorAll(".tabbar button").forEach(b=>{ const on=(b.dataset.tab==="home"&&v==="home")||(b.dataset.tab==="read"&&r)||(b.dataset.tab==="dict"&&v==="dict"); if(on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
+  updateSide();
+}
+function softReset(){ closePop(); hideSel(); $("#drawer").hidden=true; }
 function goHome(){
-  ++gen; resetUI(); io&&io.disconnect(); doc=null;
-  pagesEl.replaceChildren(); articleEl.replaceChildren(); hideLoading();
-  showView("home"); setTitle("譯讀","首頁"); viewer.scrollTop=0; renderRecent(); refreshKeyBanner();
+  softReset(); hideLoading();
+  showView("home"); setTitle("Pip","首頁"); viewer.scrollTop=0; renderRecent(); refreshKeyBanner();
+}
+function goRead(){
+  if(!doc){ toast("還沒有開啟文件，先從首頁開一份吧。"); return; }
+  closePop(); hideSel();
+  showView(doc.type==="pdf"?"pdf":"text"); setTitle(doc.name,doc.sub);
+  viewer.scrollTop=doc.scroll||0; if(doc.type==="pdf") updatePageNum();
+}
+function goDict(){
+  softReset(); showView("dict"); setTitle("Pip","生字本"); viewer.scrollTop=0; renderWords();
 }
 $("#homeBtn").onclick=goHome;
+document.querySelector(".tabbar").addEventListener("click",e=>{
+  const b=e.target.closest("[data-tab]"); if(!b) return;
+  const t=b.dataset.tab;
+  if(t==="home") goHome(); else if(t==="read") goRead(); else if(t==="dict") goDict(); else { closePop(); openDrawer("set"); }
+});
+
+/* ---- word book ---- */
+function wordGroups(){
+  const seen=new Map();
+  for(const [k,e] of Object.entries(dict)){
+    const id=(e.lemma||k).toLowerCase()+"|"+(e.senses||[]).join("|");
+    const g=seen.get(id);
+    if(g){ g.keys.push(k); if(k===String(e.lemma||"").toLowerCase()) g.head=k; g.t=Math.max(g.t,e.t||0); }
+    else seen.set(id,{head:e.lemma?String(e.lemma).toLowerCase():k,keys:[k],e,t:e.t||0});
+  }
+  return [...seen.values()].sort((a,b)=>(b.t-a.t)||a.head.localeCompare(b.head));
+}
+function renderWords(){
+  const q=$("#dictSearch").value.trim().toLowerCase(), box=$("#words");
+  let gs=wordGroups();
+  if(q) gs=gs.filter(g=>g.keys.some(k=>k.includes(q))||(g.e.senses||[]).some(x=>String(x).includes(q)));
+  if(!gs.length){ box.innerHTML='<div class="empty" style="grid-column:1/-1"><svg class="mini" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span>'+(Object.keys(dict).length?"找不到符合的字。":"生字本還是空的。閱讀時在浮窗裡點「查某某字」，查過的字就會出現在這裡。")+"</span></div>"; return; }
+  box.innerHTML=gs.map((g,i)=>'<article class="wcard"><div class="wtop"><b lang="en">'+esc(g.head)+"</b>"+(g.e.ipa?'<span class="wm">'+esc(g.e.ipa)+"</span>":"")+(g.e.pos?'<span class="chip">'+esc(g.e.pos)+"</span>":"")+'</div><div class="ms">'+esc((g.e.senses||[]).join("；"))+"</div>"+(g.e.note?'<div class="nt">'+esc(g.e.note)+"</div>":"")+'<button class="wdel" data-keys="'+esc(g.keys.join(","))+'">從生字本移除</button></article>').join("");
+}
+$("#dictSearch").addEventListener("input",renderWords);
+$("#words").addEventListener("click",e=>{ const b=e.target.closest("[data-keys]"); if(!b) return; b.dataset.keys.split(",").forEach(k=>delete dict[k]); saveDict(); renderWords(); });
 function save(){ if(doc) store.set(doc.key, JSON.stringify(doc.paras.map(p=>p.zh||""))); }
 function restore(){ try{ const s=JSON.parse(store.get(doc.key)||"null"); if(Array.isArray(s)) s.forEach((z,i)=>{ if(doc.paras[i]&&z) doc.paras[i].zh=z; }); }catch(e){} }
 function resetUI(){ closePop(); hideSel(); sumCtl&&sumCtl.abort(); $("#sumOut").innerHTML=""; $("#sumGo").textContent="產生摘要"; $("#drawer").hidden=true; }
@@ -464,7 +617,7 @@ function mergeInto(all,next){
 async function openPdf(buf,name,meta){
   meta=meta||{};
   if(!window.pdfjsLib) throw new Error("PDF 元件沒有載入，請確認網路後重新開啟");
-  const myGen=++gen; resetUI(); showView("pdf"); pagesEl.replaceChildren(); showLoading("正在開啟…");
+  const myGen=++gen; resetUI(); io&&io.disconnect(); showView("pdf"); pagesEl.replaceChildren(); showLoading("正在開啟…");
   const keep=buf.slice(0);
   const pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;
   const pages=[]; let all=[];
@@ -495,7 +648,7 @@ async function openPdf(buf,name,meta){
   doc={type:"pdf",name,src:meta.src||"",key:"yidu:doc:"+(meta.src||name)+":"+paras.length,paras,pages,maxW:Math.max(...pages.map(p=>p.w))};
   restore();
   buildPages(); hideLoading(); viewer.scrollTop=0;
-  setTitle(name, pdf.numPages+" 頁"); updatePageNum();
+  doc.sub=pdf.numPages+" 頁"; setTitle(name, doc.sub); updatePageNum();
   if(!meta.sample) saveRecent({id:meta.id||("pdf:"+name+":"+keep.byteLength),kind:"pdf",name,src:meta.src||"",data:keep.byteLength<60e6?keep:null});
   if(!paras.length) toast("這份 PDF 讀不到文字，可能是掃描的圖片檔，目前無法點選翻譯。");
 }
@@ -568,13 +721,13 @@ function openText(name,ps,meta){
   articleEl.style.fontSize=(18*zoom)+"px"; $("#zoomVal").textContent=Math.round(zoom*100)+"%";
   articleEl.innerHTML=(meta.src?'<p class="src">來源：'+esc(meta.src)+"</p>":"")+doc.paras.map((p,i)=>'<p class="ap'+(p.h?" h":"")+'" data-p="'+i+'" lang="en">'+esc(p.t)+"</p>").join("");
   hideLoading(); viewer.scrollTop=0;
-  setTitle(name, meta.src?hostOf(meta.src):ps.length+" 段");
+  doc.sub=meta.src?hostOf(meta.src):ps.length+" 段"; setTitle(name, doc.sub);
   saveRecent({id:meta.id||((meta.src?"url:":"text:")+(meta.src||name)),kind:meta.kind||(meta.src?"url":"text"),name,src:meta.src||"",paras:ps});
 }
 
 /* ---- page number / zoom ---- */
 function updatePageNum(){
-  if(!doc||doc.type!=="pdf") return;
+  if(!doc||doc.type!=="pdf"||view!=="pdf") return;
   const y=viewer.scrollTop+viewer.clientHeight*0.35; let cur=1;
   for(const pg of doc.pages){ if(pg.el.offsetTop<=y) cur=pg.n+1; else break; }
   $("#docSub").textContent="第 "+cur+" / "+doc.pages.length+" 頁";
@@ -652,7 +805,7 @@ async function importUrl(raw){
     }
   }catch(e){
     if(myGen!==gen) return;
-    hideLoading(); goHome();
+    hideLoading(); doc=null; goHome();
     toast("匯入失敗："+((e&&e.message)||"請確認網址或網路")+"。也可以複製文章內容改用「貼上文字」。");
   }
 }
@@ -685,7 +838,7 @@ function openPara(pid,word,x,y){
   hideSel();
   if(pop&&pop.kind==="para"&&pop.pid===pid&&!word&&pop.view==="main"){ closePop(); return; }
   pop={kind:"para",pid,word,view:"main",ax:x,ay:y,st:viewer.scrollTop,sentence:word?sentenceIn(doc.paras[pid].t,word):""};
-  setHL(pid); drawPop(true);
+  pushHist(pid); setHL(pid); drawPop(true);
   const p=doc.paras[pid]; if(!p.zh&&!p.busy) translatePara(pid);
 }
 let selCtl=null;
@@ -696,11 +849,16 @@ function openSel(text,rect,ctx){
   drawPop(true);
   if(single) startWord(); else translateSel();
 }
-function closePop(){ selCtl&&selCtl.abort(); pop=null; $("#pop").hidden=true; setHL(-1); }
+function closePop(){ selCtl&&selCtl.abort(); pop=null; $("#pop").hidden=true; setHL(-1); if(sideOn()) drawPop(); }
 function errBlock(e){ return '<div class="err">'+esc(errMsg(e))+"</div>"+(e&&e.code==="no_key"?'<div class="pf"><button class="lk" data-a="settings">開啟設定</button></div>':""); }
 
 function drawPop(fresh){
-  const el=$("#pop"); if(!pop){ el.hidden=true; return; }
+  const el=$("#pop");
+  if(!pop){
+    if(sideOn()){ el.innerHTML='<div class="sidempty"><svg viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span>點一下句子，翻譯會出現在這裡。<br>翻過的段落會留在下面，方便回頭看。</span></div>'+histHTML(); el.hidden=false; placeSide(el); }
+    else el.hidden=true;
+    return;
+  }
   let h="";
   if(pop.view==="word"){
     const e=pop.entry;
@@ -730,10 +888,13 @@ function drawPop(fresh){
     else if(pop.err) h+=errBlock(pop.err);
     else h+='<div class="zh muted">翻譯中…</div>';
   }
+  if(sideOn()) h+=histHTML();
   el.innerHTML=h; el.hidden=false; placePop(fresh);
 }
 function placePop(fresh){
   const el=$("#pop"); if(!pop||el.hidden) return;
+  if(sideOn()){ placeSide(el); return; }
+  el.classList.remove("side");
   if(innerWidth<700){ el.classList.add("sheet"); el.style.left=""; el.style.top=""; return; }
   el.classList.remove("sheet");
   const w=el.offsetWidth, h=el.offsetHeight, ay=pop.ay-(viewer.scrollTop-pop.st), tbB=$(".tb").getBoundingClientRect().bottom;
@@ -751,6 +912,7 @@ $("#pop").addEventListener("click",e=>{
   else if(a==="word"){ pop.view="word"; drawPop(); startWord(); }
   else if(a==="here") askHere();
   else if(a==="retry") translatePara(pop.pid);
+  else if(a==="hist"){ const pid=+b.dataset.pid; openPara(pid,"",0,0); scrollToPara(pid); }
   else if(a==="settings"){ closePop(); openDrawer("set"); }
   else if(a==="copy"){ const t=doc.paras[pop.pid].zh; try{ navigator.clipboard.writeText(t).then(()=>toast("已複製譯文"),()=>toast("無法複製，請長按譯文手動選取。")); }catch(err){ toast("無法複製，請長按譯文手動選取。"); } }
 });
@@ -761,7 +923,7 @@ async function translatePara(pid){
   const live=()=>doc===d&&pop&&pop.kind==="para"&&pop.pid===pid&&pop.view==="main";
   try{ p.zh=await claude(P_PARA+p.t,{max:3000,onText:t=>{ p.zh=t; if(live()) drawPop(); }}); if(doc===d) save(); }
   catch(e){ p.zh=(e&&e.text)||""; if(!p.zh) p.err=e; if(e&&e.code!=="no_key") handleErr(e); }
-  finally{ p.busy=false; if(live()) drawPop(); }
+  finally{ p.busy=false; if(live()||sideOn()) drawPop(); }
 }
 async function translateSel(){
   const cur=pop; selCtl&&selCtl.abort(); const ctl=selCtl=new AbortController();
@@ -777,7 +939,7 @@ async function startWord(){
   try{
     const r=parseJSON(await claude(P_DICT(cur.word),{max:400}));
     const e={lemma:String(r.lemma||""),ipa:String(r.ipa||""),pos:String(r.pos||""),senses:Array.isArray(r.senses)?r.senses.slice(0,3).map(String):[],note:String(r.note||"")};
-    if(e.senses.length){ dict[key]=e; const lk=e.lemma.toLowerCase(); if(lk&&!dict[lk]) dict[lk]=e; saveDict(); }
+    if(e.senses.length){ e.t=Date.now(); dict[key]=e; const lk=e.lemma.toLowerCase(); if(lk&&!dict[lk]) dict[lk]=e; saveDict(); }
     cur.entry=e; cur.saved=false;
   }catch(err){ cur.wordErr=err; }
   if(pop===cur) drawPop();
@@ -792,7 +954,7 @@ async function askHere(){
 
 /* ================= Interaction ================= */
 viewer.addEventListener("click",e=>{
-  if(!doc) return;
+  if(!doc||!reading()) return;
   if(String(getSelection()).trim().length>1) return;
   let pid=-1;
   const sp=e.target.closest(".tl span");
@@ -810,9 +972,9 @@ const selBtn=$("#selBtn");
 function hideSel(){ selBtn.hidden=true; selPending=null; }
 document.addEventListener("selectionchange",()=>{ clearTimeout(selT); selT=setTimeout(checkSel,350); });
 function checkSel(){
-  if(!doc) return;
+  if(!doc||!reading()) return;
   const s=getSelection(), t=String(s).replace(/\s+/g," ").trim();
-  if(!t||t.length<2||t.length>3000||!/[A-Za-z]/.test(t)||!s.rangeCount||!viewer.contains(s.anchorNode)){ hideSel(); return; }
+  if(!t||t.length<2||t.length>3000||!/[A-Za-z]/.test(t)||!s.rangeCount||!(pagesEl.contains(s.anchorNode)||articleEl.contains(s.anchorNode))){ hideSel(); return; }
   const r=s.getRangeAt(0).getBoundingClientRect(); if(!r.width&&!r.height){ hideSel(); return; }
   let ctx=""; const an=s.anchorNode&&(s.anchorNode.nodeType===1?s.anchorNode:s.anchorNode.parentElement);
   if(an){ const sp=an.closest(".tl span"); if(sp){ const it=doc.pages[+sp.parentNode.dataset.p].items[+sp.dataset.i]; if(it&&it.para>=0) ctx=doc.paras[it.para].t; } const ap=an.closest(".ap"); if(ap) ctx=doc.paras[+ap.dataset.p].t; }
@@ -835,7 +997,6 @@ function openDrawer(which){
   $("#drawer").hidden=false;
 }
 $("#drawerClose").onclick=()=>{ $("#drawer").hidden=true; };
-$("#setBtn").onclick=()=>{ closePop(); openDrawer("set"); };
 $("#keyBannerBtn").onclick=()=>openDrawer("set");
 let sumCtl=null;
 function md(t){
@@ -905,15 +1066,14 @@ $("#urlInput").addEventListener("keydown",e=>{ if(e.key==="Enter") $("#urlGo").c
 
 async function openSample(){
   try{ const bin=atob(SAMPLE_B64), u=new Uint8Array(bin.length); for(let i=0;i<bin.length;i++) u[i]=bin.charCodeAt(i); await openPdf(u.buffer,"示範論文（虛構內容）.pdf",{sample:true}); }
-  catch(e){ hideLoading(); goHome(); toast("示範論文開啟失敗，請確認網路後再試。"); }
+  catch(e){ hideLoading(); doc=null; goHome(); toast("示範論文開啟失敗，請確認網路後再試。"); }
 }
 
 let tt=null;
 function toast(m){ const t=$("#toast"); t.textContent=m; t.hidden=false; clearTimeout(tt); tt=setTimeout(()=>t.hidden=true,4200); }
 
 goHome();
-if(!S.key) setTimeout(()=>openDrawer("set"),400);
-// Windows：在檔案總管對 PDF 按右鍵「開啟檔案 → 譯讀」時，直接打開那個檔案
+// Windows：在檔案總管對 PDF 按右鍵「開啟檔案 → Pip」時，直接打開那個檔案
 if("launchQueue" in window){ try{ window.launchQueue.setConsumer(async p=>{ if(p.files&&p.files.length){ const f=await p.files[0].getFile(); $("#drawer").hidden=true; openFile(f); } }); }catch(e){} }
 })();
 </script>

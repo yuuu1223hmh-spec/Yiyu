@@ -1,5 +1,5 @@
-// 譯讀：離線快取。App 本體優先抓最新版，PDF 元件與字型存起來重複使用。
-const V = "yidu-v1";
+// Pip：離線快取。App 本體優先抓最新版，PDF 元件與字型存起來重複使用。
+const V = "yidu-v6";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
