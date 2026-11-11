@@ -1,5 +1,5 @@
 // Pip：離線快取。App 本體優先抓最新版；字典、PDF 元件、繁體轉換和字型存起來重複使用。
-const V = "pip-v13";
+const V = "pip-v15";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 self.addEventListener("install", e => {

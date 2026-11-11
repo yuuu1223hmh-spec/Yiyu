@@ -396,6 +396,58 @@ body.annon #pop.side{bottom:calc(120px + env(safe-area-inset-bottom,0px))}
   #printView .q{border-left:4pt solid #ccc;padding:2pt 0 2pt 8pt;margin:6pt 0;break-inside:avoid} #printView .q .en{color:#444} #printView .lab{font-size:9pt;font-weight:700;padding:0 5pt;border-radius:6pt}
   #printView img{max-width:100%;break-inside:avoid;border:1pt solid #ddd} #printView li{margin:2pt 0}
 }
+
+/* ---- desktop layout (wide screen + mouse) ---- */
+.tabbar .navtog{display:none}
+.hstats,.drophint{display:none}
+body.desk{--navW:188px;padding-left:var(--navW)}
+body.desk.navmini{--navW:74px}
+body.desk.barsoff.reading{padding-left:0}
+body.desk .tabbar,body.desk.split .tabbar,body.desk.annon .tabbar{display:flex}
+body.desk.barsoff.reading .tabbar{display:none}
+body.desk .tabbar{left:0;top:0;bottom:0;transform:none;width:var(--navW);flex-direction:column;gap:6px;border-radius:0;border:0;border-right:2.5px solid var(--line);box-shadow:none;padding:calc(84px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
+body.desk .tabbar button{flex-direction:row;justify-content:flex-start;gap:12px;font-size:15px;padding:10px 12px;border-radius:14px 12px 15px 11px}
+body.desk .tabbar button:not([aria-current]):hover{background:var(--soft);color:var(--ink)}
+body.desk.navmini .tabbar button{justify-content:center;font-size:0;gap:0}
+body.desk .tabbar .navtog{display:flex;margin-top:auto;font-size:14px;color:var(--muted)}
+body.desk.navmini .tabbar .navtog{font-size:0}
+body.desk .tabbar .navtog svg{transition:transform .2s}
+body.desk.navmini .tabbar .navtog svg{transform:rotate(180deg)}
+body.desk #viewer{padding-bottom:40px}
+body.desk #leftPanel{left:var(--navW)}
+body.desk.barsoff #leftPanel{left:0}
+body.desk #focusExit{left:calc(var(--navW) + 14px)}
+body.desk.barsoff.reading #focusExit{left:14px}
+body.desk #pgPrev{left:calc(var(--navW) + 8px)}
+body.desk.barsoff.reading #pgPrev{left:8px}
+body.desk .card:hover,body.desk .rrow:hover{transform:translate(-1px,-1px);box-shadow:5px 5px 0 var(--line)}
+body.desk .tb button:hover:not(:disabled),body.desk .act:hover,body.desk .tool:hover{filter:brightness(.96)}
+/* home: two columns */
+body.desk #home{max-width:1180px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"greet sect" "cards sect" "banner sect";column-gap:44px;row-gap:22px;align-items:start}
+body.desk #home .greet{grid-area:greet} body.desk #home .cards{grid-area:cards} body.desk #home #keyBanner{grid-area:banner} body.desk #home .sect{grid-area:sect;padding-top:14px}
+body.desk .hstats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.hstats button{flex:1;min-width:140px;text-align:left;font:inherit;color:var(--ink);background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r2);box-shadow:var(--hard);padding:10px 14px;cursor:pointer;display:flex;flex-direction:column}
+.hstats b{font-size:22px;font-family:var(--f-hand)} .hstats small{color:var(--muted);font-size:13px}
+body.desk .drophint{display:block;grid-column:1/-1;text-align:center;font-size:13.5px;color:var(--muted);border:2px dashed var(--line);border-radius:14px;padding:10px;opacity:.75}
+/* right panel tabs */
+#deskTabs{position:fixed;z-index:31;right:0;width:calc(var(--sideW) + 20px);display:flex;gap:4px;padding:8px 10px;background:var(--chrome);border-left:2.5px solid var(--line);border-bottom:2px solid var(--line);overflow-x:auto}
+#deskTabs button{flex:1 0 auto;font:inherit;font-size:13.5px;font-weight:700;border:2px solid transparent;border-radius:11px 9px 12px 8px;padding:5px 8px;background:none;color:var(--muted);cursor:pointer;white-space:nowrap}
+#deskTabs button:hover{background:var(--soft);color:var(--ink)}
+#deskTabs button.on{background:var(--accent);color:var(--accent-ink);border-color:#1E1A17}
+#drawer.dock{top:var(--dtTop,120px);width:calc(var(--sideW) + 20px);box-shadow:none;z-index:17;padding-top:0}
+#drawer.dock #drawerClose{display:none}
+body.desk.reading .nptabs{display:none}
+body.desk.side:not(.split) #pop.side{right:12px;width:calc(var(--sideW) - 6px);bottom:14px}
+/* tooltip + context menu */
+#tip{position:fixed;z-index:60;pointer-events:none;background:#1E1A17;color:#FFF6EC;font:600 12.5px var(--f-ui);padding:5px 9px;border-radius:8px;max-width:260px;line-height:1.45;box-shadow:2px 2px 0 rgba(0,0,0,.2)}
+#ctxMenu{position:fixed;z-index:50;min-width:230px;background:var(--chrome);color:var(--ink);border:2.5px solid var(--line);border-radius:var(--r1);box-shadow:var(--hard-lg);padding:6px;display:flex;flex-direction:column}
+#ctxMenu>button{font:inherit;font-size:14.5px;text-align:left;border:0;background:none;color:var(--ink);padding:8px 12px;border-radius:10px;cursor:pointer;display:flex;justify-content:space-between;gap:12px}
+#ctxMenu>button:hover{background:var(--soft)}
+#ctxMenu .ctxsep{height:1.5px;background:var(--line);opacity:.25;margin:4px 6px}
+#ctxMenu .ctxcol{display:flex;gap:5px;align-items:center;padding:6px 12px;font-size:14px;flex-wrap:wrap}
+#ctxMenu .ctxcol button{font:inherit;font-size:12.5px;font-weight:700;border:2px solid var(--line);border-radius:999px;padding:2px 9px;background:var(--chrome);color:var(--ink);cursor:pointer}
+#ctxMenu .ctxcol button.on{background:var(--mustard);color:#1E1A17}
+#ctxMenu small{color:var(--muted)}
 /* ---- v2 additions ---- */
 .tb .sq svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 #syncChip{background:var(--mustard)!important;color:#1E1A17!important}
@@ -506,6 +558,9 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
 <button class="pgnav" id="pgPrev" aria-label="上一頁" hidden>‹</button>
 <button class="pgnav" id="pgNext" aria-label="下一頁" hidden>›</button>
 <div id="rowMenu" hidden></div>
+<div id="deskTabs" hidden><button data-dt="tr">翻譯</button><button data-dt="note">筆記</button><button data-dt="sum">摘要</button><button data-dt="ask">問 Pip</button><button data-dt="marks">書籤</button><button data-dt="search">搜尋</button><button data-dt="tools">工具</button></div>
+<div id="ctxMenu" hidden></div>
+<div id="tip" hidden></div>
 <aside id="notePane" hidden>
   <div class="npdiv" id="npDiv" aria-hidden="true"></div>
   <div class="nphead" id="npHead">
@@ -563,6 +618,7 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
         <span><b>貼上文字</b><small>複製的英文內容</small></span>
       </button>
     </div>
+    <p class="drophint">也可以直接把 PDF、Word 或文字檔拖進這個視窗開啟</p>
     <div class="banner" id="keyBanner" hidden>
       <span>還沒設定 API 金鑰，翻譯功能需要它才能運作。</span>
       <button id="keyBannerBtn">前往設定</button>
@@ -570,6 +626,7 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
     <section class="sect">
       <h2>最近閱讀</h2>
       <div class="recent" id="recent"></div>
+      <div class="hstats" id="hStats"></div>
     </section>
   </div>
 
@@ -616,6 +673,7 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
   <button data-tab="lib"><svg viewBox="0 0 24 24"><path d="M4 5h4v15H4zM10 5h4v15h-4z"/><path d="M16 6l3.6-1 3 14.5-3.6 1z"/></svg>書庫</button>
   <button data-tab="dict"><svg viewBox="0 0 24 24"><path d="M6 3h11a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2V5a2 2 0 0 1 1-2z"/><path d="M5 19a2 2 0 0 0 2 2h11v-4"/><path d="M9 8h6M9 11h4"/></svg>生字本</button>
   <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1.2-4 4.2-6 7.5-6s6.3 2 7.5 6"/></svg>我的</button>
+  <button class="navtog" data-tab="tog" aria-label="收合或展開選單"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>收合選單</button>
 </nav>
 
 <div id="pop" role="dialog" aria-label="翻譯" hidden></div>
@@ -992,8 +1050,10 @@ function rowHTML(r,showFolder){
 async function renderRecent(){
   const box=$("#recent"), rows=(await allDocs()).sort((a,b)=>(b.time||0)-(a.time||0));
   if(!rows.length){ box.innerHTML='<div class="empty"><svg class="mini" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span>還沒有讀過文件。按上面的「開啟檔案」開始，或先<button class="lnk" id="sampleBtn">試試示範論文</button>。</span></div>'; $("#sampleBtn").onclick=openSample; return; }
-  box.innerHTML=rows.slice(0,5).map(r=>rowHTML(r,true)).join("")
-    +'<div class="more">'+(rows.length>5?'<button class="lnk" id="seeAll">查看書庫全部 '+rows.length+' 份 ›</button> · ':"")+'<button class="lnk" id="sampleBtn">開啟示範論文</button></div>';
+  const lim=document.body.classList.contains("desk")?8:5;
+  $("#hStats").innerHTML='<button data-go="lib"><b>'+rows.length+'</b><small>書庫裡的文件 ›</small></button><button data-go="dict"><b>'+wordGroups().length+'</b><small>生字本裡的字 ›</small></button>';
+  box.innerHTML=rows.slice(0,lim).map(r=>rowHTML(r,true)).join("")
+    +'<div class="more">'+(rows.length>lim?'<button class="lnk" id="seeAll">查看書庫全部 '+rows.length+' 份 ›</button> · ':"")+'<button class="lnk" id="sampleBtn">開啟示範論文</button></div>';
   $("#sampleBtn").onclick=openSample; if($("#seeAll")) $("#seeAll").onclick=goLib;
 }
 /* ---- library ---- */
@@ -1135,7 +1195,7 @@ let view="home";
 const reading=()=>view==="pdf"||view==="text";
 const sideMQ=matchMedia("(orientation: landscape) and (min-width: 900px)");
 const sideOn=()=>reading()&&(npOpen?npTab==="tr":sideMQ.matches);
-function placeSide(el){ el.classList.add("side"); el.classList.remove("sheet"); el.style.left=""; el.style.top=(npOpen?$("#npHead").getBoundingClientRect().bottom+10:$(".tb").getBoundingClientRect().bottom+14)+"px"; }
+function placeSide(el){ el.classList.add("side"); el.classList.remove("sheet"); el.style.left=""; el.style.top=(npOpen?$("#npHead").getBoundingClientRect().bottom+10:isDeskR()?$("#deskTabs").getBoundingClientRect().bottom+10:$(".tb").getBoundingClientRect().bottom+14)+"px"; }
 function updateSide(){
   const on=sideOn(), el=$("#pop");
   document.body.classList.toggle("side",on);
@@ -1169,7 +1229,7 @@ function showView(v){
   document.querySelectorAll(".tabbar button").forEach(b=>{ const t=b.dataset.tab, on=t===v||(t==="read"&&r); if(on) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
   updPgNav();
   $("#annBtn").hidden=!(r&&doc&&doc.type==="pdf"&&!doc.dual); if(annOn&&(!r||$("#annBtn").hidden)) setAnn(false);
-  layoutSplit();
+  layoutSplit(); deskLayout();
   updateSide();
 }
 function softReset(){ closePop(); hideSel(); $("#drawer").hidden=true; }
@@ -1192,6 +1252,7 @@ $("#homeBtn").onclick=goHome;
 document.querySelector(".tabbar").addEventListener("click",e=>{
   const b=e.target.closest("[data-tab]"); if(!b) return;
   const t=b.dataset.tab;
+  if(t==="tog"){ const m=!document.body.classList.contains("navmini"); document.body.classList.toggle("navmini",m); store.set("yidu:navmini",m?"1":"0"); setTimeout(()=>{ deskLayout(); if(doc&&doc.type==="pdf"&&view==="pdf"&&!doc.dual) relayoutDoc(); },60); return; }
   if(t==="home") goHome(); else if(t==="read") goRead(); else if(t==="dict") goDict(); else if(t==="lib") goLib(); else goMe();
 });
 
@@ -1458,7 +1519,7 @@ $("#docSub").addEventListener("click",async e=>{
   const n=parseInt(v,10); if(n) gotoPage(n);
 });
 /* hide toolbar */
-function setBars(off){ barsOff=off; document.body.classList.toggle("barsoff",off); layoutSplit(); $("#focusExit").hidden=!(off&&reading()); $("#layMenu").hidden=true; if(doc&&doc.type==="pdf"&&PV.fit==="page"&&!doc.dual) setZoom(zoom); updateSide(); }
+function setBars(off){ barsOff=off; document.body.classList.toggle("barsoff",off); deskLayout(); layoutSplit(); $("#focusExit").hidden=!(off&&reading()); $("#layMenu").hidden=true; if(doc&&doc.type==="pdf"&&PV.fit==="page"&&!doc.dual) setZoom(zoom); updateSide(); }
 $("#hideBtn").onclick=()=>{ closePop(); setBars(true); };
 function unrenderPage(pg){
   if(pg.task){ try{pg.task.cancel()}catch(e){} pg.task=null; }
@@ -1992,9 +2053,17 @@ articleEl.addEventListener("click",e=>{
 });
 
 /* ================= Interaction ================= */
+function hitPara(e){
+  let pid=-1; const sp=e.target.closest(".tl span");
+  if(sp){ const pg=doc.pages[+sp.parentNode.dataset.p]; const it=pg&&pg.items[+sp.dataset.i]; pid=it?it.para:-1; }
+  else if(doc.type==="pdf"&&!doc.dual){ const pe=e.target.closest(".page"); const it=pe&&hitItem(pe,e.clientX,e.clientY); pid=it?it.para:-1; }
+  else { const ap=e.target.closest(".ap"); if(ap) pid=+ap.dataset.p; }
+  return pid;
+}
 viewer.addEventListener("click",e=>{
   if(!doc||!reading()) return;
   if(annOn&&e.target.closest(".page")) return;
+  if(isDeskR()&&dTab!=="tr"&&dTab!=="note"&&!$("#drawer").hidden&&hitPara(e)>=0) setDTab("tr");
   if(String(getSelection()).trim().length>1) return;
   let pid=-1;
   const sp=e.target.closest(".tl span");
@@ -2028,15 +2097,17 @@ function checkSel(){
   selBtn.style.top=top+"px"; selBtn.style.left=Math.min(Math.max(12,r.left+r.width/2-bw/2),innerWidth-bw-12)+"px";
 }
 selBtn.addEventListener("mousedown",e=>e.preventDefault());
-selBtn.addEventListener("click",()=>{ if(!selPending) return; const p=selPending; openSel(p.t,p.r,p.ctx); try{getSelection().removeAllRanges()}catch(e){} });
+selBtn.addEventListener("click",()=>{ if(!selPending) return; if(isDeskR()&&dTab!=="tr"&&dTab!=="note") setDTab("tr"); const p=selPending; openSel(p.t,p.r,p.ctx); try{getSelection().removeAllRanges()}catch(e){} });
 
-document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closePop(); hideSel(); $("#drawer").hidden=true; document.querySelectorAll(".dlg").forEach(d=>d.hidden=true); } });
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"){ closePop(); hideSel(); closeDrawer(); $("#ctxMenu").hidden=true; document.querySelectorAll(".dlg").forEach(d=>d.hidden=true); } });
 $("#words").addEventListener("click",e=>{ const b=e.target.closest(".wsay"); if(b) speak(b.dataset.w); });
 
 /* ================= Drawer ================= */
 const PANES={sum:"全文摘要",tools:"工具",ask:"問 Pip",search:"搜尋全文",marks:"書籤與筆記",cite:"引用格式"};
 function openDrawer(which){
   if(which==="set"){ goMe(); return; }
+  const dock=isDeskR(); $("#drawer").classList.toggle("dock",dock);
+  if(dock){ dTab=["sum","ask","marks","search","tools"].includes(which)?which:"tools"; setTimeout(syncDTabs,0); }
   for(const k in PANES){ const el=$("#pane"+k[0].toUpperCase()+k.slice(1)); if(el) el.hidden=k!==which; }
   $("#drawerTitle").textContent=PANES[which]||"";
   $("#drawer").hidden=false;
@@ -2046,7 +2117,8 @@ function openDrawer(which){
   if(which==="sum"&&doc&&doc.note&&doc.note.sum&&!$("#sumOut").innerHTML){ $("#sumOut").innerHTML=md(doc.note.sum); $("#sumGo").textContent="重新產生"; }
   if(which==="set") renderSync();
 }
-$("#drawerClose").onclick=()=>{ $("#drawer").hidden=true; };
+$("#drawerClose").onclick=()=>closeDrawer();
+function closeDrawer(){ const d=$("#drawer"); d.hidden=true; if(d.classList.contains("dock")){ dTab=npOpen?"note":"tr"; if(npOpen){ npTab="note"; layoutSplit(); showNpTab(); } syncDTabs(); updateSide(); } }
 $("#keyBannerBtn").onclick=()=>openDrawer("set");
 function goToPara(pid){
   if(innerWidth<900) $("#drawer").hidden=true;
@@ -2583,7 +2655,7 @@ function splitLand(){ return innerWidth>=700&&innerWidth>innerHeight; }
 function layoutSplit(){
   const b=document.body, np=$("#notePane");
   if(!(npOpen&&reading())){ if(b.classList.contains("split")){ b.classList.remove("split","sland","sport","nink"); b.style.removeProperty("--sideW"); b.style.removeProperty("--paneH"); } np.hidden=true; $("#noteBtn").classList.remove("on"); placeInkBar(); return; }
-  const land=splitLand(), top=barsOff?0:Math.round($(".tb").getBoundingClientRect().bottom);
+  const land=splitLand(), top=isDeskR()&&land?Math.round(dtBottom()):barsOff?0:Math.round($(".tb").getBoundingClientRect().bottom);
   b.classList.add("split"); b.classList.toggle("sland",land); b.classList.toggle("sport",!land); b.classList.toggle("nink",noteMode==="ink"&&npTab==="note");
   np.hidden=false; np.style.top=land?top+"px":""; $("#noteBtn").classList.add("on");
   if(land){ const w=Math.round(Math.min(innerWidth*0.72,Math.max(300,innerWidth*(+store.get("yidu:splitW")||0.42)))); b.style.setProperty("--sideW",(w-20)+"px"); b.style.removeProperty("--paneH"); }
@@ -2620,8 +2692,9 @@ function sizeNote(){
 function toggleNotes(force){
   if(!doc||!reading()){ toast("先打開一份文件，才能並排寫筆記。"); return; }
   npOpen=force!=null?force:!npOpen; closePop(); hideSel();
-  if(npOpen){ npTab="note"; if(!doc.note) loadNote(doc); }
-  layoutSplit(); showNpTab(); refreshNoteUI(); relayoutDoc();
+  if(npOpen){ npTab="note"; if(!doc.note) loadNote(doc); if(isDeskR()){ $("#drawer").hidden=true; dTab="note"; } }
+  else if(isDeskR()&&dTab==="note") dTab="tr";
+  layoutSplit(); showNpTab(); refreshNoteUI(); relayoutDoc(); syncDTabs();
 }
 $("#noteBtn").onclick=()=>toggleNotes();
 $("#npClose").onclick=()=>toggleNotes(false);
@@ -3155,6 +3228,107 @@ $("#expGo").onclick=async()=>{
   }catch(e){ $("#expMsg").textContent="匯出失敗："+((e&&e.message)||"請再試一次"); }
   finally{ $("#expGo").disabled=false; }
 };
+
+
+/* ================= Desktop layout ================= */
+const deskMQ=matchMedia("(min-width:1024px) and (hover:hover) and (pointer:fine)");
+const isDesk=()=>document.body.classList.contains("desk");
+const isDeskR=()=>isDesk()&&reading();
+let dTab="tr";
+const dtBottom=()=>{ const t=$("#deskTabs"); return t.hidden?$(".tb").getBoundingClientRect().bottom:t.getBoundingClientRect().bottom; };
+function deskLayout(){
+  const on=isDeskR(), t=$("#deskTabs"), dr=$("#drawer");
+  t.hidden=!on;
+  if(on){ t.style.top=(barsOff?0:Math.round($(".tb").getBoundingClientRect().bottom))+"px"; document.body.style.setProperty("--dtTop",Math.round(t.getBoundingClientRect().bottom)+"px"); if(!dr.hidden) dr.classList.add("dock"); }
+  else if(dr.classList.contains("dock")){ dr.classList.remove("dock"); dr.hidden=true; dTab="tr"; }
+  syncDTabs();
+}
+function syncDTabs(){
+  if(!isDeskR()) return;
+  const dr=$("#drawer"); let cur=dTab;
+  if(dr.hidden||!dr.classList.contains("dock")) cur=npOpen&&npTab==="note"?"note":"tr";
+  dTab=cur; document.querySelectorAll("#deskTabs [data-dt]").forEach(b=>b.classList.toggle("on",b.dataset.dt===cur));
+}
+function setDTab(t){
+  if(!isDeskR()) return;
+  if(t==="note"){ $("#drawer").hidden=true; dTab="note"; if(!npOpen) toggleNotes(true); else { npTab="note"; layoutSplit(); showNpTab(); refreshNoteUI(); } }
+  else if(t==="tr"){ $("#drawer").hidden=true; dTab="tr"; if(npOpen){ npTab="tr"; layoutSplit(); showNpTab(); if(pop) drawPop(true); } else updateSide(); }
+  else { if(npOpen){ npTab="note"; } closePop(); hideSel(); openDrawer(t); if(t==="sum"&&!$("#sumOut").innerHTML&&doc&&doc.note&&doc.note.sum){ $("#sumOut").innerHTML=md(doc.note.sum); } return; }
+  syncDTabs(); updateSide();
+}
+$("#deskTabs").addEventListener("click",e=>{ const b=e.target.closest("[data-dt]"); if(b) setDTab(b.dataset.dt); });
+function applyDesk(){
+  const was=isDesk(); document.body.classList.toggle("desk",deskMQ.matches); document.body.classList.toggle("navmini",store.get("yidu:navmini")==="1");
+  deskLayout(); if(was!==isDesk()){ layoutSplit(); updateSide(); if(view==="home") renderRecent(); if(doc&&doc.type==="pdf"&&view==="pdf"&&!doc.dual) setTimeout(relayoutDoc,50); }
+}
+if(deskMQ.addEventListener) deskMQ.addEventListener("change",applyDesk); else if(deskMQ.addListener) deskMQ.addListener(applyDesk);
+addEventListener("resize",()=>{ if(isDesk()) deskLayout(); });
+$("#hStats").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(!b) return; if(b.dataset.go==="lib") goLib(); else goDict(); });
+applyDesk();
+
+/* ---- hover tooltips ---- */
+const TIPS={layBtn:"頁面排列、縮放、縮圖和目錄",noteBtn:"打開筆記，和文件並排",annBtn:"直接在 PDF 頁面上手寫標註",searchBtn:"搜尋這份文件",toolsBtn:"全文翻譯、摘要、心智圖、匯出等工具",hideBtn:"收起工具列和選單，專心閱讀",syncChip:"重新連線 Google 同步",homeBtn:"回首頁",docSub:"點一下輸入頁碼跳頁",
+  mmRe:"用 AI 重新畫一張",mmPng:"把心智圖存成圖片",zoomIn:"放大",zoomOut:"縮小",capBtn:"在 PDF 上框一塊，貼進筆記",pgPrev:"上一頁（←）",pgNext:"下一頁（→）",focusExit:"把工具列叫回來",npClose:"關閉筆記"};
+for(const [id,t] of Object.entries(TIPS)){ const el=document.getElementById(id); if(el) el.dataset.tip=t; }
+document.querySelectorAll('.tabbar [data-tab]').forEach(b=>{ if(!b.dataset.tip&&b.dataset.tab!=="tog") b.dataset.tip=b.textContent.trim(); });
+[["pen","一般的筆，觸控筆會依力道變粗細"],["hl","半透明螢光筆"],["eraser","碰到的整條筆跡會擦掉"]].forEach(([k,t])=>{ const b=$('#inkBar [data-it="'+k+'"]'); if(b) b.dataset.tip=t+"。畫到終點停一下會拉直"; });
+const tipU=$('#inkBar [data-iu="undo"]'); if(tipU) tipU.dataset.tip="復原（Ctrl+Z）"; const tipR=$('#inkBar [data-iu="redo"]'); if(tipR) tipR.dataset.tip="重做（Ctrl+Shift+Z）";
+const tipF=$('#inkBar [data-if]'); if(tipF) tipF.dataset.tip="打開後手指也能畫；關掉時手指用來捲動";
+let tipT=null, tipEl=null;
+function tipText(el){ if(el.dataset.tip){ if(el.closest(".tabbar")&&!document.body.classList.contains("navmini")) return ""; return el.dataset.tip; } return el.getAttribute("aria-label")||""; }
+document.addEventListener("pointerover",e=>{
+  if(e.pointerType!=="mouse"||!isDesk()) return;
+  const el=e.target.closest("[data-tip],button[aria-label]"); if(el===tipEl) return;
+  clearTimeout(tipT); $("#tip").hidden=true; tipEl=el; if(!el) return;
+  tipT=setTimeout(()=>{ const t=tipText(el); if(!t||!el.isConnected) return; const tp=$("#tip"); tp.textContent=t; tp.hidden=false;
+    const r=el.getBoundingClientRect(), w=tp.offsetWidth, h=tp.offsetHeight; let x,y;
+    if(el.closest(".tabbar")){ x=r.right+10; y=r.top+r.height/2-h/2; } else { x=Math.min(Math.max(8,r.left+r.width/2-w/2),innerWidth-w-8); y=r.bottom+8; if(y+h>innerHeight-8) y=r.top-h-8; }
+    tp.style.left=x+"px"; tp.style.top=y+"px"; },450);
+});
+document.addEventListener("pointerdown",()=>{ clearTimeout(tipT); $("#tip").hidden=true; tipEl=null; },true);
+document.addEventListener("scroll",()=>{ $("#tip").hidden=true; },true);
+
+/* ---- right-click menu on the document ---- */
+let ctx=null;
+viewer.addEventListener("contextmenu",e=>{
+  if(!doc||!reading()||annOn) return;
+  const selT=String(getSelection()).trim(), pid=hitPara(e);
+  if(pid<0&&!selT) return;
+  e.preventDefault(); $("#tip").hidden=true;
+  const wa=selT?null:wordAt(e.clientX,e.clientY);
+  ctx={pid,word:wa?wa.w:"",rect:wa?wa.rect:null,x:e.clientX,y:e.clientY,sel:selT};
+  const m=doc.meta, items=[];
+  if(selT){ items.push('<button data-c="sel">'+(WORD.test(selT)?"查這個字":"翻譯選取的文字")+"</button>",'<button data-c="copysel">複製</button>'); if(pid>=0) items.push('<div class="ctxsep"></div>'); }
+  if(pid>=0){
+    if(ctx.word) items.push('<button data-c="word">查「'+esc(ctx.word)+'」</button>');
+    items.push('<button data-c="para">翻譯這段</button>','<button data-c="plain">說白一點</button>','<div class="ctxsep"></div>');
+    items.push('<div class="ctxcol"><small>畫重點</small>'+Object.keys(MKN).map(c=>'<button data-c="mk" data-k="'+c+'" class="'+(m.hl[pid]&&hlCol(m.hl[pid])===c?"on":"")+'"><span class="cdot '+c+'"></span>'+MKN[c]+"</button>").join("")+(m.hl[pid]?'<button data-c="mk" data-k="">取消</button>':"")+"</div>");
+    items.push('<button data-c="bm">'+(m.bm.includes(pid)?"移除書籤":"加書籤")+"</button>",'<button data-c="note">'+(m.notes[pid]?"編輯段落筆記":"寫段落筆記")+"</button>");
+    items.push('<button data-c="quote">引用到筆記本<small>附頁碼</small></button>','<div class="ctxsep"></div>','<button data-c="say">朗讀英文</button>','<button data-c="copy">複製這段原文</button>');
+  }
+  const cm=$("#ctxMenu"); cm.innerHTML=items.join(""); cm.hidden=false;
+  const w=cm.offsetWidth, h=cm.offsetHeight;
+  cm.style.left=Math.min(e.clientX,innerWidth-w-8)+"px"; cm.style.top=Math.min(e.clientY,innerHeight-h-8)+"px";
+});
+document.addEventListener("pointerdown",e=>{ if(!$("#ctxMenu").hidden&&!e.target.closest("#ctxMenu")) $("#ctxMenu").hidden=true; },true);
+viewer.addEventListener("scroll",()=>{ $("#ctxMenu").hidden=true; },{passive:true});
+$("#ctxMenu").addEventListener("click",e=>{
+  const b=e.target.closest("[data-c]"); if(!b||!ctx||!doc) return; const c=b.dataset.c, pid=ctx.pid; $("#ctxMenu").hidden=true;
+  const copy=t=>{ try{ navigator.clipboard.writeText(t).then(()=>toast("已複製"),()=>toast("無法複製")); }catch(err){ toast("無法複製"); } };
+  if(isDeskR()&&["sel","word","para","plain","note"].includes(c)&&dTab!=="tr"&&dTab!=="note") setDTab("tr");
+  if(c==="sel"){ if(selPending){ const p=selPending; openSel(p.t,p.r,p.ctx); } else toast("請重新選取一次。"); }
+  else if(c==="copysel") copy(ctx.sel);
+  else if(c==="word"){ closePop(); openPara(pid,ctx.word,ctx.x,ctx.y); showMark(ctx.rect&&pop&&pop.view==="word"?ctx.rect:null); }
+  else if(c==="para"){ closePop(); openPara(pid,"",ctx.x,ctx.y); }
+  else if(c==="plain"){ closePop(); openPara(pid,"",ctx.x,ctx.y); plainPara(); }
+  else if(c==="mk"){ const k=b.dataset.k; if(k) doc.meta.hl[pid]=k; else delete doc.meta.hl[pid]; saveMeta(); applyMarks(); if(pop&&pop.pid===pid) drawPop(); toast(k?"已畫成「"+MKN[k]+"」重點":"已取消重點"); }
+  else if(c==="bm"){ const i=doc.meta.bm.indexOf(pid); if(i>=0) doc.meta.bm.splice(i,1); else doc.meta.bm.push(pid); saveMeta(); toast(i>=0?"已移除書籤":"已加書籤"); }
+  else if(c==="note"){ closePop(); openPara(pid,"",ctx.x,ctx.y); if(pop){ pop.editNote=true; pop.noteDraft=null; pop.noteFocus=true; drawPop(); } }
+  else if(c==="quote"){ const t=doc.paras[pid].t, lk=doc.type==="pdf"&&doc.pp&&doc.pp[pid]!=null?'<a class="plink" data-pg="'+(doc.pp[pid]+1)+'" contenteditable="false">p.'+(doc.pp[pid]+1)+"</a>":'<a class="plink" data-pid="'+pid+'" contenteditable="false">第'+(pid+1)+"段</a>";
+    insertNote('<p>“'+esc(t.length>400?t.slice(0,400)+"…":t)+'” '+lk+"</p><div><br></div>"); toast("已引用到筆記本"); }
+  else if(c==="say") speak(doc.paras[pid].t);
+  else if(c==="copy") copy(doc.paras[pid].t);
+});
 
 /* ================= Open files / paste / URL ================= */
 async function openFile(f){
