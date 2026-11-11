@@ -419,15 +419,21 @@ $("#keySave").onclick=async()=>{
 
 /* ================= AI engines ================= */
 function claude(prompt,opts){ return S.engine==="gemini"?gemini(prompt,opts):claudeCall(prompt,opts); }
-const GEM_MODEL="gemini-2.5-flash-lite";
-async function gemini(prompt,{max=2000,onText,signal}={}){
+let GEM_MODEL=store.get("yidu:gmodel")||"gemini-3.5-flash-lite";
+async function gemini(prompt,{max=2000,onText,signal}={},retried){
   if(!S.gkey) throw {code:"no_key"};
   const url="https://generativelanguage.googleapis.com/v1beta/models/"+GEM_MODEL+(onText?":streamGenerateContent?alt=sse":":generateContent");
   const body=JSON.stringify({contents:[{role:"user",parts:[{text:prompt}]}],generationConfig:{maxOutputTokens:max,temperature:0.3}});
   let res;
   try{ res=await fetch(url,{method:"POST",signal,headers:{"content-type":"application/json","x-goog-api-key":S.gkey},body}); }
   catch(e){ throw {code:e&&e.name==="AbortError"?"cancelled":"net"}; }
-  if(!res.ok){ let d=null; try{ d=await res.json(); }catch(e){} const er=d&&(Array.isArray(d)?d[0]:d)&&(Array.isArray(d)?d[0]:d).error; throw {code:"http",gem:true,status:res.status,message:er&&er.message||"",reason:er&&er.status||""}; }
+  if(!res.ok){
+    let d=null; try{ d=await res.json(); }catch(e){}
+    const er=d&&(Array.isArray(d)?d[0]:d)&&(Array.isArray(d)?d[0]:d).error, msg=er&&er.message||"";
+    const mv=msg.match(/use models\/([A-Za-z0-9._-]+)/);
+    if(mv&&!retried&&mv[1]!==GEM_MODEL){ GEM_MODEL=mv[1]; store.set("yidu:gmodel",GEM_MODEL); return gemini(prompt,{max,onText,signal},true); }
+    throw {code:"http",gem:true,status:res.status,message:msg,reason:er&&er.status||""};
+  }
   const pick=d=>{ const c=d&&d.candidates&&d.candidates[0]; return c&&c.content&&c.content.parts?c.content.parts.map(p=>p.text||"").join(""):""; };
   if(!onText){ const t=pick(await res.json()).trim(); if(!t) throw {code:"http",gem:true,status:0,message:"empty"}; return t; }
   const rd=res.body.getReader(), dec=new TextDecoder(); let buf="",text="";
