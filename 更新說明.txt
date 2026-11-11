@@ -1,17 +1,22 @@
-Pip 第三版更新（書庫、我的、PDF 版面、分割筆記、手寫、標註、心智圖、匯出）
+Pip 第三版更新（書庫、我的、PDF 版面、分割筆記、手寫、標註、心智圖、匯出、明體、聖誕紅）
 
-這次只需要上傳 2 個檔案：index.html、sw.js
-（dict.json、圖示、manifest 都沒變，不用重傳）
+這次要上傳 6 個檔案：
+index.html、sw.js、icon-192.png、icon-512.png、icon-maskable-512.png、apple-touch-icon.png
+（dict.json、manifest 沒變，不用重傳）
 
 上傳步驟：
 1. 打開 github.com/yuuu1223hmh-spec/Yiyu
 2. Add file → Upload files
-3. 把 index.html 和 sw.js 拖進去（或點 choose your files 選取）
+3. 把上面 6 個檔案一起放進去（同名檔案會直接覆蓋）
 4. 按 Commit changes
 5. 到 Actions 等綠色勾勾（約 1～2 分鐘）
-6. 打開 App，若還是舊畫面：完全關掉 App 再開一次（必要時重開兩次）
+
+換新圖標：
+- iPad：長按主畫面上的 Pip → 移除 App → 刪除；再用 Safari 打開網址 → 分享 → 加入主畫面
+- 電腦：打開已安裝的 Pip，右上角「⋯」→ 解除安裝；再用 Chrome/Edge 打開網址重新安裝
+  （解除安裝不會刪掉你的資料，資料存在瀏覽器裡；登入 Google 的話雲端也有一份）
 
 第一次使用新版要注意：
 - 到「我的」重新按一次 Google 登入，Google 會多問一次「基本資料」權限，按允許。
-- 第一次匯出 Word / PPT 要有網路（會下載匯出元件）。
+- 第一次匯出 Word / PPT 要有網路。
 - 舊的 PDF 要重新打開一次，書庫的「內容搜尋」才找得到它的內文。

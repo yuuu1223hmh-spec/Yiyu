@@ -16,17 +16,17 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=LXGW+WenKai+TC:wght@400;700&display=swap">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
 <style>
 /* Layout: doodle sticker-book shell — cream grainy desk, thick hand-drawn outlines on chrome only (pages stay quiet), greeting + big open-file card with Pip standing on it, bottom tab bar; landscape iPad pins translations in a right column. */
 :root{
   --desk:#FFF2DA; --chrome:#FFFBF1; --ink:#1E1A17; --muted:#6E6155; --line:#1E1A17;
-  --accent:#E8452C; --accent-ink:#1E1A17; --mustard:#F6D23E; --leaf:#5DB35E; --sky:#7DA0BE;
-  --soft:#FFE3D6; --hl:rgba(246,210,62,.6); --sel:rgba(232,69,44,.25);
+  --accent:#9B2F35; --accent-ink:#FFF6EC; --mustard:#F6D23E; --leaf:#5DB35E; --sky:#7DA0BE;
+  --soft:#F6E0DC; --hl:rgba(246,210,62,.6); --sel:rgba(155,47,53,.25);
   --warn-bg:#FFE07A; --warn-ink:#1E1A17; --err:#B5281A;
   --hard:3px 3px 0 var(--line); --hard-lg:5px 5px 0 var(--line);
-  --f-ui:"Huninn","Noto Sans TC","PingFang TC","Microsoft JhengHei",system-ui,sans-serif;
+  --f-ui:"Noto Serif TC","Songti TC","PMingLiU","MingLiU",serif;
   --f-hand:"LXGW WenKai TC","Kaiti TC","DFKai-SB","BiauKai",serif;
   --f-en:"Source Serif 4",Georgia,"Times New Roman",serif;
   --r1:20px 16px 22px 18px; --r2:14px 18px 12px 16px;
@@ -35,12 +35,12 @@
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --desk:#221C17; --chrome:#2F2720; --ink:#FFF2DA; --muted:#CDBEAC; --line:#FFF2DA;
-  --accent:#FF6A4D; --accent-ink:#1E1A17; --mustard:#F6D23E; --leaf:#7CCB7D; --sky:#9AB9D3;
+  --accent:#D9606A; --accent-ink:#1E1A17; --mustard:#F6D23E; --leaf:#7CCB7D; --sky:#9AB9D3;
   --soft:#4A2A22; --hl:rgba(246,210,62,.38); --sel:rgba(255,106,77,.32);
   --warn-bg:#5A4712; --warn-ink:#FFF2DA; --err:#FF8A73; color-scheme:dark}}
 :root[data-theme="dark"]{
   --desk:#221C17; --chrome:#2F2720; --ink:#FFF2DA; --muted:#CDBEAC; --line:#FFF2DA;
-  --accent:#FF6A4D; --accent-ink:#1E1A17; --mustard:#F6D23E; --leaf:#7CCB7D; --sky:#9AB9D3;
+  --accent:#D9606A; --accent-ink:#1E1A17; --mustard:#F6D23E; --leaf:#7CCB7D; --sky:#9AB9D3;
   --soft:#4A2A22; --hl:rgba(246,210,62,.38); --sel:rgba(255,106,77,.32);
   --warn-bg:#5A4712; --warn-ink:#FFF2DA; --err:#FF8A73; color-scheme:dark}
 
@@ -116,7 +116,7 @@ body.side #viewer{margin-right:calc(var(--sideW) + 20px)}
 .recent{display:flex;flex-direction:column;gap:12px}
 .rrow{display:flex;align-items:center;gap:14px;padding:12px 16px;background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r1);cursor:pointer;box-shadow:var(--hard)}
 .rrow:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--line)}
-.rrow:nth-child(3n+1) .kind{background:var(--accent)} .rrow:nth-child(3n+2) .kind{background:var(--mustard)} .rrow:nth-child(3n) .kind{background:var(--sky)}
+.rrow:nth-child(3n+1) .kind{background:var(--accent);color:var(--accent-ink)} .rrow:nth-child(3n+2) .kind{background:var(--mustard)} .rrow:nth-child(3n) .kind{background:var(--sky)}
 .kind{flex:none;width:48px;height:48px;border-radius:14px 12px 16px 10px;border:2.5px solid #1E1A17;color:#1E1A17;display:grid;place-items:center;font-weight:700;font-size:15px}
 .rname{flex:1;min-width:0}
 .rname b{display:block;font-size:16.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -146,7 +146,7 @@ body.side #viewer{margin-right:calc(var(--sideW) + 20px)}
 .tabbar{position:fixed;z-index:15;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(620px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:6px;background:var(--chrome);border:2.5px solid var(--line);border-radius:26px 22px 28px 24px;box-shadow:var(--hard-lg)}
 .tabbar button{font:inherit;font-size:12.5px;font-weight:700;border:2.5px solid transparent;background:transparent;color:var(--muted);border-radius:18px 14px 20px 16px;padding:6px 4px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
 .tabbar svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
-.tabbar button[aria-current="page"]{background:var(--accent);color:#1E1A17;border-color:#1E1A17}
+.tabbar button[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:#1E1A17}
 
 /* translation card: floating (portrait) / bottom sheet (phone) / right column (landscape iPad) */
 #pop{position:fixed;z-index:20;width:400px;max-width:calc(100vw - 24px);max-height:min(60vh,520px);overflow:auto;background:var(--chrome);color:var(--ink);border:2.5px solid var(--line);border-radius:22px 18px 24px 20px;box-shadow:var(--hard-lg);padding:14px 16px 16px}
@@ -347,7 +347,7 @@ body.annon #focusExit{display:none}
 body.annon #pop.side{bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 #annBar .done{background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:700;border:2px solid var(--line);border-radius:11px;padding:3px 12px;min-height:32px;cursor:pointer}
 #capLayer{position:fixed;z-index:40;cursor:crosshair;background:rgba(30,26,23,.12);touch-action:none}
-#capBox{position:absolute;border:2.5px dashed var(--accent);background:rgba(232,69,44,.08)}
+#capBox{position:absolute;border:2.5px dashed var(--accent);background:rgba(155,47,53,.1)}
 .capcancel{position:absolute;top:10px;left:50%;transform:translateX(-50%);font:700 14px var(--f-ui);border:2.5px solid #1E1A17;border-radius:12px;background:var(--mustard);color:#1E1A17;padding:6px 12px;cursor:pointer}
 /* highlight colors */
 .tl span.mk-y,#article .ap.mk-y{background:rgba(242,190,30,.4)}
@@ -2499,6 +2499,7 @@ function eraseAt(S,p,cur){
     if(st.pts.some((q,j)=>segD(p,j?st.pts[j-1]:q,q)<rr)){ cur.removed.push({s:st,i}); arr.splice(i,1); hit=true; } }
   if(hit) paintSurface(S);
 }
+function snapLine(a,b){ const dx=b[0]-a[0], dy=b[1]-a[1], t=Math.tan(8*Math.PI/180); if(Math.abs(dy)<=Math.abs(dx)*t) return [b[0],a[1],0.5]; if(Math.abs(dx)<=Math.abs(dy)*t) return [a[0],b[1],0.5]; return [b[0],b[1],0.5]; }
 function attachInk(S){
   const cv=S.cv; let cur=null, pid=null;
   const pos=e=>{ const r=cv.getBoundingClientRect(), k=S.k(); return [Math.round((e.clientX-r.left)/k*10)/10,Math.round((e.clientY-r.top)/k*10)/10,e.pointerType==="pen"?Math.round((e.pressure||0.5)*100)/100:0.5]; };
@@ -2512,16 +2513,21 @@ function attachInk(S){
     e.preventDefault(); try{ cv.setPointerCapture(e.pointerId); }catch(err){} pid=e.pointerId;
     const p=pos(e);
     if(INK.tool==="eraser"){ cur={erase:true,removed:[]}; eraseAt(S,p,cur); return; }
-    cur={t:INK.tool==="hl"?"hl":"pen",c:INK.color,w:Math.round((INK.tool==="hl"?HL_W:PEN_W)[INK.size]/S.k()*100)/100,pts:[p]};
-    paintSurface(S,cur);
+    cur={t:INK.tool==="hl"?"hl":"pen",c:INK.color,w:Math.round((INK.tool==="hl"?HL_W:PEN_W)[INK.size]/S.k()*100)/100,pts:[p],hp:p};
+    paintSurface(S,cur); holdArm();
   });
   cv.addEventListener("pointermove",e=>{
     if(!cur||e.pointerId!==pid) return; e.preventDefault();
+    if(cur.straight){ const q=pos(e); cur.pts=[cur.pts[0],snapLine(cur.pts[0],q)]; paintSurface(S,cur); return; }
+    if(!cur.erase){ const q=pos(e); if(Math.hypot(q[0]-cur.hp[0],q[1]-cur.hp[1])>4/S.k()){ cur.hp=q; holdArm(); } }
     let evs=e.getCoalescedEvents?e.getCoalescedEvents():[]; if(!evs.length) evs=[e];
     for(const ev of evs){ const p=pos(ev); if(cur.erase) eraseAt(S,p,cur); else { const l=cur.pts[cur.pts.length-1]; if(Math.abs(l[0]-p[0])+Math.abs(l[1]-p[1])>0.6/S.k()) cur.pts.push(p); } }
     if(!cur.erase) paintSurface(S,cur);
   });
-  const end=e=>{ if(!cur||e.pointerId!==pid) return; const c=cur; cur=null; pid=null;
+  function holdArm(){ clearTimeout(holdT); holdT=setTimeout(()=>{ if(!cur||cur.erase||cur.straight) return; const a=cur.pts[0], b=cur.pts[cur.pts.length-1];
+    if(Math.hypot(b[0]-a[0],b[1]-a[1])<24/S.k()) return; cur.straight=true; cur.pts=[[a[0],a[1],0.5],snapLine(a,[b[0],b[1],0.5])]; paintSurface(S,cur); },550); }
+  let holdT=null;
+  const end=e=>{ if(!cur||e.pointerId!==pid) return; clearTimeout(holdT); const c=cur; cur=null; pid=null; delete c.hp; delete c.straight;
     if(c.erase){ if(c.removed.length){ pushUndo({S,op:"erase",items:c.removed}); S.changed(); } return; }
     S.arr(true).push(c); pushUndo({S,op:"add",s:c}); S.changed(); paintSurface(S); if(S.grow) S.grow(c); };
   cv.addEventListener("pointerup",end); cv.addEventListener("pointercancel",end);
@@ -2566,7 +2572,7 @@ document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key.toLowe
 function setAnn(on){
   if(on&&(!doc||doc.type!=="pdf"||doc.dual)) return;
   annOn=on; document.body.classList.toggle("annon",on); $("#annBar").hidden=!on; $("#annBtn").classList.toggle("on",on);
-  if(on){ closePop(); hideSel(); $("#layMenu").hidden=true; if(INK.tool==="eraser") INK.tool="pen"; syncInkBar(); toast(penSeen||!("ontouchstart" in window)?"在頁面上直接寫，寫完按「完成」":"用觸控筆或滑鼠在頁面上寫；手指會捲動頁面"); }
+  if(on){ closePop(); hideSel(); $("#layMenu").hidden=true; if(INK.tool==="eraser") INK.tool="pen"; syncInkBar(); toast(penSeen||!("ontouchstart" in window)?"在頁面上直接寫，寫完按「完成」。畫到終點停一下，線會自動拉直":"用觸控筆或滑鼠在頁面上寫；手指會捲動頁面"); }
   placeInkBar();
 }
 $("#annBtn").onclick=()=>setAnn(!annOn);
@@ -2772,7 +2778,7 @@ function linkRefs(h){
 
 /* ================= Mind map ================= */
 let mmSrc="all", mmZoom=1, mmBusy=null; const mmCol=new Set();
-const MMC=["#E8452C","#2F6FD0","#2E9A55","#F08A24","#8A4FD0","#D9A400","#C2417A"];
+const MMC=["#C0453F","#2F6FD0","#2E9A55","#F08A24","#8A4FD0","#D9A400","#C2417A"];
 const normQ=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 function mineText(){
   const m=doc.meta, parts=[];
@@ -2850,7 +2856,7 @@ function mapSVG(tree,forImage){
   walk(tree,n=>{ if(n._open) n.c.forEach(c=>{ const x1=n._x+n._w+(n.c.length?10:0), y1=n._y+off+n._h/2, x2=c._x, y2=c._y+off+c._h/2, mx=(x1+x2)/2;
     g+='<path d="M'+x1+","+y1+" C"+mx+","+y1+" "+mx+","+y2+" "+x2+","+y2+'" fill="none" stroke="'+c._col+'" stroke-width="2.5" stroke-opacity=".7"/>'; }); });
   walk(tree,n=>{
-    const x=n._x, yy=n._y+off, root=n._d===0, fill=root?"#E8452C":n._d===1?n._col:"#FFFDF8", tc=root||n._d===1?"#FFFFFF":"#1E1A17";
+    const x=n._x, yy=n._y+off, root=n._d===0, fill=root?"#9B2F35":n._d===1?n._col:"#FFFDF8", tc=root||n._d===1?"#FFFFFF":"#1E1A17";
     g+='<g class="mmn" data-id="'+n._id+'"'+(n.pid!=null?' data-pid="'+n.pid+'"':"")+'><rect x="'+x+'" y="'+yy+'" width="'+n._w+'" height="'+n._h+'" rx="12" fill="'+fill+'" stroke="'+(n._d===2||n._d>2?n._col:"#1E1A17")+'" stroke-width="2"/>';
     n._lines.forEach((l,i)=>{ g+='<text x="'+(x+14)+'" y="'+(yy+8+(i+1)*(n._fs+6)-5)+'" font-size="'+n._fs+'" font-weight="'+(n._d<2?700:400)+'" fill="'+tc+'" font-family=\''+MMF+'\'>'+esc(l)+"</text>"; });
     if(n.p){ const px=x+n._w-40, py=yy+n._h/2-10; g+='<rect x="'+px+'" y="'+py+'" width="32" height="20" rx="10" fill="#BFD9F2" stroke="#1E1A17" stroke-width="1.2"/><text x="'+(px+16)+'" y="'+(py+14)+'" font-size="11" font-weight="700" text-anchor="middle" fill="#1E1A17" font-family=\''+MMF+'\'>'+(doc.type==="pdf"?"p."+n.p:"¶"+n.p)+"</text>"; }
@@ -3036,7 +3042,7 @@ async function toDOCX(title,P){
 async function toPPTX(title,P){
   await loadLib(()=>window.PptxGenJS,"https://cdnjs.cloudflare.com/ajax/libs/pptxgenjs/3.12.0/pptxgen.bundle.js");
   const px=new PptxGenJS(); px.layout="LAYOUT_WIDE"; px.title=title;
-  const F="Microsoft JhengHei", RED="E8452C", INKC="1E1A17";
+  const F="Microsoft JhengHei", RED="9B2F35", INKC="1E1A17";
   const t0=px.addSlide(); t0.background={color:"FFF2DA"};
   t0.addText(title,{x:0.8,y:2.3,w:11.7,h:1.6,fontFace:F,fontSize:34,bold:true,color:INKC});
   t0.addText("閱讀筆記 · 匯出自 Pip · "+new Date().toLocaleDateString("zh-TW"),{x:0.8,y:4.0,w:11.7,h:0.6,fontFace:F,fontSize:16,color:"6B625A"});
