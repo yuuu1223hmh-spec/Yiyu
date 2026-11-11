@@ -1,0 +1,17 @@
+Pip 第三版更新（書庫、我的、PDF 版面、分割筆記、手寫、標註、心智圖、匯出）
+
+這次只需要上傳 2 個檔案：index.html、sw.js
+（dict.json、圖示、manifest 都沒變，不用重傳）
+
+上傳步驟：
+1. 打開 github.com/yuuu1223hmh-spec/Yiyu
+2. Add file → Upload files
+3. 把 index.html 和 sw.js 拖進去（或點 choose your files 選取）
+4. 按 Commit changes
+5. 到 Actions 等綠色勾勾（約 1～2 分鐘）
+6. 打開 App，若還是舊畫面：完全關掉 App 再開一次（必要時重開兩次）
+
+第一次使用新版要注意：
+- 到「我的」重新按一次 Google 登入，Google 會多問一次「基本資料」權限，按允許。
+- 第一次匯出 Word / PPT 要有網路（會下載匯出元件）。
+- 舊的 PDF 要重新打開一次，書庫的「內容搜尋」才找得到它的內文。
