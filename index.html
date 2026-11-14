@@ -348,6 +348,7 @@ body.annon #pop.side{bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 #annBar .done{background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:700;border:2px solid var(--line);border-radius:11px;padding:3px 12px;min-height:32px;cursor:pointer}
 #capLayer{position:fixed;z-index:40;cursor:crosshair;background:rgba(30,26,23,.12);touch-action:none}
 #capBox{position:absolute;border:2.5px dashed var(--accent);background:rgba(155,47,53,.1)}
+.caphint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);font:600 14px/1.5 var(--f-ui);background:#1E1A17;color:#fff;border-radius:12px;padding:8px 14px;text-align:center;pointer-events:none}.caphint b{color:var(--mustard)}
 .capcancel{position:absolute;top:10px;left:50%;transform:translateX(-50%);font:700 14px var(--f-ui);border:2.5px solid #1E1A17;border-radius:12px;background:var(--mustard);color:#1E1A17;padding:6px 12px;cursor:pointer}
 /* highlight colors */
 .tl span.mk-y,#article .ap.mk-y{background:rgba(242,190,30,.4)}
@@ -508,6 +509,8 @@ body.barsoff.reading #viewer{padding-bottom:60px}
 body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px))}
 .db .lnk{border:0;box-shadow:none;padding:0;background:none;color:var(--accent);font-weight:700}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+@media (pointer:coarse){input,textarea,select,[contenteditable="true"]{font-size:16px!important}}
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 </style>
 </head>
 <body>
@@ -593,7 +596,7 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
   <div class="ig"><button data-is="0">細</button><button data-is="1">中</button><button data-is="2">粗</button></div>
   <div class="ig"><button data-iu="undo" aria-label="復原">↶</button><button data-iu="redo" aria-label="重做">↷</button><button data-if="1">手指也能畫</button></div>
 </div>
-<div id="capLayer" hidden><div id="capBox" hidden></div><button class="capcancel" id="capCancel">取消擷取</button></div>
+<div id="capLayer" hidden><div id="capBox" hidden></div><div class="caphint">用手指、筆或滑鼠<b>拖出一個框</b>，放開就會貼進右邊（下面）的筆記</div><button class="capcancel" id="capCancel">取消擷取</button></div>
 
 <div id="viewer" tabindex="-1">
   <div id="loading" hidden>正在開啟…</div>
@@ -620,7 +623,7 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
     </div>
     <p class="drophint">也可以直接把 PDF、Word 或文字檔拖進這個視窗開啟</p>
     <div class="banner" id="keyBanner" hidden>
-      <span>還沒設定 API 金鑰，翻譯功能需要它才能運作。</span>
+      <span id="keyBannerTx">還沒設定 API 金鑰，翻譯功能需要它才能運作。</span>
       <button id="keyBannerBtn">前往設定</button>
     </div>
     <section class="sect">
@@ -701,6 +704,7 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
         <button class="tool" data-tool="cite"><b>引用格式</b><small>APA、MLA、Chicago</small></button>
         <button class="tool" data-tool="upload"><b>上傳到雲端</b><small>其他裝置也能開這份</small></button>
         <button class="tool" data-tool="folder"><b>移到資料夾</b><small>整理到書庫</small></button>
+        <button class="tool" data-tool="cap"><b>截圖到筆記</b><small>在 PDF 上框一塊，貼進筆記</small></button>
         <button class="tool narrowonly" data-tool="note"><b>筆記</b><small>打字或手寫，和文件並排</small></button>
         <button class="tool narrowonly" data-tool="ann"><b>標註</b><small>直接在 PDF 上手寫</small></button>
         <button class="tool narrowonly" data-tool="lay"><b>版面</b><small>單頁、雙頁、縮放、縮圖</small></button>
@@ -741,7 +745,7 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
         <h3>Gemini 金鑰</h3>
         <input id="gkey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza...">
         <div class="row"><button class="primary" id="gkeySave">儲存並測試</button><span id="gkeyMsg" class="hintline" role="status"></span></div>
-        <p class="hintline">到 <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a> 左下角的鑰匙圖示建立，不需要綁信用卡。免費方案傳送的內容會被 Google 用來改進產品，未發表的研究請斟酌。金鑰只存在這台裝置上。</p>
+        <p class="hintline">到 <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a> 左下角的鑰匙圖示建立，不需要綁信用卡。免費方案傳送的內容會被 Google 用來改進產品，未發表的研究請斟酌。登入 Google 後，金鑰會存進你自己雲端硬碟裡 Pip 專用的隱藏資料夾，換裝置或被瀏覽器清掉都會自動補回。</p>
       </section>
       <section id="claSec">
         <h3>Claude 金鑰</h3>
@@ -751,7 +755,7 @@ body.barsoff.reading #pop.side{bottom:calc(16px + env(safe-area-inset-bottom,0px
           <option value="claude-haiku-5-5">Claude Haiku（最省、最快，建議）</option>
           <option value="claude-sonnet-5-5">Claude Sonnet（較精準、約貴 20 倍）</option>
         </select>
-        <p class="hintline">到 <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> 的 API Keys 頁面建立，需要先儲值。金鑰只存在這台裝置上，只會傳給 Anthropic。</p>
+        <p class="hintline">到 <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> 的 API Keys 頁面建立，需要先儲值。登入 Google 後會同步到你自己的雲端硬碟；呼叫時只會傳給 Anthropic。</p>
       </section>
       <section id="syncSec">
         <h3>Google 雲端同步</h3>
@@ -878,13 +882,13 @@ setTimeout(()=>{ loadDict(); loadCC(); },1200);
 /* ================= Settings ================= */
 const S={engine:store.get("yidu:engine")||"gemini",gkey:store.get("yidu:gkey")||"",key:store.get("yidu:key")||"",model:store.get("yidu:model")||"claude-haiku-5-5",reader:store.get("yidu:reader")||"jina",proxy:store.get("yidu:proxy")||""};
 const activeKey=()=>S.engine==="gemini"?S.gkey:S.key;
-function refreshKeyBanner(){ $("#keyBanner").hidden=!!activeKey(); }
+function refreshKeyBanner(){ $("#keyBanner").hidden=!!activeKey(); const t=$("#keyBannerTx"); if(t) t.textContent=store.get("yidu:gsigned")?"還沒設定 API 金鑰。連上 Google 同步後會自動補回，或到設定貼上。":"還沒設定 API 金鑰。如果之前設定過，用 Google 登入就能自動補回。"; }
 function showEngine(){ $("#engine").value=S.engine; $("#gemSec").hidden=S.engine!=="gemini"; $("#claSec").hidden=S.engine!=="claude"; refreshKeyBanner(); }
 $("#gkey").value=S.gkey; showEngine();
 $("#engine").onchange=()=>{ S.engine=$("#engine").value; store.set("yidu:engine",S.engine); showEngine(); };
 $("#gkeySave").onclick=async()=>{
   const k=$("#gkey").value.trim(), m=$("#gkeyMsg");
-  S.gkey=k; store.set("yidu:gkey",k); refreshKeyBanner();
+  S.gkey=k; store.set("yidu:gkey",k); store.set("yidu:keyT",String(Date.now())); refreshKeyBanner(); syncSoon();
   if(!k){ m.className="hintline"; m.textContent="已清除金鑰。"; return; }
   m.className="hintline"; m.textContent="測試中…";
   try{ await gemini("只回覆「連線成功」四個字。",{max:20}); m.className="hintline ok"; m.textContent="連線成功，可以開始使用了。"; }
@@ -897,7 +901,7 @@ $("#proxy").onchange=()=>{ S.proxy=$("#proxy").value.trim(); store.set("yidu:pro
 $("#keySave").onclick=async()=>{
   const k=$("#key").value.trim(), m=$("#keyMsg");
   if(k&&!k.startsWith("sk-ant-")){ m.className="hintline err"; m.textContent="格式不對，金鑰應以 sk-ant- 開頭。"; return; }
-  S.key=k; store.set("yidu:key",k); refreshKeyBanner();
+  S.key=k; store.set("yidu:key",k); store.set("yidu:keyT",String(Date.now())); refreshKeyBanner(); syncSoon();
   if(!k){ m.className="hintline"; m.textContent="已清除金鑰。"; return; }
   m.className="hintline"; m.textContent="測試中…";
   try{ await claudeCall("回覆「連線成功」四個字就好。",{max:20}); m.className="hintline ok"; m.textContent="連線成功，可以開始使用了。"; }
@@ -1327,7 +1331,9 @@ function groupParas(g){
       if(d>lg*1.4||d<0) brk=true;
       if(Math.abs(L.z-prev.z)>1) brk=true;
       if(L.x0-minX>L.z*0.9&&/[.?!:"”)]$/.test(prev.t)) brk=true;
-      if((prev.x1-minX)<width*0.7&&/[.?!:"”]$/.test(prev.t)) brk=true; }
+      if((prev.x1-minX)<width*0.7&&/[.?!:"”]$/.test(prev.t)) brk=true;
+      if(prev.t.length<70&&/^((\d+\.)+\d*|[IVX]+\.|[A-Z]\.)\s+[A-Z]/.test(prev.t)&&!/[.?!,;:]$/.test(prev.t)&&cur.parts.length===1) brk=true;
+      if(/^(Abstract|Keywords|References|Introduction|Conclusions?|Acknowledg(e)?ments)$/i.test(prev.t)&&cur.parts.length===1) brk=true; }
     if(brk){ cur={parts:[L.t],z:L.z,items:L.items.slice()}; out.push(cur); } else { cur.parts.push(L.t); cur.items.push(...L.items); }
     prev=L;
   }
@@ -1358,11 +1364,14 @@ async function openPdf(buf,name,meta){
     const mid=vp.width/2; let lc=0,rc=0,tot=0;
     for(const it of items){ tot+=it.s.length; if(it.x+it.w<mid+6) lc+=it.s.length; else if(it.x>mid-6) rc+=it.s.length; }
     let groups=[items];
-    if(lc>tot*0.25&&rc>tot*0.25){
+    const colT=lc+rc;
+    if(colT>tot*0.35&&lc>colT*0.2&&rc>colT*0.2){
       const L=[],R=[],Sp=[];
       for(const it of items){ if(it.x+it.w<mid+6) L.push(it); else if(it.x>mid-6) R.push(it); else Sp.push(it); }
-      let top=-Infinity; for(const it of L) top=Math.max(top,it.y); for(const it of R) top=Math.max(top,it.y);
-      groups=[Sp.filter(i=>i.y>top),L,R,Sp.filter(i=>i.y<=top)];
+      let rTop=-Infinity; for(const it of R) rTop=Math.max(rTop,it.y);
+      const gap=Math.max(12,(R[0]&&R[0].z)||10);
+      const head=Sp.filter(i=>i.y>rTop).concat(L.filter(i=>i.y>rTop+gap));
+      groups=[head,L.filter(i=>i.y<=rTop+gap),R,Sp.filter(i=>i.y<=rTop)];
     }
     for(const g of groups) if(g.length) all=mergeInto(all,groupParas(g));
   }
@@ -2142,6 +2151,7 @@ $("#paneTools").addEventListener("click",e=>{
   else if(t==="folder"){ if(!doc||!doc.rid){ toast("示範論文不會放進書庫。"); return; } $("#drawer").hidden=true; pickFolder(doc.rid); }
   else if(t==="lay"){ $("#drawer").hidden=true; toggleLay(); }
   else if(t==="note"){ $("#drawer").hidden=true; toggleNotes(); }
+  else if(t==="cap"){ $("#drawer").hidden=true; captureToNotes(); }
   else if(t==="ann"){ $("#drawer").hidden=true; if(!doc||doc.type!=="pdf"||doc.dual) toast("標註目前只支援 PDF 原版畫面。"); else setAnn(!annOn); }
   else if(t==="hide"){ $("#drawer").hidden=true; setBars(true); }
   else openDrawer(t);
@@ -2305,8 +2315,8 @@ $("#wipe").onclick=async()=>{
 const GCID="650874095623-3vmnr9k2r8vneqveb6mdv63sho5chino.apps.googleusercontent.com";
 const GSCOPE="openid email profile https://www.googleapis.com/auth/drive.appdata";
 const G={token:null,exp:0,client:null};
-try{ const t=JSON.parse(sessionStorage.getItem("yidu:gtok")||"null"); if(t&&t.exp>Date.now()+60000){ G.token=t.t; G.exp=t.exp; } }catch(e){}
-function setToken(t,sec){ G.token=t; G.exp=Date.now()+(sec||3600)*1000; try{ sessionStorage.setItem("yidu:gtok",JSON.stringify({t,exp:G.exp})); }catch(e){} }
+try{ const t=JSON.parse(sessionStorage.getItem("yidu:gtok")||store.get("yidu:gtok")||"null"); if(t&&t.exp>Date.now()+60000){ G.token=t.t; G.exp=t.exp; } }catch(e){}
+function setToken(t,sec){ G.token=t; G.exp=Date.now()+(sec||3600)*1000; const v=JSON.stringify({t,exp:G.exp}); try{ sessionStorage.setItem("yidu:gtok",v); }catch(e){} store.set("yidu:gtok",v); }
 const gValid=()=>!!G.token&&G.exp>Date.now()+60000;
 (function(){
   const h=location.hash;
@@ -2331,7 +2341,7 @@ function loadGIS(){
 function gSignIn(){
   if(!navigator.onLine){ toast("目前沒有網路。"); return; }
   if(!G.client){ loadGIS(); toast("正在準備 Google 登入，請再按一次。"); return; }
-  G.client.requestAccessToken({prompt:store.get("yidu:gsigned")?"":"consent"});
+  const pf=getJSON("yidu:gprof",null), o={prompt:store.get("yidu:gsigned")?"":"consent"}; if(pf&&pf.email) o.login_hint=pf.email; G.client.requestAccessToken(o);
 }
 function gRedirect(){
   const st=Math.random().toString(36).slice(2); store.set("yidu:gstate",st);
@@ -2340,7 +2350,7 @@ function gRedirect(){
 async function gfetch(url,opt){
   opt=opt||{}; if(!gValid()) throw {code:"gauth"};
   const r=await fetch(url,Object.assign({},opt,{headers:Object.assign({},opt.headers||{},{Authorization:"Bearer "+G.token})}));
-  if(r.status===401){ G.token=null; try{ sessionStorage.removeItem("yidu:gtok"); }catch(e){} throw {code:"gauth"}; }
+  if(r.status===401){ G.token=null; try{ sessionStorage.removeItem("yidu:gtok"); }catch(e){} store.del("yidu:gtok"); throw {code:"gauth"}; }
   if(!r.ok){ let m=""; try{ m=(await r.json()).error.message; }catch(e){} throw {code:"gdrive",status:r.status,message:m}; }
   return r;
 }
@@ -2415,7 +2425,7 @@ async function applyMerged(M){
   if(view==="home") renderRecent(); if(view==="dict") renderWords(); if(view==="lib") renderLib();
 }
 let syncing=false, syncT=null;
-function syncSoon(){ if(!store.get("yidu:gsigned")) return; clearTimeout(syncT); syncT=setTimeout(()=>{ if(gValid()) syncNow(true); else renderSync(); },6000); }
+function syncSoon(){ if(!store.get("yidu:gsigned")) return; store.set("yidu:dirty","1"); clearTimeout(syncT); syncT=setTimeout(()=>{ if(gValid()) syncNow(true); else renderSync(); },6000); }
 async function syncNow(quiet){
   if(syncing) return;
   if(!gValid()){ renderSync(); if(!quiet){ toast("請先連線 Google。"); openDrawer("set"); } return; }
@@ -2427,23 +2437,38 @@ async function syncNow(quiet){
     await applyMerged(merged);
     await syncNotes(merged);
     await driveUpload("pip-sync.json",new Blob([JSON.stringify(merged)],{type:"application/json"}),f&&f.id);
-    store.set("yidu:lastsync",String(Date.now())); if(!quiet) toast("已同步");
+    try{ await syncKeys(); }catch(e){ if(e&&e.code==="gauth") throw e; }
+    store.set("yidu:lastsync",String(Date.now())); store.del("yidu:dirty"); if(!quiet) toast("已同步");
   }catch(e){
     if(e&&e.code==="gauth"){ if(!quiet) toast("Google 連線過期了，請重新連線。"); }
     else if(!quiet) toast("同步失敗："+((e&&e.message)||(e&&e.status)||"請稍後再試"));
   }finally{ syncing=false; renderSync(); }
+}
+async function syncKeys(){
+  const f=await driveFind("pip-keys.json");
+  const rm=f?await (await driveGet(f.id)).json().catch(()=>null):null;
+  const lt=+store.get("yidu:keyT")||0, rt=rm&&+rm.t||0;
+  const hasLocal=!!(S.gkey||S.key), hasRemote=!!(rm&&(rm.gkey||rm.key));
+  if(hasRemote&&(rt>lt||!hasLocal&&!lt)){
+    if(typeof rm.gkey==="string"){ S.gkey=rm.gkey; store.set("yidu:gkey",S.gkey); $("#gkey").value=S.gkey; }
+    if(typeof rm.key==="string"){ S.key=rm.key; store.set("yidu:key",S.key); $("#key").value=S.key; }
+    store.set("yidu:keyT",String(rt||Date.now())); refreshKeyBanner();
+    if(!hasLocal) toast("已從 Google 雲端補回 API 金鑰");
+  }else if(lt>rt||(!f&&hasLocal)){
+    await driveUpload("pip-keys.json",new Blob([JSON.stringify({gkey:S.gkey,key:S.key,t:lt||Date.now()})],{type:"application/json"}),f&&f.id);
+  }
 }
 function renderSync(){
   const signed=!!store.get("yidu:gsigned"), ok=gValid(), last=+store.get("yidu:lastsync")||0;
   const st=$("#syncStatus");
   if(st) st.textContent=syncing?"同步中…":!signed?"尚未登入。登入後，生字本、翻譯紀錄、讀到哪一頁和最近閱讀清單會同步到你自己的 Google 雲端硬碟。":ok?("已連線 Google 雲端硬碟"+(last?"，上次同步："+new Date(last).toLocaleString("zh-TW",{month:"numeric",day:"numeric",hour:"2-digit",minute:"2-digit"}):"")+"。"):"已登入過，但連線過期了（Google 每小時要重新確認一次），按「重新連線」繼續同步。";
   $("#gIn").textContent=signed?"重新連線":"用 Google 登入"; $("#gIn").hidden=signed&&ok; $("#gSync").hidden=!ok; $("#gOut").hidden=!signed;
-  const chip=$("#syncChip"); chip.hidden=!(syncing||(signed&&!ok)); chip.textContent=syncing?"☁ 同步中…":"☁ 重新連線";
+  const dirty=!!store.get("yidu:dirty"), chip=$("#syncChip"); chip.hidden=!(syncing||(signed&&!ok&&dirty)); chip.textContent=syncing?"☁ 同步中…":"☁ 有變更未同步・點一下";
   const pf=getJSON("yidu:gprof",null);
   $("#meName").textContent=signed?(pf&&pf.name||"已登入 Google"):"尚未登入";
   $("#meEmail").textContent=signed&&pf&&pf.email?pf.email:"";
   $("#meEmail").hidden=!$("#meEmail").textContent;
-  $("#meSync").textContent=syncing?"同步中…":!signed?"登入後，生字本、翻譯、筆記、資料夾和閱讀進度會存到你自己的 Google 雲端硬碟。":ok?(last?"已同步 · "+fmtT(last):"已連線"):"連線過期了，按「重新連線」繼續同步";
+  $("#meSync").textContent=syncing?"同步中…":!signed?"登入後，生字本、翻譯、筆記、資料夾和閱讀進度會存到你自己的 Google 雲端硬碟。":ok?(last?"已同步 · "+fmtT(last):"已連線"):(store.get("yidu:dirty")?"有變更還沒同步。":"")+"Google 登入每小時會到期，按「重新連線」就會接著同步，資料都先存在這台裝置上";
   const av=$("#meAvatar"); if(signed&&pf&&pf.picture){ if(av.getAttribute("src")!==pf.picture) av.src=pf.picture; av.hidden=false; $("#mePip").style.display="none"; } else { av.hidden=true; $("#mePip").style.display=""; }
   $("#meIn").textContent=signed?"重新連線":"用 Google 登入"; $("#meIn").hidden=signed&&ok; $("#meSyncBtn").hidden=!ok;
 }
@@ -2455,7 +2480,7 @@ $("#meSettings").appendChild($("#paneSet")); $("#paneSet").hidden=false;
 $("#gIn").onclick=gSignIn; $("#syncChip").onclick=()=>{ if(!syncing) gSignIn(); };
 $("#gSync").onclick=()=>syncNow();
 $("#gRedirect").onclick=gRedirect;
-$("#gOut").onclick=()=>{ try{ if(G.token&&window.google&&google.accounts) google.accounts.oauth2.revoke(G.token,()=>{}); }catch(e){} G.token=null; G.exp=0; try{ sessionStorage.removeItem("yidu:gtok"); }catch(e){} store.del("yidu:gsigned"); store.del("yidu:gprof"); renderSync(); toast("已登出，資料仍留在這台裝置和你的雲端硬碟。"); };
+$("#gOut").onclick=()=>{ try{ if(G.token&&window.google&&google.accounts) google.accounts.oauth2.revoke(G.token,()=>{}); }catch(e){} G.token=null; G.exp=0; try{ sessionStorage.removeItem("yidu:gtok"); }catch(e){} store.del("yidu:gtok"); store.del("yidu:gsigned"); store.del("yidu:gprof"); renderSync(); toast("已登出，資料仍留在這台裝置和你的雲端硬碟。"); };
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"&&syncT&&gValid()){ clearTimeout(syncT); syncT=null; syncNow(true); } });
 async function uploadRecent(id){
   if(!gValid()){ toast("請先連線 Google，才能上傳檔案。"); openDrawer("set"); return; }
@@ -2497,6 +2522,8 @@ addEventListener("online",()=>{ toast("已連上網路"+(store.get("yidu:gsigned
 addEventListener("offline",()=>toast("目前離線：已下載的文件、翻譯紀錄和離線字典都還能用"));
 try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persisted().then(p=>{ if(!p) navigator.storage.persist(); }); }catch(e){}
 if(store.get("yidu:gsigned")&&gValid()) setTimeout(()=>syncNow(true),2500);
+setInterval(()=>{ if(store.get("yidu:gsigned")) renderSync(); },60000);
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&store.get("yidu:gsigned")){ renderSync(); if(gValid()&&store.get("yidu:dirty")) syncNow(true); } });
 
 
 /* ================= Notes, handwriting, PDF annotation ================= */
@@ -2741,7 +2768,7 @@ $("#npBar").addEventListener("click",e=>{
   const b=e.target.closest("[data-cmd]"); if(!b||!doc||!doc.note) return; const c=b.dataset.cmd;
   if(c==="color"){ $("#tColors").hidden=!$("#tColors").hidden; return; }
   if(c==="link"){ insertNote(pageLinkHTML()); return; }
-  if(c==="cap"){ startCapture(); return; }
+  if(c==="cap"){ captureToNotes(); return; }
   const t=$("#nText"); t.focus(); if(npRange&&t.contains(npRange.startContainer)){ const s=getSelection(); s.removeAllRanges(); s.addRange(npRange); }
   if(c==="bold") document.execCommand("bold");
   else if(c==="h"){ const cur=String(document.queryCommandValue("formatBlock")||"").toLowerCase(); document.execCommand("formatBlock",false,cur==="h3"?"<div>":"<h3>"); }
@@ -2756,12 +2783,17 @@ $("#nText").addEventListener("click",e=>{
 });
 /* capture a PDF region into notes */
 let cap=null;
+function captureToNotes(){
+  if(!doc||doc.type!=="pdf"||doc.dual){ toast("截圖目前只支援 PDF 原版畫面。"); return; }
+  const was=npOpen; if(!npOpen) toggleNotes(true);
+  if(npTab!=="note"||noteMode!=="text"){ npTab="note"; noteMode="text"; store.set("yidu:nmode","text"); showNpTab(); refreshNoteUI(); }
+  setTimeout(startCapture,was?50:450);
+}
 function startCapture(){
   if(!doc||doc.type!=="pdf"||doc.dual){ toast("擷取畫面目前只支援 PDF 原版畫面。"); return; }
   const L=$("#capLayer"), r=viewer.getBoundingClientRect();
   Object.assign(L.style,{left:r.left+"px",top:r.top+"px",width:r.width+"px",height:r.height+"px"}); L.hidden=false; $("#capBox").hidden=true;
-  toast("在 PDF 上拖出要擷取的範圍");
-}
+  }
 $("#capCancel").onclick=e=>{ e.stopPropagation(); $("#capLayer").hidden=true; cap=null; };
 $("#capLayer").addEventListener("pointerdown",e=>{ if(e.target.id==="capCancel") return; e.preventDefault(); try{ e.currentTarget.setPointerCapture(e.pointerId); }catch(err){} cap={x:e.clientX,y:e.clientY,x2:e.clientX,y2:e.clientY}; });
 $("#capLayer").addEventListener("pointermove",e=>{ if(!cap) return; cap.x2=e.clientX; cap.y2=e.clientY; const L=$("#capLayer").getBoundingClientRect(), B=$("#capBox");
