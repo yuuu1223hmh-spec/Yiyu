@@ -644,6 +644,9 @@ body.zhdoc #article .ap{text-align:justify}
 
 .wsort{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:3px;background:var(--chrome);color:var(--ink);padding:6px 8px;height:34px}
 .dexp{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.keystate{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:8px;border:1px dotted var(--line,#1C1A19);border-radius:6px;font-size:14px}
+.keystate span{color:#2f6b3b;min-width:0}
+.keystate button{flex:none;padding:5px 12px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -870,13 +873,15 @@ body.zhdoc #article .ap{text-align:justify}
       </section>
       <section id="gemSec">
         <h3>Gemini 金鑰</h3>
-        <input id="gkey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza...">
+        <div class="keystate" id="gkeyState" hidden><span>✓ 已儲存，金鑰不會顯示在畫面上</span><button type="button" class="ghost" id="gkeyDel">移除</button></div>
+        <input id="gkey" type="password" autocomplete="new-password" spellcheck="false" placeholder="AIza...">
         <div class="row"><button class="primary" id="gkeySave">儲存並測試</button><span id="gkeyMsg" class="hintline" role="status"></span></div>
         <p class="hintline">到 <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a> 左下角的鑰匙圖示建立，不需要綁信用卡。免費方案傳送的內容會被 Google 用來改進產品，未發表的研究請斟酌。登入 Google 後，金鑰會存進你自己雲端硬碟裡 Pip 專用的隱藏資料夾，換裝置或被瀏覽器清掉都會自動補回。</p>
       </section>
       <section id="claSec">
         <h3>Claude 金鑰</h3>
-        <input id="key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-...">
+        <div class="keystate" id="keyState" hidden><span>✓ 已儲存，金鑰不會顯示在畫面上</span><button type="button" class="ghost" id="keyDel">移除</button></div>
+        <input id="key" type="password" autocomplete="new-password" spellcheck="false" placeholder="sk-ant-...">
         <div class="row"><button class="primary" id="keySave">儲存並測試</button><span id="keyMsg" class="hintline" role="status"></span></div>
         <select id="model" aria-label="Claude 模型" style="margin-top:10px">
           <option value="claude-haiku-5-5">Claude Haiku（最省、最快，建議）</option>
@@ -1025,25 +1030,32 @@ const S={engine:store.get("yidu:engine")||"gemini",gkey:store.get("yidu:gkey")||
 const activeKey=()=>S.engine==="gemini"?S.gkey:S.key;
 function refreshKeyBanner(){ $("#keyBanner").hidden=!!activeKey(); const t=$("#keyBannerTx"); if(t) t.textContent=store.get("yidu:gsigned")?"還沒設定 API 金鑰。連上 Google 同步後會自動補回，或到設定貼上。":"還沒設定 API 金鑰。如果之前設定過，用 Google 登入就能自動補回。"; }
 function showEngine(){ $("#engine").value=S.engine; $("#gemSec").hidden=S.engine!=="gemini"; $("#claSec").hidden=S.engine!=="claude"; refreshKeyBanner(); }
-$("#gkey").value=S.gkey; showEngine();
+/* 金鑰欄位永遠是空的，只顯示「已儲存」，不把金鑰秀在畫面上 */
+function keyUI(){
+  $("#gkeyState").hidden=!S.gkey; $("#gkey").value=""; $("#gkey").placeholder=S.gkey?"要更換時，貼上新的金鑰":"AIza...";
+  $("#keyState").hidden=!S.key; $("#key").value=""; $("#key").placeholder=S.key?"要更換時，貼上新的金鑰":"sk-ant-...";
+}
+keyUI(); showEngine();
+$("#gkeyDel").onclick=()=>{ S.gkey=""; store.set("yidu:gkey",""); store.set("yidu:keyT",String(Date.now())); keyUI(); refreshKeyBanner(); syncSoon(); const m=$("#gkeyMsg"); m.className="hintline"; m.textContent="已移除金鑰。"; };
+$("#keyDel").onclick=()=>{ S.key=""; store.set("yidu:key",""); store.set("yidu:keyT",String(Date.now())); keyUI(); refreshKeyBanner(); syncSoon(); const m=$("#keyMsg"); m.className="hintline"; m.textContent="已移除金鑰。"; };
 $("#engine").onchange=()=>{ S.engine=$("#engine").value; store.set("yidu:engine",S.engine); showEngine(); };
 $("#gkeySave").onclick=async()=>{
   const k=$("#gkey").value.trim(), m=$("#gkeyMsg");
-  S.gkey=k; store.set("yidu:gkey",k); store.set("yidu:keyT",String(Date.now())); refreshKeyBanner(); syncSoon();
-  if(!k){ m.className="hintline"; m.textContent="已清除金鑰。"; return; }
+  if(!k){ m.className="hintline"; m.textContent=S.gkey?"金鑰已儲存。要更換的話，先貼上新金鑰。":"請先貼上金鑰。"; return; }
+  S.gkey=k; store.set("yidu:gkey",k); store.set("yidu:keyT",String(Date.now())); keyUI(); refreshKeyBanner(); syncSoon();
   m.className="hintline"; m.textContent="測試中…";
   try{ await gemini("只回覆「連線成功」四個字。",{max:20}); m.className="hintline ok"; m.textContent="連線成功，可以開始使用了。"; }
   catch(e){ m.className="hintline err"; m.textContent=errMsg(e); }
 };
-$("#key").value=S.key; $("#model").value=S.model; $("#reader").value=S.reader; $("#proxy").value=S.proxy; $("#proxy").hidden=S.reader!=="proxy";
+$("#model").value=S.model; $("#reader").value=S.reader; $("#proxy").value=S.proxy; $("#proxy").hidden=S.reader!=="proxy";
 $("#model").onchange=()=>{ S.model=$("#model").value; store.set("yidu:model",S.model); };
 $("#reader").onchange=()=>{ S.reader=$("#reader").value; store.set("yidu:reader",S.reader); $("#proxy").hidden=S.reader!=="proxy"; };
 $("#proxy").onchange=()=>{ S.proxy=$("#proxy").value.trim(); store.set("yidu:proxy",S.proxy); };
 $("#keySave").onclick=async()=>{
   const k=$("#key").value.trim(), m=$("#keyMsg");
-  if(k&&!k.startsWith("sk-ant-")){ m.className="hintline err"; m.textContent="格式不對，金鑰應以 sk-ant- 開頭。"; return; }
-  S.key=k; store.set("yidu:key",k); store.set("yidu:keyT",String(Date.now())); refreshKeyBanner(); syncSoon();
-  if(!k){ m.className="hintline"; m.textContent="已清除金鑰。"; return; }
+  if(!k){ m.className="hintline"; m.textContent=S.key?"金鑰已儲存。要更換的話，先貼上新金鑰。":"請先貼上金鑰。"; return; }
+  if(!k.startsWith("sk-ant-")){ m.className="hintline err"; m.textContent="格式不對，金鑰應以 sk-ant- 開頭。"; return; }
+  S.key=k; store.set("yidu:key",k); store.set("yidu:keyT",String(Date.now())); keyUI(); refreshKeyBanner(); syncSoon();
   m.className="hintline"; m.textContent="測試中…";
   try{ await claudeCall("回覆「連線成功」四個字就好。",{max:20}); m.className="hintline ok"; m.textContent="連線成功，可以開始使用了。"; }
   catch(e){ m.className="hintline err"; m.textContent=errMsg(e); }
@@ -2826,7 +2838,8 @@ function gRedirect(){
 }
 async function gfetch(url,opt){
   opt=opt||{}; if(!gValid()) await gRefresh(); if(!gValid()) throw {code:"gauth"};
-  const go=()=>fetch(url,Object.assign({},opt,{headers:Object.assign({},opt.headers||{},{Authorization:"Bearer "+G.token})}));
+  const go=()=>{ const ac=new AbortController(), tm=setTimeout(()=>ac.abort(),60000);
+    return fetch(url,Object.assign({},opt,{signal:ac.signal,headers:Object.assign({},opt.headers||{},{Authorization:"Bearer "+G.token})})).finally(()=>clearTimeout(tm)); };
   let r=await go();
   if(r.status===401&&await gRefresh()) r=await go();
   if(r.status===401){ G.token=null; try{ sessionStorage.removeItem("yidu:gtok"); }catch(e){} store.del("yidu:gtok"); throw {code:"gauth"}; }
@@ -2932,8 +2945,9 @@ async function syncKeys(){
   const lt=+store.get("yidu:keyT")||0, rt=rm&&+rm.t||0;
   const hasLocal=!!(S.gkey||S.key), hasRemote=!!(rm&&(rm.gkey||rm.key));
   if(hasRemote&&(rt>lt||!hasLocal&&!lt)){
-    if(typeof rm.gkey==="string"){ S.gkey=rm.gkey; store.set("yidu:gkey",S.gkey); $("#gkey").value=S.gkey; }
-    if(typeof rm.key==="string"){ S.key=rm.key; store.set("yidu:key",S.key); $("#key").value=S.key; }
+    if(typeof rm.gkey==="string"){ S.gkey=rm.gkey; store.set("yidu:gkey",S.gkey); }
+    if(typeof rm.key==="string"){ S.key=rm.key; store.set("yidu:key",S.key); }
+    keyUI();
     store.set("yidu:keyT",String(rt||Date.now())); refreshKeyBanner();
     if(!hasLocal) toast("已從 Google 雲端補回 API 金鑰");
   }else if(lt>rt||(!f&&hasLocal)){
