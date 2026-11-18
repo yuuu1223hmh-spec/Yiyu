@@ -2813,7 +2813,7 @@ async function renderWordsPDF(gs){
   const W=1190,H=1684,M=96,CW=W-2*M, pages=[]; let c,x,y;
   const ZF='"Chiron Sung HK","Noto Serif TC","PingFang TC","Microsoft JhengHei",serif', EF='"Newsreader","Source Serif 4",Georgia,serif';
   const INK="#2B2622",MUT="#7A6E62",RED="#9B2F35",SC={new:"#E86A6F",learn:"#E7C33A",known:"#5DB35E",zh:"#7DA0BE"};
-  const np=()=>{ c=document.createElement("canvas"); c.width=W; c.height=H; x=c.getContext("2d"); x.fillStyle="#FFFDF8"; x.fillRect(0,0,W,H); x.textBaseline="top"; pages.push(c); y=M; };
+  const K=2, np=()=>{ c=document.createElement("canvas"); c.width=W*K; c.height=H*K; x=c.getContext("2d"); x.scale(K,K); x.fillStyle="#FFFDF8"; x.fillRect(0,0,W,H); x.textBaseline="top"; pages.push(c); y=M; };
   const lines=(t,font,w)=>{ x.font=font; return wrapLines(x,String(t||""),w); };
   np();
   x.fillStyle=RED; x.font="600 17px "+EF; x.fillText("PIP READING JOURNAL  ·  GLOSSARY".split("").join(String.fromCharCode(8202)),M,y); y+=34;
