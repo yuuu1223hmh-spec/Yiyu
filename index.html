@@ -18,6 +18,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chiron+Sung+HK:wght@400;600;700&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&display=swap">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Iansui&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap">
 <style>
 /* Layout: doodle sticker-book shell — cream grainy desk, thick hand-drawn outlines on chrome only (pages stay quiet), greeting + big open-file card with Pip standing on it, bottom tab bar; landscape iPad pins translations in a right column. */
 :root{
@@ -44,6 +45,38 @@
   --soft:#4A2A22; --hl:rgba(246,210,62,.38); --sel:rgba(255,106,77,.32);
   --warn-bg:#5A4712; --warn-ink:#FFF2DA; --err:#FF8A73; color-scheme:dark}
 
+/* ---- 我的：分頁、強調色、字體 ---- */
+.mewrap .metabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:-4px 0 14px;overflow-x:auto}
+.mewrap .metabs button{flex:1 0 auto;border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;color:var(--muted);font:inherit;font-size:15px;font-weight:700;padding:10px 8px;border-bottom:3px solid transparent!important;margin-bottom:-1px;cursor:pointer;white-space:nowrap}
+.mewrap .metabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)!important}
+.lab2{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+.mewrap .accsw{display:flex;gap:12px;flex-wrap:wrap}
+.mewrap .accsw button{width:38px;height:38px;min-width:38px;padding:0;border-radius:50%!important;border:2px solid transparent!important;background:var(--c)!important;cursor:pointer}
+.mewrap .accsw{padding-bottom:18px}
+.mewrap .accsw button{position:relative}
+.mewrap .accsw button[data-def]::after{content:attr(data-def);position:absolute;left:50%;top:44px;transform:translateX(-50%);font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
+.mewrap .accsw button[aria-checked="true"]{outline:3px solid var(--ink);outline-offset:2px}
+:root{--f-zh:var(--f-ui)}
+:root[data-zhfont="kai"]{--f-zh:var(--f-pip)}
+:root[data-zhfont="hei"]{--f-zh:"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif}
+.zh,.drow .dz,.msg,.zhprev{font-family:var(--f-zh)}
+:root[data-accent="navy"]{--accent:#27496D;--sel:rgba(39,73,109,.25)}
+:root[data-accent="green"]{--accent:#3C6E4F;--sel:rgba(60,110,79,.25)}
+:root[data-accent="ochre"]{--accent:#B8642A;--sel:rgba(184,100,42,.25)}
+:root[data-accent="plum"]{--accent:#6B4A7A;--sel:rgba(107,74,122,.25)}
+:root[data-accent="rose"]{--accent:#8E4B56;--sel:rgba(142,75,86,.25)}
+:root[data-theme="dark"][data-accent="navy"]{--accent:#7FA6CF}
+:root[data-theme="dark"][data-accent="green"]{--accent:#7FC59B}
+:root[data-theme="dark"][data-accent="ochre"]{--accent:#E39A5F}
+:root[data-theme="dark"][data-accent="plum"]{--accent:#B995CB}
+:root[data-theme="dark"][data-accent="rose"]{--accent:#D798A2}
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"])[data-accent="navy"]{--accent:#7FA6CF}
+:root:not([data-theme="light"])[data-accent="green"]{--accent:#7FC59B}
+:root:not([data-theme="light"])[data-accent="ochre"]{--accent:#E39A5F}
+:root:not([data-theme="light"])[data-accent="plum"]{--accent:#B995CB}
+:root:not([data-theme="light"])[data-accent="rose"]{--accent:#D798A2}}
+
 html{box-sizing:border-box;height:100%}
 *,*::before,*::after{box-sizing:inherit}
 html,body{margin:0;background:var(--desk);color:var(--ink)}
@@ -66,7 +99,9 @@ body{height:100%;display:flex;flex-direction:column;font-family:var(--f-ui);font
 .tb .primary{background:var(--accent)!important;color:var(--accent-ink)!important}
 .zoomv{font-size:13px;color:var(--muted);min-width:40px;text-align:center;font-variant-numeric:tabular-nums}
 @media (max-width:600px){ .zoomv,.hide-s{display:none} .tb button:not(.brand),.tb .btn{padding:0 10px} }
-button:focus-visible,.btn:focus-visible,select:focus-visible,textarea:focus-visible,input:focus-visible,.card:focus-visible{outline:3px dashed var(--accent);outline-offset:3px}
+button:focus-visible,.btn:focus-visible,.card:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+button:focus-visible:not(.primary):not(.dot):not(.done){background-color:var(--hl);border-color:var(--accent)}
+select:focus-visible,textarea:focus-visible,input:focus-visible{outline:none;box-shadow:inset 0 -3px 0 var(--accent)}
 
 /* desk — reading pages stay quiet */
 #viewer{flex:1;overflow:auto;position:relative;-webkit-overflow-scrolling:touch;padding-block:24px 150px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
@@ -332,7 +367,7 @@ body.sport .npdiv::after{top:6px;left:50%;height:4px;width:44px;margin-left:-22p
 .tcolors{display:flex;gap:6px;flex-wrap:wrap;width:100%}
 .dot{width:28px!important;height:28px;min-height:28px!important;padding:0!important;border-radius:50%!important;background:var(--c)!important;border:1px solid var(--line)!important}
 .dot.on{outline:3px solid var(--accent);outline-offset:2px}
-.dot.custom{position:relative;overflow:hidden;background:conic-gradient(#E8452C,#F2C230,#2E9A55,#2F6FD0,#8A4FD0,#E8452C)!important;display:inline-block;cursor:pointer}
+.dot.custom{position:relative;overflow:hidden;background:conic-gradient(#B7676B,#CDB57A,#8AA088,#6F8CA3,#9A86A8,#B7676B)!important;display:inline-block;cursor:pointer}
 .dot.custom input{position:absolute;inset:0;opacity:0;width:100%;height:100%;cursor:pointer}
 .inkbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
 .inkbar .ig{display:flex;gap:5px;align-items:center;flex-wrap:wrap}
@@ -349,7 +384,8 @@ body.nink #nInk{display:block}
 body.nink .nsheet{background-image:repeating-linear-gradient(transparent 0 27px,var(--soft) 27px 28px);background-position:0 15px}
 body.nink #nInk{pointer-events:auto;touch-action:pan-x pan-y}
 body.nink.inkfinger #nInk,body.annon.inkfinger .page canvas.ink{touch-action:none}
-.plink{display:inline-block;font-size:13px;font-weight:700;color:#1E1A17;background:var(--sky);border:1px solid var(--line);border-radius:999px;padding:0 8px;margin:0 2px;text-decoration:none;cursor:pointer;line-height:1.6;vertical-align:baseline}
+.plink{display:inline;font-family:var(--f-en);font-style:italic;font-weight:600;font-size:.92em;color:var(--accent);padding:0 1px;margin:0 1px;text-decoration:none;cursor:pointer;white-space:nowrap}
+.plink::before{content:"〔"}.plink::after{content:"〕"}
 .ncap{margin:8px 0;padding:6px;border:1px solid var(--line);border-radius:10px;background:#fff;display:inline-block;max-width:100%}
 .ncap img{display:block;max-width:100%;height:auto}
 .ncap figcaption{font-size:12.5px;margin-top:4px;color:#555}
@@ -647,6 +683,44 @@ body.zhdoc #article .ap{text-align:justify}
 .keystate{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 12px;margin-bottom:8px;border:1px dotted var(--line,#1C1A19);border-radius:6px;font-size:14px}
 .keystate span{color:#2f6b3b;min-width:0}
 .keystate button{flex:none;padding:5px 12px;border:1px solid currentColor;border-radius:6px;background:transparent;color:inherit;font:inherit;font-size:13px;cursor:pointer}
+
+/* ===== v26：期刊式工具列、選單、畫筆、段落標籤 ===== */
+.tb .rtool{flex-direction:column;gap:2px;height:auto!important;min-width:46px;padding:4px 8px 3px!important;border:0!important;border-bottom:2.5px solid transparent!important;border-radius:0!important;background:none!important;box-shadow:none!important;font-size:11.5px!important;font-weight:600!important;line-height:1.25;justify-content:center;color:var(--ink)}
+.tb .rtool svg{width:18px;height:18px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;display:block}
+.tb .rtool.on{background:none!important;color:var(--accent)!important;border-bottom-color:var(--accent)!important;font-weight:700!important}
+.tb .rtool.primary{background:var(--accent)!important;color:var(--accent-ink)!important;border-radius:4px!important;border-bottom-color:transparent!important;margin-left:4px;padding:5px 10px!important}
+.tb .rtool.sq{width:auto!important}
+.tb .rtool:active{transform:none}
+.tools2{display:flex;flex-direction:column}
+.tfeat{border-top:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink);margin-bottom:4px}
+.tool.feat{flex-direction:row;align-items:center;gap:12px;width:100%;background:none;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;padding:12px 4px}
+.tool.feat:last-child{border-bottom:0}
+.tool.feat svg{width:24px;height:24px;flex:none;stroke:var(--accent);fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.tool.feat .tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:1px}
+.tool.feat::after{content:"→";color:var(--accent);font-size:17px}
+.tg{font-size:12px;letter-spacing:.14em;color:var(--accent);font-weight:700;margin:16px 0 2px}
+.tool.row{flex-direction:row;align-items:baseline;gap:8px;width:100%;background:none;border:0;border-radius:0;box-shadow:none;padding:8px 2px}
+.tool.row b{font-size:15.5px;font-weight:600;white-space:nowrap}
+.tool.row s{flex:1;text-decoration:none;border-bottom:1px dotted var(--muted);transform:translateY(-4px);min-width:12px}
+.tool.row small{text-align:right;max-width:55%}
+.tool.feat:active,.tool.row:active{transform:none;background:var(--hl)}
+.inkbar{flex-direction:column;align-items:stretch;gap:8px}
+.inkbar .ig{width:100%}
+.inkbar .sp{flex:1}
+.inkbar .vr{width:1px;align-self:stretch;background:var(--line);opacity:.6}
+.inkbar .seg{display:inline-flex;border:1.5px solid var(--ink);border-radius:4px;overflow:hidden;flex:none}
+.inkbar .seg button{border:0;border-right:1.5px solid var(--ink);border-radius:0;display:inline-flex;align-items:center;gap:4px}
+.inkbar .seg button:last-child{border-right:0}
+.inkbar .seg svg{width:17px;height:17px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.inkbar .swt{border:0;background:none;min-height:0;padding:0;display:inline-flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);font-weight:600}
+.inkbar .swt i{width:34px;height:20px;border-radius:10px;border:1.5px solid var(--ink);background:var(--chrome);position:relative;display:inline-block;flex:none}
+.inkbar .swt i::after{content:"";position:absolute;top:2px;left:2px;width:13px;height:13px;border-radius:50%;background:var(--ink);transition:left .12s}
+.inkbar .swt.on{background:none;border-color:transparent;color:var(--ink)}
+.inkbar .swt.on i{background:var(--mustard)}
+.inkbar .swt.on i::after{left:16px}
+#mmBody svg{background:#FBF7EF;border-radius:4px}
+.tools2 .narrowonly{display:none!important}
+@media (max-width:560px){.tools2 .tool.narrowonly{display:flex!important}.tools2 .tg.narrowonly{display:block!important}}
 </style>
 </head>
 <body>
@@ -671,12 +745,12 @@ body.zhdoc #article .ap{text-align:justify}
     <span class="title"><b id="docTitle" lang="en">Pip</b><small id="docSub">首頁</small></span>
   </button>
   <div class="grp">
-    <button class="rtool" id="layBtn" hidden>版面</button>
-    <button class="rtool" id="noteBtn" hidden>筆記</button>
-    <button class="rtool" id="annBtn" hidden>標註</button>
-    <button class="sq rtool" id="searchBtn" aria-label="搜尋本文" hidden><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg></button>
-    <button class="primary rtool" id="toolsBtn" hidden>工具</button>
-    <button class="rtool" id="hideBtn" hidden>隱藏</button>
+    <button class="rtool" id="layBtn" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>版面</button>
+    <button class="rtool" id="noteBtn" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h10l4 4v12H5z"/><path d="M9 12h6M9 16h4"/></svg>筆記</button>
+    <button class="rtool" id="annBtn" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/></svg>標註</button>
+    <button class="sq rtool" id="searchBtn" aria-label="搜尋本文" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4.5 4.5"/></svg>搜尋</button>
+    <button class="primary rtool" id="toolsBtn" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>工具</button>
+    <button class="rtool" id="hideBtn" hidden><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 12c3-5 13-5 16 0-3 5-13 5-16 0z"/><path d="M5 19L19 5"/></svg>隱藏</button>
     <button id="syncChip" hidden>☁ 重新連線</button>
     <input type="file" id="file" accept=".pdf,.docx,.txt,.md,application/pdf" hidden>
   </div>
@@ -726,10 +800,8 @@ body.zhdoc #article .ap{text-align:justify}
 </aside>
 <div id="annBar" hidden><span id="annSlot"></span><button class="done" id="annDone">完成</button></div>
 <div id="inkBar" class="inkbar">
-  <div class="ig"><button data-it="pen">筆</button><button data-it="hl">螢光筆</button><button data-it="eraser">橡皮擦</button></div>
-  <div class="ig"><button class="dot" data-ic="#1E1A17" style="--c:#1E1A17" aria-label="黑"></button><button class="dot" data-ic="#5B5652" style="--c:#5B5652" aria-label="深灰"></button><button class="dot" data-ic="#E8452C" style="--c:#E8452C" aria-label="番茄紅"></button><button class="dot" data-ic="#2F6FD0" style="--c:#2F6FD0" aria-label="藍"></button><button class="dot" data-ic="#2E9A55" style="--c:#2E9A55" aria-label="綠"></button><button class="dot" data-ic="#F08A24" style="--c:#F08A24" aria-label="橘"></button><button class="dot" data-ic="#8A4FD0" style="--c:#8A4FD0" aria-label="紫"></button><button class="dot" data-ic="#D9A400" style="--c:#D9A400" aria-label="芥末黃"></button><label class="dot custom" aria-label="自訂顏色"><input type="color" id="inkCustom" value="#2F6FD0"></label></div>
-  <div class="ig"><button data-is="0">細</button><button data-is="1">中</button><button data-is="2">粗</button></div>
-  <div class="ig"><button data-iu="undo" aria-label="復原">↶</button><button data-iu="redo" aria-label="重做">↷</button><button data-if="1">手指也能畫</button></div>
+  <div class="ig"><span class="seg"><button data-it="pen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/></svg>筆</button><button data-it="hl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14l6-8 4 3-6 8z"/><path d="M9 14l-2 4 4-1M5 21h8"/></svg>螢光</button><button data-it="eraser"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 14l8-8 6 6-6 6H8z"/><path d="M10 20h9"/></svg>擦</button></span><span class="vr"></span><span class="seg"><button data-is="0">細</button><button data-is="1">中</button><button data-is="2">粗</button></span><span class="sp"></span><button data-iu="undo" aria-label="復原">↶</button><button data-iu="redo" aria-label="重做">↷</button></div>
+  <div class="ig"><button class="dot" data-ic="#3E3B39" style="--c:#3E3B39" aria-label="炭灰"></button><button class="dot" data-ic="#8C8782" style="--c:#8C8782" aria-label="霧灰"></button><button class="dot" data-ic="#B7676B" style="--c:#B7676B" aria-label="豆沙紅"></button><button class="dot" data-ic="#6F8CA3" style="--c:#6F8CA3" aria-label="霧藍"></button><button class="dot" data-ic="#8AA088" style="--c:#8AA088" aria-label="鼠尾草綠"></button><button class="dot" data-ic="#D39A6A" style="--c:#D39A6A" aria-label="杏橘"></button><button class="dot" data-ic="#9A86A8" style="--c:#9A86A8" aria-label="藕紫"></button><button class="dot" data-ic="#CDB57A" style="--c:#CDB57A" aria-label="奶茶黃"></button><label class="dot custom" aria-label="自訂顏色"><input type="color" id="inkCustom" value="#6F8CA3"></label><span class="sp"></span><button class="swt" data-if="1" role="switch"><i></i>手指也能畫</button></div>
 </div>
 <div id="capLayer" hidden><div id="capBox" hidden></div><div class="caphint">用手指、筆或滑鼠<b>拖出一個框</b>，放開就會貼進右邊（下面）的筆記</div><button class="capcancel" id="capCancel">取消擷取</button></div>
 
@@ -821,25 +893,30 @@ body.zhdoc #article .ap{text-align:justify}
       </section>
     </div>
     <div id="paneTools" hidden>
-      <div class="tools">
-        <button class="tool" data-tool="dual"><b>全文翻譯</b><small>一次翻完，左右對照</small></button>
-        <button class="tool" data-tool="lang"><b>文件語言</b><small>目前：英文文件</small></button>
-        <button class="tool" data-tool="sum"><b>全文摘要</b><small>研究問題、方法、發現</small></button>
-        <button class="tool" data-tool="ask"><b>問 Pip</b><small>針對這份文件提問</small></button>
-        <button class="tool" data-tool="search"><b>搜尋全文</b><small>英文或中文關鍵字</small></button>
-        <button class="tool" data-tool="marks"><b>書籤與筆記</b><small>重點、書籤、筆記</small></button>
-        <button class="tool" data-tool="map"><b>心智圖</b><small>整篇或我的重點，點節點跳原文</small></button>
-        <button class="tool" data-tool="export"><b>匯出</b><small>Word、PPT、PDF、TXT</small></button>
-        <button class="tool" data-tool="cite"><b>引用格式</b><small>APA、MLA、Chicago</small></button>
-        <button class="tool" data-tool="upload"><b>上傳到雲端</b><small>其他裝置也能開這份</small></button>
-        <button class="tool" data-tool="folder"><b>移到資料夾</b><small>整理到文件庫</small></button>
-        <button class="tool" data-tool="cap"><b>截圖到筆記</b><small>在 PDF 上框一塊，貼進筆記</small></button>
-        <button class="tool narrowonly" data-tool="note"><b>筆記</b><small>打字或手寫，和文件並排</small></button>
-        <button class="tool narrowonly" data-tool="ann"><b>標註</b><small>直接在 PDF 上手寫</small></button>
-        <button class="tool narrowonly" data-tool="lay"><b>版面</b><small>單頁、雙頁、縮放、縮圖</small></button>
-        <button class="tool narrowonly" data-tool="hide"><b>隱藏工具列</b><small>只留一個小按鈕</small></button>
-        <button class="tool" data-tool="open"><b>開啟其他檔案</b><small>PDF、Word、文字檔</small></button>
-        <button class="tool" data-tool="url"><b>網址匯入</b><small>期刊、新聞文章</small></button>
+      <div class="tools2">
+        <div class="tfeat">
+        <button class="tool feat" data-tool="dual"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h8M8 4v2M6 6c0 4 3 7 6 8M11 6c0 3-2 6-5 8"/><path d="M13 20l4-9 4 9M14.5 17h5"/></svg><span class="tx"><b>全文翻譯</b><small>一次翻完，左右對照</small></span></button>
+        <button class="tool feat" data-tool="sum"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14M5 10h14M5 15h9"/></svg><span class="tx"><b>全文摘要</b><small>研究問題、方法、發現</small></span></button>
+        <button class="tool feat" data-tool="ask"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 5h14v10H11l-4 4v-4H5z"/></svg><span class="tx"><b>問 Pip</b><small>針對這份文件提問</small></span></button>
+        <button class="tool feat" data-tool="map"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="2.5"/><circle cx="5" cy="6" r="1.8"/><circle cx="19" cy="6" r="1.8"/><circle cx="5" cy="18" r="1.8"/><circle cx="19" cy="18" r="1.8"/><path d="M7 7l3 3M17 7l-3 3M7 17l3-3M17 17l-3-3"/></svg><span class="tx"><b>心智圖</b><small>整篇或我的重點，點節點跳原文</small></span></button>
+        </div>
+        <div class="tg">整理與輸出</div>
+        <button class="tool row" data-tool="search"><b>搜尋全文</b><s></s><small>英文或中文關鍵字</small></button>
+        <button class="tool row" data-tool="marks"><b>書籤與筆記</b><s></s><small>重點、書籤、筆記</small></button>
+        <button class="tool row" data-tool="export"><b>匯出</b><s></s><small>Word、PPT、PDF、TXT</small></button>
+        <button class="tool row" data-tool="cite"><b>引用格式</b><s></s><small>APA、MLA、Chicago</small></button>
+        <button class="tool row" data-tool="cap"><b>截圖到筆記</b><s></s><small>在 PDF 上框一塊</small></button>
+        <div class="tg">文件本身</div>
+        <button class="tool row" data-tool="lang"><b>文件語言</b><s></s><small>目前：英文文件</small></button>
+        <button class="tool row" data-tool="upload"><b>上傳到雲端</b><s></s><small>其他裝置也能開</small></button>
+        <button class="tool row" data-tool="folder"><b>移到資料夾</b><s></s><small>整理到文件庫</small></button>
+        <button class="tool row" data-tool="open"><b>開啟其他檔案</b><s></s><small>PDF、Word、文字檔</small></button>
+        <button class="tool row" data-tool="url"><b>網址匯入</b><s></s><small>期刊、新聞文章</small></button>
+        <div class="tg narrowonly">介面</div>
+        <button class="tool row narrowonly" data-tool="note"><b>筆記</b><s></s><small>打字或手寫</small></button>
+        <button class="tool row narrowonly" data-tool="ann"><b>標註</b><s></s><small>直接在 PDF 上手寫</small></button>
+        <button class="tool row narrowonly" data-tool="lay"><b>版面</b><s></s><small>單頁、雙頁、縮放</small></button>
+        <button class="tool row narrowonly" data-tool="hide"><b>隱藏工具列</b><s></s><small>只留一個小按鈕</small></button>
       </div>
     </div>
     <div id="paneAsk" hidden>
@@ -863,21 +940,22 @@ body.zhdoc #article .ap{text-align:justify}
       <p class="hintline">由 AI 從文件開頭讀出作者、年份等資訊，可能有錯漏，請對照原文確認。</p>
     </div>
     <div id="paneSet" hidden>
-      <section>
+      <div class="metabs" role="tablist" aria-label="我的設定分類"><button role="tab" data-t="acct" aria-selected="true">帳號</button><button role="tab" data-t="learn" aria-selected="false">學習偏好</button><button role="tab" data-t="look" aria-selected="false">外觀</button><button role="tab" data-t="ai" aria-selected="false">翻譯 AI</button><button role="tab" data-t="more" aria-selected="false">更多</button></div>
+      <section data-mt="ai">
         <h3>翻譯引擎</h3>
         <select id="engine" aria-label="翻譯引擎">
           <option value="gemini">Google Gemini（免費方案）</option>
           <option value="claude">Claude（需要儲值）</option>
         </select>
       </section>
-      <section id="gemSec">
+      <section id="gemSec" data-mt="ai">
         <h3>Gemini 金鑰</h3>
         <div class="keystate" id="gkeyState" hidden><span>✓ 已儲存，金鑰不會顯示在畫面上</span><button type="button" class="ghost" id="gkeyDel">移除</button></div>
         <input id="gkey" type="password" autocomplete="new-password" spellcheck="false" placeholder="AIza...">
         <div class="row"><button class="primary" id="gkeySave">儲存並測試</button><span id="gkeyMsg" class="hintline" role="status"></span></div>
         <p class="hintline">到 <a href="https://aistudio.google.com" target="_blank" rel="noopener">aistudio.google.com</a> 左下角的鑰匙圖示建立，不需要綁信用卡。免費方案傳送的內容會被 Google 用來改進產品，未發表的研究請斟酌。登入 Google 後，金鑰會存進你自己雲端硬碟裡 Pip 專用的隱藏資料夾，換裝置或被瀏覽器清掉都會自動補回。</p>
       </section>
-      <section id="claSec">
+      <section id="claSec" data-mt="ai">
         <h3>Claude 金鑰</h3>
         <div class="keystate" id="keyState" hidden><span>✓ 已儲存，金鑰不會顯示在畫面上</span><button type="button" class="ghost" id="keyDel">移除</button></div>
         <input id="key" type="password" autocomplete="new-password" spellcheck="false" placeholder="sk-ant-...">
@@ -888,29 +966,55 @@ body.zhdoc #article .ap{text-align:justify}
         </select>
         <p class="hintline">到 <a href="https://platform.claude.com" target="_blank" rel="noopener">platform.claude.com</a> 的 API Keys 頁面建立，需要先儲值。登入 Google 後會同步到你自己的雲端硬碟；呼叫時只會傳給 Anthropic。</p>
       </section>
-      <section id="syncSec">
+      <section id="syncSec" data-mt="acct">
         <h3>Google 雲端同步</h3>
         <p id="syncStatus"></p>
         <div class="row"><button class="primary" id="gIn">用 Google 登入</button><button id="gSync" hidden>立即同步</button><button id="gOut" hidden>登出</button></div>
         <p class="hintline">資料存在你雲端硬碟裡 Pip 專用的隱藏資料夾，只有 Pip 讀得到。PDF 等檔案要在「最近閱讀」或「工具」按「上傳到雲端」才會同步。登入視窗沒反應時，可以<button class="lnk" id="gRedirect">改用整頁登入</button>。</p>
       </section>
-      <section>
-        <h3>外觀</h3>
+      <section data-mt="look">
+        <h3>主題</h3>
         <select id="theme" aria-label="主題">
-          <option value="auto">跟著裝置（自動）</option>
+          <option value="auto">跟著裝置（自動，預設）</option>
           <option value="light">淺色</option>
           <option value="dark">深色</option>
         </select>
+        <h3 style="margin-top:16px">強調色</h3>
+        <div class="accsw" id="accSw" role="radiogroup" aria-label="強調色"><button type="button" role="radio" data-c="wine" data-def="預設" style="--c:#9B2F35" aria-label="酒紅（預設）"></button><button type="button" role="radio" data-c="navy" style="--c:#27496D" aria-label="墨藍"></button><button type="button" role="radio" data-c="plum" style="--c:#6B4A7A" aria-label="紫褐"></button><button type="button" role="radio" data-c="ochre" style="--c:#B8642A" aria-label="赭橙"></button><button type="button" role="radio" data-c="green" style="--c:#3C6E4F" aria-label="森綠"></button><button type="button" role="radio" data-c="rose" style="--c:#8E4B56" aria-label="玫瑰褐"></button></div>
+        <p class="hintline" id="accName"></p>
+        <h3 style="margin-top:16px">譯文字體</h3>
+        <select id="zhfont" aria-label="譯文字體">
+          <option value="song">昭源宋體（預設）</option>
+          <option value="kai">楷體（手寫感）</option>
+          <option value="hei">黑體（清晰、適合小字）</option>
+        </select>
+        <p class="hintline">英文固定使用 Newsreader，不受這個選項影響。</p>
         <label class="swrow" for="zhs" style="margin-top:12px"><span>譯文字體大小</span><b id="zhsVal"></b></label>
         <input id="zhs" type="range" min="14" max="24" step="0.5">
         <div class="zhprev">本文探討民眾對歐盟執委會的信任。</div>
       </section>
-      <section>
-        <h3>閱讀</h3>
-        <label class="swrow" for="focusOn"><span>專注模式<br><small class="hintline">打開文件時自動隱藏工具列，閱讀畫面也可以隨時按「隱藏」</small></span><input id="focusOn" type="checkbox"></label>
-        <label class="swrow" for="termsOn"><span>譯文裡的術語附上英文<br><small class="hintline">例如：寬容共識（permissive consensus）</small></span><input id="termsOn" type="checkbox"></label>
+      <section data-mt="learn">
+        <h3>翻譯</h3>
+        <label class="lab2" for="tone">翻譯語氣</label>
+        <select id="tone"><option value="formal">學術正式（預設）</option><option value="plain">白話好懂</option></select>
+        <label class="swrow" for="termsOn"><span>譯文裡的術語附上英文<br><small class="hintline">預設：開。例如：寬容共識（permissive consensus）</small></span><input id="termsOn" type="checkbox"></label>
+        <label class="lab2" for="sumLvl">摘要詳細程度</label>
+        <select id="sumLvl"><option value="short">簡短（只要重點）</option><option value="std">標準（預設）</option><option value="long">詳細</option></select>
       </section>
-      <section>
+      <section data-mt="learn">
+        <h3>閱讀</h3>
+        <label class="swrow" for="focusOn"><span>專注模式<br><small class="hintline">預設：關。打開文件時自動隱藏工具列，閱讀畫面也可以隨時按「隱藏」</small></span><input id="focusOn" type="checkbox"></label>
+      </section>
+      <section data-mt="learn">
+        <h3>生字本</h3>
+        <label class="lab2" for="prefSort">預設排序</label>
+        <select id="prefSort"><option value="time">最新加入（預設）</option><option value="az">字母順序</option><option value="stat">熟悉度（新字優先）</option></select>
+        <label class="swrow" for="autoSpeak"><span>點單字自動發音<br><small class="hintline">預設：關</small></span><input id="autoSpeak" type="checkbox"></label>
+        <label class="swrow" for="autoAdd"><span>查完自動加入生字本<br><small class="hintline">預設：開。關掉後，要按字典卡上的「加入生字本」才會收</small></span><input id="autoAdd" type="checkbox"></label>
+        <label class="lab2" for="goal">每日複習目標</label>
+        <select id="goal"><option value="10">每次 10 個字</option><option value="20">每次 20 個字（預設）</option><option value="30">每次 30 個字</option><option value="50">每次 50 個字</option></select>
+      </section>
+      <section data-mt="more">
         <h3>網址讀取方式</h3>
         <select id="reader">
           <option value="jina">公開讀取服務 r.jina.ai（免設定）</option>
@@ -919,7 +1023,7 @@ body.zhdoc #article .ap{text-align:justify}
         <input id="proxy" type="url" placeholder="https://yidu-proxy.你的帳號.workers.dev" style="margin-top:8px" hidden>
         <p class="hintline">使用公開服務時，你貼的網址會經過該服務。需要登入才能看的付費全文無法讀取。</p>
       </section>
-      <section>
+      <section data-mt="more">
         <h3>生字本與資料</h3>
         <p>生字本已收錄 <b id="dictCount">0</b> 個字。內建 3 萬字離線字典，點單字直接查，不耗用額度。</p>
         <div class="row"><button id="expPdf2">匯出 PDF</button><button id="expCsv2">匯出 Excel</button><button id="expAnki2">匯出 Anki</button></div>
@@ -927,7 +1031,7 @@ body.zhdoc #article .ap{text-align:justify}
         <p class="hintline">備份包含生字本、翻譯、筆記、重點、書籤、資料夾和閱讀進度，不含 PDF 檔本身。可以存一份在雲端硬碟當保險。</p>
         <div class="row"><button id="wipe">清除這台裝置的閱讀紀錄</button><span id="wipeMsg" class="hintline"></span></div>
       </section>
-      <section>
+      <section data-mt="more">
         <h3>怎麼用</h3>
         <p>點單字：標出那個字並查離線字典，可聽發音、看片語。<br>點句子的空白或標點：翻譯整段，還能說白一點、朗讀、畫重點、寫筆記、加書籤。<br>選取幾個字：查片語；選取一段：只翻那部分。<br>「工具」裡有全文翻譯對照、摘要、問 Pip、搜尋和引用格式。</p>
       </section>
@@ -1145,7 +1249,8 @@ function handleErr(e){ if(e&&e.code==="cancelled") return; toast(errMsg(e)); }
 const termsTxt=()=>S.termsEn===false?"":"重要專有名詞或術語第一次出現時，在中文後用括號保留英文原文。";
 const ZH=()=>!!(doc&&doc.zh);
 const P_ZHKEY="請用台灣繁體中文整理下面這段文字的重點：第一行用一句話說這段在講什麼，接著用 2 到 3 個以「・」開頭的短句列出重點或關鍵概念。不要重複原文，不要前言。\n\n內容：\n";
-const paraPrompt=()=>ZH()?P_ZHKEY:"請把下面這段英文學術文字翻成通順、精確的台灣繁體中文（使用台灣學術慣用譯名）。"+termsTxt()+"只輸出譯文，不要任何前言或說明。\n\n英文：\n";
+const toneTxt=()=>S.tone==="plain"?"語氣用白話、口語、容易懂的說法，長句可拆成短句，但不要漏掉內容。":"";
+const paraPrompt=()=>ZH()?P_ZHKEY:"請把下面這段英文學術文字翻成通順、精確的台灣繁體中文（使用台灣學術慣用譯名）。"+toneTxt()+termsTxt()+"只輸出譯文，不要任何前言或說明。\n\n英文：\n";
 const selPrompt=()=>"請把下面這段英文翻成通順、精確的台灣繁體中文（台灣慣用譯名）。只輸出譯文，不要任何說明。\n\n英文：\n";
 const batchPrompt=arr=>ZH()?"請替下列 JSON 陣列裡的每一段中文文字，各寫一句話重點（台灣繁體中文，40 字以內，講出這段的核心意思）。只回傳一個 JSON 字串陣列，長度和順序必須和輸入完全相同，不要其他文字。\n\n輸入：\n"+JSON.stringify(arr):"請把下列 JSON 陣列裡的每一段英文學術文字，逐段翻成通順、精確的台灣繁體中文（台灣學術慣用譯名）。"+termsTxt()+"只回傳一個 JSON 字串陣列，長度和順序必須和輸入完全相同，不要其他文字。\n\n輸入：\n"+JSON.stringify(arr);
 const P_PLAIN="請用台灣繁體中文、大學生聽得懂的白話，說明下面這段英文在講什麼：先用一句話講重點，再用 2 到 4 個短句補充背景、例子或作者的立場。不要逐字翻譯，不要前言。\n\n英文：\n";
@@ -1159,7 +1264,8 @@ const P_DICT=(w,ctx)=>"你是給台灣大學生用的英漢學術字典。請解
 const P_HERE=(w,s)=>"英文單字「"+w+"」在下面這個句子裡是什麼意思？只輸出一行台灣繁體中文解釋，30 字以內，不要其他文字。\n句子："+s;
 const P_REF=()=>doc&&doc.type==="pdf"?"文章裡的〔p.N〕標記是頁碼。每個重點、發現或引用後面用（p.N）標出它在第幾頁，例如「信任度下降（p.4）」；不確定頁碼就不要標。":"文章裡的〔第N段〕標記是段落編號。每個重點後面用（第N段）標出出處；不確定就不要標。";
 const P_SUM0="請用台灣繁體中文整理以下英文文章，讓大學生能快速掌握重點。依序使用這些小標題（每個小標題一行，以 ## 開頭），內容用條列（- 開頭）或短句：\n## 一句話重點\n## 研究問題\n## 方法與資料\n## 主要發現\n## 結論與限制\n## 關鍵術語（每條格式：英文｜中文｜一句說明）\n如果文章不是研究論文，省略不適用的小標題。不要開場白、不要結語。";
-const P_SUM_=()=>(ZH()?P_SUM0.replace("整理以下英文文章","整理以下文章").replace("## 關鍵術語（每條格式：英文｜中文｜一句說明）","## 關鍵概念（每條格式：名詞｜一句說明）"):P_SUM0)+P_REF()+"\n\n文章：\n";
+const sumLvlTxt=()=>S.sumLvl==="short"?"\n篇幅要精簡：每個小標題最多 2 條，整體控制在 300 字內。":S.sumLvl==="long"?"\n請詳細一點：每個小標題可以多列幾條，附上重要數據與論點。":"";
+const P_SUM_=()=>(ZH()?P_SUM0.replace("整理以下英文文章","整理以下文章").replace("## 關鍵術語（每條格式：英文｜中文｜一句說明）","## 關鍵概念（每條格式：名詞｜一句說明）"):P_SUM0)+sumLvlTxt()+P_REF()+"\n\n文章：\n";
 function parseJSON(t){ const a=t.indexOf("{"), b=t.lastIndexOf("}"); if(a<0||b<a) throw {code:"http",message:"字典回傳格式有誤，請再試一次"}; return JSON.parse(t.slice(a,b+1)); }
 
 let dict={}; try{ dict=JSON.parse(store.get("yidu:dict")||"{}")||{}; }catch(e){ dict={}; }
@@ -1215,7 +1321,7 @@ function rowHTML(r,showFolder,idx){
 }
 async function renderRecent(){
   const box=$("#recent"), rows=(await allDocs()).sort((a,b)=>(b.time||0)-(a.time||0));
-  let rvN=0; try{ rvN=Object.keys(dict).length?Math.min(dueGroups().all.length,20):0; }catch(e){}
+  let rvN=0; try{ rvN=Object.keys(dict).length?Math.min(dueGroups().all.length,S.goal||20):0; }catch(e){}
   const nW=wordGroups().length;
   $("#hStats").hidden=!rows.length&&!nW;
   $("#hStats").innerHTML='<button data-go="rv" class="'+(rvN?"hot":"")+'"><b>'+rvN+'</b>今天複習</button><button data-go="dict"><b>'+nW+'</b>生字</button><button data-go="lib"><b>'+rows.length+'</b>文件</button>';
@@ -1377,7 +1483,7 @@ function isZhText(ps){ const s=ps.map(p=>p.t).join(" ").slice(0,8000), c=(s.matc
 function applyLang(){
   if(!doc) return; doc.zh=doc.meta&&doc.meta.lang?doc.meta.lang==="zh":isZhText(doc.paras);
   document.body.classList.toggle("zhdoc",doc.zh);
-  const t=document.querySelector('[data-tool="dual"]'); if(t) t.innerHTML=doc.zh?"<b>逐段重點</b><small>左邊原文、右邊每段一句重點</small>":"<b>全文翻譯</b><small>一次翻完，左右對照</small>";
+  const t=document.querySelector('[data-tool="dual"]'); if(t){ const tb=t.querySelector("b"), ts=t.querySelector("small"); if(tb) tb.textContent=doc.zh?"逐段重點":"全文翻譯"; if(ts) ts.textContent=doc.zh?"左邊原文、右邊每段一句重點":"一次翻完，左右對照"; }
   const lt=document.querySelector('[data-tool="lang"] small'); if(lt) lt.textContent="目前："+(doc.zh?"中文文件（點段落看重點）":"英文文件（點段落翻譯）");
 }
 function setTitle(name,sub){ $("#docTitle").textContent=name; $("#docSub").textContent=sub||"\u00a0"; document.title=name==="Pip"?"Pip":name+" · Pip"; }
@@ -1485,7 +1591,7 @@ function renderWords(){
   } else box.innerHTML=gs.map(row).join("");
 }
 $("#wSort").value=wSort;
-$("#wSort").onchange=()=>{ wSort=$("#wSort").value; store.set("yidu:wsort",wSort); renderWords(); };
+$("#wSort").onchange=()=>{ wSort=$("#wSort").value; store.set("yidu:wsort",wSort); const ps=$("#prefSort"); if(ps) ps.value=wSort; renderWords(); };
 $("#wFilt").addEventListener("click",e=>{ const b=e.target.closest("[data-wf]"); if(!b) return; wFilt=b.dataset.wf; renderWords(); });
 $("#dictSearch").addEventListener("input",renderWords);
 /* ---- 複習（間隔重複）：忘了→今天再出現；有點印象→間隔稍微拉長；記得→間隔變成約 2.5 倍 ---- */
@@ -1504,16 +1610,16 @@ const ivTxt=d=>d<=0?"今天":d===1?"明天":d<30?d+" 天後":Math.round(d/30)+" 
 function renderRvBar(){
   const bar=$("#rvBar"); if(!bar) return;
   const n=Object.keys(dict).length; bar.hidden=!n; if(!n) return;
-  const d=dueGroups(), cnt=Math.min(d.all.length,20);
+  const d=dueGroups(), cnt=Math.min(d.all.length,S.goal||20);
   $("#rvDue").textContent=cnt;
-  $("#rvSub").textContent=cnt?(d.old.length?"其中 "+Math.min(d.old.length,20)+" 個是之前學過、該複習的":"都是新收進來的字"):"今天都複習完了，明天再來 🎉";
+  $("#rvSub").textContent=cnt?(d.old.length?"其中 "+Math.min(d.old.length,S.goal||20)+" 個是之前學過、該複習的":"都是新收進來的字"):"今天都複習完了，明天再來 🎉";
   $("#rvGo").disabled=!cnt;
   updRvBadge();
 }
-function updRvBadge(){ const b=$("#rvBadge"); if(!b) return; let n=0; try{ if(Object.keys(dict).length) n=Math.min(dueGroups().all.length,20); }catch(e){} b.hidden=!n; b.textContent=n>9?"9+":String(n); }
+function updRvBadge(){ const b=$("#rvBadge"); if(!b) return; let n=0; try{ if(Object.keys(dict).length) n=Math.min(dueGroups().all.length,S.goal||20); }catch(e){} b.hidden=!n; b.textContent=n>9?"9+":String(n); }
 let RV=null;
 function startReview(){
-  const d=dueGroups(); const list=d.all.slice(0,20);
+  const d=dueGroups(); const list=d.all.slice(0,S.goal||20);
   if(!list.length){ toast("今天沒有要複習的字。"); return; }
   RV={list,i:0,done:0,flip:false,again:new Set()}; $("#dlgRv").hidden=false; drawRv();
 }
@@ -2227,7 +2333,8 @@ function drawPop(fresh){
       if(!pop.here&&!pop.hereBusy&&pop.sentence) btns.push('<button class="hb" data-a="here">看它在這句裡的意思</button>');
       if(e.src==="od"&&!e.note) btns.push('<button class="hb" data-a="ai">'+(pop.aiBusy?"AI 查詢中…":"AI 補充用法")+"</button>");
       if(btns.length) h+='<div class="row" style="margin-top:0">'+btns.join("")+"</div>";
-      h+='<div class="foot">'+(e.src==="od"?"離線字典":"AI 解釋")+" · 已收進生字本（共 "+Object.keys(dict).length+" 字）</div>";
+      if(!dict[pop.word.toLowerCase()]) h+='<div class="row" style="margin-top:0"><button class="hb" data-a="addw">＋ 加入生字本</button></div>';
+      h+='<div class="foot">'+(e.src==="od"?"離線字典":"AI 解釋")+(dict[pop.word.toLowerCase()]?" · 已收進生字本（共 "+Object.keys(dict).length+" 字）":" · 還沒收進生字本")+"</div>";
     }
   } else if(pop.view==="term"){
     h+='<div class="ph"><span class="pl">名詞解釋</span><div class="pa">'+PEEK+X+"</div></div>";
@@ -2290,6 +2397,7 @@ $("#pop").addEventListener("click",e=>{
   else if(a==="ai") aiMore();
   else if(a==="force"){ pop.force=true; pop.wordBad=false; startWord(); }
   else if(a==="say") speak(pop.word);
+  else if(a==="addw"){ const e=pop.entry; if(e){ e.t=Date.now(); e.from=e.from||wordFrom(pop); dict[pop.word.toLowerCase()]=e; saveDict(); drawPop(); toast("已加入生字本"); } }
   else if(a==="sayph") speak(pop.phrase);
   else if(a==="phrase"){ pop.view="phrase"; pop.phAI=null; pop.phErr=null; showMark(null); openPhrase(); }
   else if(a==="toword"){ pop.view="word"; drawPop(); }
@@ -2351,6 +2459,7 @@ function looksBad(w){
   if(!/[aeiouy]/i.test(w)) return !/^[A-Z]+$/.test(w);
   return w.length<=3;
 }
+function autoSay(cur){ if(S.autoSpeak&&pop===cur&&cur.word) try{ speak(cur.word); }catch(e){} }
 async function startWord(){
   const cur=pop, key=cur.word.toLowerCase();
   if(cur.entry) return;
@@ -2358,8 +2467,8 @@ async function startWord(){
   await withTimeout(loadCC(),5000);
   if(pop!==cur) return;
   if(OD&&cur.sentence) cur.phrase=findPhrase(cur.sentence,cur.word);
-  if(dict[key]){ cur.entry=dict[key]; drawPop(); return; }
-  if(OD){ const e=odEntry(cur.word); if(e){ e.t=Date.now(); e.from=wordFrom(cur); dict[key]=e; saveDict(); cur.entry=e; drawPop(); return; } }
+  if(dict[key]){ cur.entry=dict[key]; drawPop(); autoSay(cur); return; }
+  if(OD){ const e=odEntry(cur.word); if(e){ e.t=Date.now(); e.from=wordFrom(cur); if(S.autoAdd!==false){ dict[key]=e; saveDict(); } cur.entry=e; drawPop(); autoSay(cur); return; } }
   if(!cur.force&&(OD?looksBad(cur.word):quickBad(cur.word))){ cur.wordBad=true; drawPop(); return; }
   if(!cur.force&&isFragment(cur.word,doc&&doc.paras[cur.pid]&&doc.paras[cur.pid].t)){ cur.wordBad=true; drawPop(); return; }
   cur.wordErr=null; cur.wordBad=false; drawPop();
@@ -2367,8 +2476,8 @@ async function startWord(){
     const r=parseJSON(await claude(P_DICT(cur.word,cur.sentence),{max:400}));
     if(r&&r.invalid){ cur.wordBad=true; cur.aiBad=true; if(pop===cur) drawPop(); return; }
     const e={lemma:String(r.lemma||""),ipa:String(r.ipa||""),pos:String(r.pos||""),senses:Array.isArray(r.senses)?r.senses.slice(0,3).map(String):[],note:String(r.note||""),src:"ai"};
-    if(e.senses.length){ e.t=Date.now(); e.from=wordFrom(cur); dict[key]=e; saveDict(); }
-    cur.entry=e;
+    if(e.senses.length){ e.t=Date.now(); e.from=wordFrom(cur); if(S.autoAdd!==false){ dict[key]=e; saveDict(); } }
+    cur.entry=e; autoSay(cur);
   }catch(err){ cur.wordErr=err; }
   if(pop===cur) drawPop();
 }
@@ -2378,7 +2487,7 @@ async function aiMore(){
     const r=parseJSON(await claude(P_DICT(cur.entry.lemma||cur.word),{max:400}));
     const e=cur.entry; if(r.note) e.note=String(r.note); if(!e.pos&&r.pos) e.pos=String(r.pos); if(!e.ipa&&r.ipa) e.ipa=String(r.ipa);
     if(!e.note) e.note="（沒有特別的用法提醒）";
-    e.t=Date.now(); dict[cur.word.toLowerCase()]=e; saveDict();
+    e.t=Date.now(); if(dict[cur.word.toLowerCase()]){ dict[cur.word.toLowerCase()]=e; saveDict(); }
   }catch(err){ handleErr(err); }
   finally{ cur.aiBusy=false; if(pop===cur) drawPop(); }
 }
@@ -2665,10 +2774,14 @@ $("#citeGo").onclick=async()=>{
 $("#citeCopy").onclick=()=>{ const line=citeText.split("\n")[0]; try{ navigator.clipboard.writeText(line).then(()=>toast("已複製引用"),()=>toast("無法複製，請手動選取。")); }catch(e){ toast("無法複製，請手動選取。"); } };
 
 /* ---- appearance & reading settings ---- */
-Object.assign(S,{theme:store.get("yidu:theme")||"auto",zhs:+(store.get("yidu:zhs")||17.5),focus:store.get("yidu:focus")==="1",termsEn:store.get("yidu:terms")!=="0"});
+Object.assign(S,{tone:store.get("yidu:tone")||"formal",sumLvl:store.get("yidu:sumlvl")||"std",autoSpeak:store.get("yidu:autospeak")==="1",autoAdd:store.get("yidu:autoadd")!=="0",goal:+(store.get("yidu:goal")||20),accent:store.get("yidu:accent")||"wine",zhfont:store.get("yidu:zhfont")||"song",theme:store.get("yidu:theme")||"auto",zhs:+(store.get("yidu:zhs")||17.5),focus:store.get("yidu:focus")==="1",termsEn:store.get("yidu:terms")!=="0"});
 function applyLook(){
   const r=document.documentElement;
   if(S.theme==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",S.theme);
+  if(S.accent==="wine") r.removeAttribute("data-accent"); else r.setAttribute("data-accent",S.accent);
+  { const nm={wine:"酒紅（預設）",navy:"墨藍",plum:"紫褐",ochre:"赭橙",green:"森綠",rose:"玫瑰褐"}; const el=$("#accName"); if(el) el.textContent="目前：" + (nm[S.accent]||"酒紅（預設）"); }
+  if(S.zhfont==="song") r.removeAttribute("data-zhfont"); else r.setAttribute("data-zhfont",S.zhfont);
+  document.querySelectorAll("#accSw button").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.c===S.accent)));
   r.style.setProperty("--zhsize",S.zhs+"px"); $("#zhsVal").textContent=S.zhs+" px";
   document.body.classList.toggle("nightpg",!!PV.night);
 }
@@ -2677,6 +2790,21 @@ $("#theme").onchange=()=>{ S.theme=$("#theme").value; store.set("yidu:theme",S.t
 $("#zhs").oninput=()=>{ S.zhs=+$("#zhs").value; store.set("yidu:zhs",String(S.zhs)); applyLook(); };
 $("#focusOn").onchange=()=>{ S.focus=$("#focusOn").checked; store.set("yidu:focus",S.focus?"1":"0"); applyLook(); };
 $("#termsOn").onchange=()=>{ S.termsEn=$("#termsOn").checked; store.set("yidu:terms",S.termsEn?"1":"0"); };
+$("#tone").value=S.tone; $("#sumLvl").value=S.sumLvl; $("#prefSort").value=wSort; $("#autoSpeak").checked=S.autoSpeak; $("#autoAdd").checked=S.autoAdd; $("#goal").value=String(S.goal); $("#zhfont").value=S.zhfont;
+$("#tone").onchange=()=>{ S.tone=$("#tone").value; store.set("yidu:tone",S.tone); };
+$("#sumLvl").onchange=()=>{ S.sumLvl=$("#sumLvl").value; store.set("yidu:sumlvl",S.sumLvl); };
+$("#prefSort").onchange=()=>{ wSort=$("#prefSort").value; store.set("yidu:wsort",wSort); $("#wSort").value=wSort; renderWords(); };
+$("#autoSpeak").onchange=()=>{ S.autoSpeak=$("#autoSpeak").checked; store.set("yidu:autospeak",S.autoSpeak?"1":"0"); };
+$("#autoAdd").onchange=()=>{ S.autoAdd=$("#autoAdd").checked; store.set("yidu:autoadd",S.autoAdd?"1":"0"); };
+$("#goal").onchange=()=>{ S.goal=+$("#goal").value; store.set("yidu:goal",String(S.goal)); renderRvBar(); };
+$("#zhfont").onchange=()=>{ S.zhfont=$("#zhfont").value; store.set("yidu:zhfont",S.zhfont); applyLook(); };
+$("#accSw").onclick=e=>{ const b=e.target.closest("button[data-c]"); if(!b) return; S.accent=b.dataset.c; store.set("yidu:accent",S.accent); applyLook(); };
+document.querySelector(".metabs").onclick=e=>{ const b=e.target.closest("button[data-t]"); if(b) showMeTab(b.dataset.t); };
+function showMeTab(t){
+  document.querySelectorAll(".metabs button").forEach(x=>x.setAttribute("aria-selected",String(x.dataset.t===t)));
+  document.querySelectorAll("#paneSet [data-mt]").forEach(x=>{ x.hidden=x.dataset.mt!==t; });
+}
+showMeTab("acct");
 $("#focusExit").onclick=()=>setBars(false);
 applyLook();
 
@@ -2691,7 +2819,7 @@ async function renderWordsPDF(gs){
   const W=1190,H=1684,M=96,CW=W-2*M, pages=[]; let c,x,y;
   const ZF='"Chiron Sung HK","Noto Serif TC","PingFang TC","Microsoft JhengHei",serif', EF='"Newsreader","Source Serif 4",Georgia,serif';
   const INK="#2B2622",MUT="#7A6E62",RED="#9B2F35",SC={new:"#E86A6F",learn:"#E7C33A",known:"#5DB35E",zh:"#7DA0BE"};
-  const np=()=>{ c=document.createElement("canvas"); c.width=W; c.height=H; x=c.getContext("2d"); x.fillStyle="#FFFDF8"; x.fillRect(0,0,W,H); x.textBaseline="top"; pages.push(c); y=M; };
+  const K=2, np=()=>{ c=document.createElement("canvas"); c.width=W*K; c.height=H*K; x=c.getContext("2d"); x.scale(K,K); x.fillStyle="#FFFDF8"; x.fillRect(0,0,W,H); x.textBaseline="top"; pages.push(c); y=M; };
   const lines=(t,font,w)=>{ x.font=font; return wrapLines(x,String(t||""),w); };
   np();
   x.fillStyle=RED; x.font="600 17px "+EF; x.fillText("PIP READING JOURNAL  ·  GLOSSARY".split("").join(String.fromCharCode(8202)),M,y); y+=34;
@@ -3024,7 +3152,8 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 
 /* ================= Notes, handwriting, PDF annotation ================= */
 const hashS=s=>{ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))>>>0; return h.toString(36); };
-const INK=Object.assign({tool:"pen",color:"#1E1A17",size:1,finger:false},(()=>{ try{ return JSON.parse(store.get("yidu:ink")||"{}")||{}; }catch(e){ return {}; } })());
+const INK=Object.assign({tool:"pen",color:"#3E3B39",size:1,finger:false},(()=>{ try{ return JSON.parse(store.get("yidu:ink")||"{}")||{}; }catch(e){ return {}; } })());
+{ const M={"#1e1a17":"#3E3B39","#5b5652":"#8C8782","#e8452c":"#B7676B","#2f6fd0":"#6F8CA3","#2e9a55":"#8AA088","#f08a24":"#D39A6A","#8a4fd0":"#9A86A8","#d9a400":"#CDB57A"}; const m=M[String(INK.color).toLowerCase()]; if(m) INK.color=m; }
 const saveInk=()=>store.set("yidu:ink",JSON.stringify(INK));
 const PEN_W=[1.6,3,5], HL_W=[10,16,26];
 let npOpen=false, npTab="note", noteMode=store.get("yidu:nmode")==="ink"?"ink":"text", annOn=false, penSeen=false;
@@ -3379,7 +3508,7 @@ function linkRefs(h){
 
 /* ================= Mind map ================= */
 let mmSrc="all", mmZoom=1, mmBusy=null; const mmCol=new Set();
-const MMC=["#C0453F","#2F6FD0","#2E9A55","#F08A24","#8A4FD0","#D9A400","#C2417A"];
+const MMC=["#9B2F35","#27496D","#3C6E4F","#B8642A","#6B4A7A","#B58A1B","#8C5A6B"];
 const normQ=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 function mineText(){
   const m=doc.meta, parts=[];
@@ -3430,39 +3559,55 @@ function wrapLines(ctx,text,maxW){
   if(cur.trim()) lines.push(cur.trimEnd());
   return lines.length?lines:[""];
 }
-const MMF='"PingFang TC","Microsoft JhengHei","Noto Sans TC",sans-serif';
+const MMF='"Chiron Sung HK","Noto Serif TC","Songti TC","PingFang TC","Microsoft JhengHei",serif', MMEF='Newsreader,Georgia,serif';
+function mmSplit(t){ t=String(t||""); const m=/^(.*?)\s*[（(]([^()（）]*[A-Za-z][^()（）]*)[)）]\s*$/.exec(t); return m&&m[1]?{zh:m[1],en:m[2]}:{zh:t,en:""}; }
 function mapSVG(tree,forImage){
-  const ctx=measure, nodes=[], links=[]; let id=0;
-  const lay=(n,depth,color,path)=>{
-    n._id=path; n._d=depth; n._col=color;
-    const fs=depth===0?17:depth===1?15:14; ctx.font=(depth<2?"700 ":"")+fs+"px sans-serif";
-    n._lines=wrapLines(ctx,n.t,depth===0?200:210); n._fs=fs;
-    const tw=Math.max(...n._lines.map(l=>ctx.measureText(l).width)); n._w=Math.ceil(tw)+28+(n.p?44:0); n._h=n._lines.length*(fs+6)+16;
+  const ctx=measure;
+  const lay=(n,d,color,path)=>{
+    n._id=path; n._d=d; n._col=color; const sp=mmSplit(n.t), fs=d===0?16:d===1?15:14.5, mw=d===0?170:d===1?190:230;
+    ctx.font=(d<2?"700 ":"")+fs+"px serif"; n._zl=wrapLines(ctx,sp.zh,mw); n._fs=fs;
+    const tw=Math.max(...n._zl.map(l=>ctx.measureText(l).width));
+    ctx.font="11px serif"; n._el=sp.en?wrapLines(ctx,sp.en,mw+30):[]; const ew=n._el.length?Math.max(...n._el.map(l=>ctx.measureText(l).width)):0;
+    n._zhH=n._zl.length*(fs+6);
+    if(d===0){ n._w=Math.ceil(Math.max(tw,ew))+40; n._h=n._zhH+n._el.length*14+28; }
+    else { n._w=Math.ceil(Math.max(tw+(d===1?16:0)+(n.p?24:0),ew))+10; n._h=n._zhH+8+(n._el.length?n._el.length*14+4:0)+6; }
     const open=!mmCol.has(path); n._open=open;
-    (open?n.c:[]).forEach((c,i)=>lay(c,depth+1,depth===0?MMC[i%MMC.length]:color,path+"."+i));
+    (open?n.c:[]).forEach((c,i)=>lay(c,d+1,d===0?MMC[i%MMC.length]:color,path+"."+i));
   };
   lay(tree,0,"#1E1A17","r");
-  const levW=[]; const walk=(n,f)=>{ f(n); if(n._open) n.c.forEach(c=>walk(c,f)); };
-  walk(tree,n=>{ levW[n._d]=Math.max(levW[n._d]||0,n._w); });
-  const levX=[0]; for(let i=1;i<levW.length;i++) levX[i]=levX[i-1]+levW[i-1]+64;
+  const walk=(n,f)=>{ f(n); if(n._open) n.c.forEach(c=>walk(c,f)); };
+  const levW=[]; walk(tree,n=>{ levW[n._d]=Math.max(levW[n._d]||0,n._w); });
+  const levX=[0]; for(let i=1;i<levW.length;i++) levX[i]=levX[i-1]+levW[i-1]+60;
   let y=0;
   const place=n=>{ n._x=levX[n._d];
-    if(!n._open||!n.c.length){ n._y=y; y+=n._h+14; return; }
+    if(!n._open||!n.c.length){ n._y=y; y+=n._h+12; return; }
     n.c.forEach(place); const f=n.c[0], l=n.c[n.c.length-1]; n._y=(f._y+l._y+l._h)/2-n._h/2;
-    if(n._y+n._h+14>y) y=n._y+n._h+14; };
+    if(n._y+n._h+12>y) y=n._y+n._h+12; };
   place(tree);
   let minY=Infinity; walk(tree,n=>{ minY=Math.min(minY,n._y); });
-  const W=levX[levX.length-1]+levW[levW.length-1]+40, H=y-minY+20, off=10-minY;
+  const W=levX[levX.length-1]+levW[levW.length-1]+44, H=y-minY+20, off=10-minY;
+  const ay=n=>n._y+off+(n._d===0?n._h/2:n._zhH+5.5), INKC="#1E1A17", MUTC="#7A6E62";
+  const tx=(x,yy,s,fs,w,fill,anchor,fam,it)=>'<text x="'+x+'" y="'+yy+'" font-size="'+fs+'" font-weight="'+w+'" fill="'+fill+'"'+(anchor?' text-anchor="'+anchor+'"':"")+(it?' font-style="italic"':"")+" font-family='"+(fam||MMF)+"'>"+esc(s)+"</text>";
   let g="";
-  walk(tree,n=>{ if(n._open) n.c.forEach(c=>{ const x1=n._x+n._w+(n.c.length?10:0), y1=n._y+off+n._h/2, x2=c._x, y2=c._y+off+c._h/2, mx=(x1+x2)/2;
-    g+='<path d="M'+x1+","+y1+" C"+mx+","+y1+" "+mx+","+y2+" "+x2+","+y2+'" fill="none" stroke="'+c._col+'" stroke-width="2.5" stroke-opacity=".7"/>'; }); });
+  walk(tree,n=>{ if(n._open) n.c.forEach(c=>{ const x1=n._x+n._w, y1=ay(n), x2=c._x, y2=ay(c), mx=Math.max(x1+16,(x1+x2)/2);
+    g+='<path d="M'+x1+","+y1+" H"+mx+" V"+y2+" H"+x2+'" fill="none" stroke="'+c._col+'" stroke-width="1.5"/>'; }); });
   walk(tree,n=>{
-    const x=n._x, yy=n._y+off, root=n._d===0, fill=root?"#9B2F35":n._d===1?n._col:"#FFFDF8", tc=root||n._d===1?"#FFFFFF":"#1E1A17";
-    g+='<g class="mmn" data-id="'+n._id+'"'+(n.pid!=null?' data-pid="'+n.pid+'"':"")+'><rect x="'+x+'" y="'+yy+'" width="'+n._w+'" height="'+n._h+'" rx="12" fill="'+fill+'" stroke="'+(n._d===2||n._d>2?n._col:"#1E1A17")+'" stroke-width="2"/>';
-    n._lines.forEach((l,i)=>{ g+='<text x="'+(x+14)+'" y="'+(yy+8+(i+1)*(n._fs+6)-5)+'" font-size="'+n._fs+'" font-weight="'+(n._d<2?700:400)+'" fill="'+tc+'" font-family=\''+MMF+'\'>'+esc(l)+"</text>"; });
-    if(n.p){ const px=x+n._w-40, py=yy+n._h/2-10; g+='<rect x="'+px+'" y="'+py+'" width="32" height="20" rx="10" fill="#BFD9F2" stroke="#1E1A17" stroke-width="1.2"/><text x="'+(px+16)+'" y="'+(py+14)+'" font-size="11" font-weight="700" text-anchor="middle" fill="#1E1A17" font-family=\''+MMF+'\'>'+(doc.type==="pdf"?"p."+n.p:"¶"+n.p)+"</text>"; }
+    const x=n._x, yy=n._y+off, d=n._d, col=n._col, fs=n._fs;
+    g+='<g class="mmn" data-id="'+n._id+'"'+(n.pid!=null?' data-pid="'+n.pid+'"':"")+'><rect x="'+x+'" y="'+yy+'" width="'+n._w+'" height="'+n._h+'" fill="#FBF7EF" fill-opacity="0.01"/>';
+    if(d===0){
+      g+='<rect x="'+x+'" y="'+yy+'" width="'+n._w+'" height="'+n._h+'" fill="#FBF7EF" stroke="'+INKC+'" stroke-width="1"/><rect x="'+(x+4)+'" y="'+(yy+4)+'" width="'+(n._w-8)+'" height="'+(n._h-8)+'" fill="none" stroke="'+INKC+'" stroke-width="1"/>';
+      n._zl.forEach((l,i)=>{ g+=tx(x+n._w/2,yy+13+(i+1)*(fs+6)-5,l,fs,700,INKC,"middle"); });
+      n._el.forEach((l,i)=>{ g+=tx(x+n._w/2,yy+13+n._zhH+(i+1)*14-2,l,11,400,MUTC,"middle",MMEF); });
+    } else {
+      const yb=yy+n._zhH+4, x0=d===1?x+16:x+1;
+      if(d===1) g+='<rect x="'+x+'" y="'+(yy+(fs+6-9)/2)+'" width="9" height="9" fill="'+col+'"/>';
+      n._zl.forEach((l,i)=>{ g+=tx(x0,yy+(i+1)*(fs+6)-4,l,fs,d===1?700:400,INKC); });
+      if(d===1) g+='<rect x="'+x+'" y="'+yb+'" width="'+n._w+'" height="3" fill="'+col+'"/>'; else g+='<line x1="'+x+'" x2="'+(x+n._w)+'" y1="'+(yb+1.5)+'" y2="'+(yb+1.5)+'" stroke="'+INKC+'" stroke-width=".8"/>';
+      n._el.forEach((l,i)=>{ g+=tx(x+1,yb+3+(i+1)*14-2,l,11,400,MUTC,"",MMEF); });
+      if(n.p) g+=tx(x+n._w-2,yy+(fs+6)-5,String(n.p),12,600,col,"end",MMEF,true);
+    }
     g+="</g>";
-    if(n.c.length&&!forImage){ const cx=x+n._w+10, cy=yy+n._h/2; g+='<g class="mmt" data-id="'+n._id+'" style="cursor:pointer"><circle cx="'+cx+'" cy="'+cy+'" r="9" fill="#FFFDF8" stroke="#1E1A17" stroke-width="2"/><text x="'+cx+'" y="'+(cy+4.5)+'" font-size="13" font-weight="700" text-anchor="middle" fill="#1E1A17">'+(n._open?"−":"+")+"</text></g>"; }
+    if(n.c.length&&!forImage){ const cx=x+n._w+9, cy=ay(n); g+='<g class="mmt" data-id="'+n._id+'" style="cursor:pointer"><circle cx="'+cx+'" cy="'+cy+'" r="8" fill="#FFFDF8" stroke="'+INKC+'" stroke-width="1.2"/><text x="'+cx+'" y="'+(cy+4)+'" font-size="12" font-weight="700" text-anchor="middle" fill="'+INKC+'">'+(n._open?"−":"+")+"</text></g>"; }
   });
   return {W,H,body:g};
 }
@@ -3902,6 +4047,11 @@ goHome(); try{ updRvBadge(); }catch(e){}
 // Windows：在檔案總管對 PDF 按右鍵「開啟檔案 → Pip」時，直接打開那個檔案
 if("launchQueue" in window){ try{ window.launchQueue.setConsumer(async p=>{ if(p.files&&p.files.length){ const f=await p.files[0].getFile(); $("#drawer").hidden=true; openFile(f); } }); }catch(e){} }
 })();
+
+/* 「第N段」標籤只顯示數字，括號由樣式加上 */
+(function(){ const fix=n=>{ if(!n||n.nodeType!==1) return; const l=n.matches&&n.matches(".plink")?[n]:[]; (n.querySelectorAll?[...n.querySelectorAll(".plink")]:[]).forEach(x=>l.push(x));
+    l.forEach(a=>{ const m=/^第(\d+)段$/.exec(a.textContent.trim()); if(m){ a.title="第"+m[1]+"段"; a.textContent=m[1]; } }); };
+  new MutationObserver(ms=>ms.forEach(m=>m.addedNodes.forEach(fix))).observe(document.body,{childList:true,subtree:true}); fix(document.body); })();
 </script>
 </body>
 </html>
