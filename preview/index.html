@@ -642,6 +642,9 @@ body.desk .drophint{border-radius:4px}
 /* 中文文件模式 */
 body.zhdoc #article{font-family:var(--f-ui);font-size:17px;line-height:1.95}
 body.zhdoc #article .ap{text-align:justify}
+
+.wsort{font:inherit;font-size:14px;border:1px solid var(--line);border-radius:3px;background:var(--chrome);color:var(--ink);padding:6px 8px;height:34px}
+.dexp{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 </style>
 </head>
 <body>
@@ -757,7 +760,7 @@ body.zhdoc #article .ap{text-align:justify}
     <div class="dhead">
       <div><h1>生字本</h1></div>
       <input class="dsearch" id="dictSearch" type="search" placeholder="搜尋英文或中文…" aria-label="搜尋生字">
-      <div class="dexp"><button id="expCsv">匯出 Excel</button><button id="expAnki">匯出 Anki</button></div>
+      <div class="dexp"><select id="wSort" class="wsort" aria-label="排序"><option value="time">最新加入</option><option value="az">字母順序</option><option value="stat">熟悉度（新字優先）</option></select><button id="expPdf">匯出 PDF</button><button id="expCsv">匯出 Excel</button><button id="expAnki">匯出 Anki</button></div>
     </div>
     <div class="rvbar" id="rvBar" hidden><span class="rvt"><b id="rvDue">0</b> 個字今天該複習<span class="rvs" id="rvSub"></span></span><button class="primary" id="rvGo">開始複習</button></div>
     <div class="wfilt" id="wFilt"><button data-wf="all" class="on">全部</button><button data-wf="new">新字</button><button data-wf="learn">學習中</button><button data-wf="known">已熟悉</button><button data-wf="doc">依文件</button><button data-wf="zh">名詞解釋</button></div>
@@ -916,7 +919,7 @@ body.zhdoc #article .ap{text-align:justify}
       <section>
         <h3>生字本與資料</h3>
         <p>生字本已收錄 <b id="dictCount">0</b> 個字。內建 3 萬字離線字典，點單字直接查，不耗用額度。</p>
-        <div class="row"><button id="expCsv2">匯出 Excel</button><button id="expAnki2">匯出 Anki</button></div>
+        <div class="row"><button id="expPdf2">匯出 PDF</button><button id="expCsv2">匯出 Excel</button><button id="expAnki2">匯出 Anki</button></div>
         <div class="row"><button id="bkExp">匯出完整備份</button><button id="bkImp">匯入備份</button><input type="file" id="bkFile" accept=".json,application/json" hidden></div>
         <p class="hintline">備份包含生字本、翻譯、筆記、重點、書籤、資料夾和閱讀進度，不含 PDF 檔本身。可以存一份在雲端硬碟當保險。</p>
         <div class="row"><button id="wipe">清除這台裝置的閱讀紀錄</button><span id="wipeMsg" class="hintline"></span></div>
@@ -943,6 +946,13 @@ body.zhdoc #article .ap{text-align:justify}
     <p>貼上文章網址，Pip會抓下內文讓你點選翻譯。</p>
     <input id="urlInput" type="url" inputmode="url" autocomplete="off" placeholder="https://…">
     <div class="row"><button data-close>取消</button><button class="primary" id="urlGo">匯入</button></div>
+  </div>
+</div>
+<div class="dlg" id="dlgWPdf" hidden>
+  <div class="dlgc" role="dialog" aria-label="生字本 PDF">
+    <h2>生字本 PDF 準備好了</h2>
+    <p id="wpdfMsg"></p>
+    <div class="row"><button data-close>關閉</button><button class="primary" id="wpdfSave">儲存 PDF</button></div>
   </div>
 </div>
 <div class="dlg" id="dlgRv" hidden>
@@ -1429,7 +1439,18 @@ document.querySelector(".tabbar").addEventListener("click",e=>{
 /* ---- word book ---- */
 function wordFrom(cur){ try{ if(!doc) return null; const pid=cur&&cur.pid!=null?cur.pid:-1; const pg=doc.type==="pdf"&&doc.pp&&pid>=0&&doc.pp[pid]!=null?doc.pp[pid]+1:(doc.type==="pdf"?curPage():0); return {n:doc.name,p:pg||0}; }catch(e){ return null; } }
 const wStat=g=>{ const s=srs[g.head]; return !s?"new":(s.iv||0)>=7?"known":"learn"; };
-let wFilt="all";
+let wFilt="all", wSort=store.get("yidu:wsort")||"time";
+const WFN={all:"全部",new:"新字",learn:"學習中",known:"已熟悉",doc:"依文件",zh:"名詞解釋"};
+function filteredGroups(){
+  const q=($("#dictSearch").value||"").trim().toLowerCase(), isZh=g=>g.e.kind==="zh";
+  let gs=wordGroups();
+  if(q) gs=gs.filter(g=>g.keys.some(k=>k.includes(q))||(g.e.senses||[]).some(x=>String(x).toLowerCase().includes(q)));
+  if(wFilt==="zh") gs=gs.filter(isZh); else if(wFilt!=="all"&&wFilt!=="doc") gs=gs.filter(g=>!isZh(g)&&wStat(g)===wFilt); else if(wFilt==="doc") gs=gs.filter(g=>!isZh(g));
+  const rank={new:0,learn:1,known:2};
+  if(wSort==="az") gs.sort((a,b)=>(isZh(a)-isZh(b))||String(isZh(a)?a.e.lemma:a.head).localeCompare(String(isZh(b)?b.e.lemma:b.head),isZh(a)?"zh-Hant-u-co-stroke":"en"));
+  else if(wSort==="stat") gs.sort((a,b)=>((isZh(a)?3:rank[wStat(a)])-(isZh(b)?3:rank[wStat(b)]))||(b.t-a.t));
+  return gs;
+}
 function wordGroups(){
   const seen=new Map();
   for(const [k,e] of Object.entries(dict)){
@@ -1443,10 +1464,7 @@ function wordGroups(){
 function renderWords(){
   renderRvBar();
   const q=$("#dictSearch").value.trim().toLowerCase(), box=$("#words");
-  let gs=wordGroups();
-  if(q) gs=gs.filter(g=>g.keys.some(k=>k.includes(q))||(g.e.senses||[]).some(x=>String(x).toLowerCase().includes(q)));
-  const isZh=g=>g.e.kind==="zh";
-  if(wFilt==="zh") gs=gs.filter(isZh); else if(wFilt!=="all"&&wFilt!=="doc") gs=gs.filter(g=>!isZh(g)&&wStat(g)===wFilt); else if(wFilt==="doc") gs=gs.filter(g=>!isZh(g));
+  const gs=filteredGroups(), isZh=g=>g.e.kind==="zh";
   document.querySelectorAll("#wFilt [data-wf]").forEach(b=>b.classList.toggle("on",b.dataset.wf===wFilt));
   if(!gs.length){ box.innerHTML='<div class="empty"><svg class="mini" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span class="pipsay">'+(Object.keys(dict).length?(q?"找不到符合的字。":wFilt==="zh"?"還沒有名詞解釋。在中文文件裡選取一個詞，<br>按「解釋這個詞」就會收進來。":"這一類還沒有字。"):"還沒有生字喔！<br>讀文件時點一下不懂的字，Pip 會幫你記在這裡。")+"</span></div>"; return; }
   const row=g=>{ const e=g.e, st=isZh(g)?"zh":wStat(g), fr=e.from&&e.from.n?'<em class="wsrc">— '+esc(e.from.n.length>34?e.from.n.slice(0,33)+"…":e.from.n)+(e.from.p?", p."+e.from.p:"")+"</em>":"";
@@ -1456,6 +1474,8 @@ function renderWords(){
     box.innerHTML=[...m.entries()].map(([n,arr])=>'<div class="wgrp"><div class="wgh"><b>'+esc(n)+'</b><small>'+arr.length+' 個字</small></div>'+arr.map(row).join("")+"</div>").join("");
   } else box.innerHTML=gs.map(row).join("");
 }
+$("#wSort").value=wSort;
+$("#wSort").onchange=()=>{ wSort=$("#wSort").value; store.set("yidu:wsort",wSort); renderWords(); };
 $("#wFilt").addEventListener("click",e=>{ const b=e.target.closest("[data-wf]"); if(!b) return; wFilt=b.dataset.wf; renderWords(); });
 $("#dictSearch").addEventListener("input",renderWords);
 /* ---- 複習（間隔重複）：忘了→今天再出現；有點印象→間隔稍微拉長；記得→間隔變成約 2.5 倍 ---- */
@@ -2655,6 +2675,53 @@ function download(name,text,type){
   const blob=new Blob([text],{type}), u=URL.createObjectURL(blob), a=document.createElement("a");
   a.href=u; a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(u); a.remove(); },2000);
 }
+let wpdf=null;
+async function renderWordsPDF(gs){
+  try{ await Promise.all(['600 30px "Newsreader"','italic 18px "Newsreader"','22px "Chiron Sung HK"','700 52px "Chiron Sung HK"'].map(f=>document.fonts.load(f,"Aa生字本"))); }catch(e){}
+  const W=1190,H=1684,M=96,CW=W-2*M, pages=[]; let c,x,y;
+  const ZF='"Chiron Sung HK","Noto Serif TC","PingFang TC","Microsoft JhengHei",serif', EF='"Newsreader","Source Serif 4",Georgia,serif';
+  const INK="#2B2622",MUT="#7A6E62",RED="#9B2F35",SC={new:"#E86A6F",learn:"#E7C33A",known:"#5DB35E",zh:"#7DA0BE"};
+  const np=()=>{ c=document.createElement("canvas"); c.width=W; c.height=H; x=c.getContext("2d"); x.fillStyle="#FFFDF8"; x.fillRect(0,0,W,H); x.textBaseline="top"; pages.push(c); y=M; };
+  const lines=(t,font,w)=>{ x.font=font; return wrapLines(x,String(t||""),w); };
+  np();
+  x.fillStyle=RED; x.font="600 17px "+EF; x.fillText("PIP READING JOURNAL  ·  GLOSSARY".split("").join(String.fromCharCode(8202)),M,y); y+=34;
+  x.fillStyle=INK; x.font="700 52px "+ZF; x.fillText("生字本",M,y); y+=70;
+  x.fillStyle=MUT; x.font="20px "+ZF; x.fillText(new Date().toLocaleDateString("zh-TW")+"　·　"+gs.length+" 個字"+(wFilt!=="all"?"　·　"+WFN[wFilt]:"")+"　·　"+({time:"最新加入",az:"字母順序",stat:"熟悉度"})[wSort],M,y); y+=40;
+  x.fillStyle=INK; x.fillRect(M,y,CW,2); x.fillRect(M,y+6,CW,2); y+=30;
+  const st=g=>g.e.kind==="zh"?"zh":wStat(g);
+  for(const g of gs){
+    const e=g.e, zh=e.kind==="zh", head=zh?(e.lemma||g.head):g.head, tx=M+22, tw=CW-22-120;
+    const ml=lines((e.senses||[]).join("；"),"22px "+ZF,tw), nl=e.note&&!/沒有特別/.test(e.note)?lines(e.note,"18px "+ZF,tw):[];
+    const src=e.from&&e.from.n?"— "+e.from.n+(e.from.p?", p."+e.from.p:""):"";
+    const hgt=44+ml.length*34+nl.length*28+(src?28:0)+22;
+    if(y+hgt>H-M-30){ np(); }
+    const y0=y;
+    x.fillStyle=INK; x.font=(zh?"700 28px "+ZF:"600 30px "+EF); x.fillText(head,tx,y); const hw=x.measureText(head).width;
+    if(e.ipa){ x.fillStyle=MUT; x.font="20px "+EF; x.fillText(e.ipa,tx+hw+14,y+8); }
+    if(e.pos){ x.font="17px "+ZF; const pw=x.measureText(e.pos).width+18; x.strokeStyle=INK; x.lineWidth=1.2; x.strokeRect(M+CW-pw,y+4,pw,28); x.fillStyle=INK; x.fillText(e.pos,M+CW-pw+9,y+9); }
+    y+=44;
+    x.fillStyle=INK; x.font="22px "+ZF; ml.forEach(l=>{ x.fillText(l,tx,y); y+=34; });
+    x.fillStyle=MUT; x.font="18px "+ZF; nl.forEach(l=>{ x.fillText(l,tx,y); y+=28; });
+    if(src){ x.font="italic 18px "+EF; x.fillText(src.length>70?src.slice(0,69)+"…":src,tx,y); y+=28; }
+    x.fillStyle=SC[st(g)]; x.fillRect(M,y0+2,5,y-y0-4);
+    y+=10; x.strokeStyle="#BDB2A3"; x.setLineDash([3,5]); x.beginPath(); x.moveTo(M,y); x.lineTo(M+CW,y); x.stroke(); x.setLineDash([]); y+=14;
+  }
+  pages.forEach((pc,i)=>{ const cx=pc.getContext("2d"); cx.fillStyle=MUT; cx.font="17px "+EF; cx.textBaseline="top"; cx.fillText("Pip · 生字本",M,H-M+30); const t=(i+1)+" / "+pages.length; cx.fillText(t,W-M-cx.measureText(t).width,H-M+30);
+    cx.fillStyle=SC.new; cx.fillRect(W/2-150,H-M+36,10,10); cx.fillStyle=SC.learn; cx.fillRect(W/2-50,H-M+36,10,10); cx.fillStyle=SC.known; cx.fillRect(W/2+50,H-M+36,10,10); cx.fillStyle=MUT; cx.font="16px "+ZF; cx.fillText("新字",W/2-134,H-M+32); cx.fillText("學習中",W/2-34,H-M+32); cx.fillText("已熟悉",W/2+66,H-M+32); });
+  return pages;
+}
+async function exportWordsPDF(){
+  const gs=filteredGroups(); if(!gs.length){ toast("這一類還沒有字可以匯出。"); return; }
+  toast("正在製作 PDF…");
+  const pages=await renderWordsPDF(gs);
+  const blob=pdfFromJPEGs(pages.map(c=>({w:c.width,h:c.height,bytes:b64bytes(c.toDataURL("image/jpeg",0.9))})));
+  const name="Pip生字本_"+new Date().toISOString().slice(0,10)+".pdf";
+  if(!isIOS()){ const u=URL.createObjectURL(blob), a=document.createElement("a"); a.href=u; a.download=name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(u); a.remove(); },3000); toast("已匯出 "+gs.length+" 個字的 PDF"); return; }
+  wpdf={blob,name}; $("#wpdfMsg").textContent="共 "+gs.length+" 個字、"+pages.length+" 頁。按「儲存 PDF」可以存到「檔案」、傳到 LINE 或直接列印。"; $("#dlgWPdf").hidden=false;
+}
+$("#wpdfSave").onclick=async()=>{ if(!wpdf) return; const f=new File([wpdf.blob],wpdf.name,{type:"application/pdf"});
+  try{ if(navigator.canShare&&navigator.canShare({files:[f]})){ await navigator.share({files:[f],title:wpdf.name}); $("#dlgWPdf").hidden=true; return; } }catch(e){ if(e&&e.name==="AbortError") return; }
+  const u=URL.createObjectURL(wpdf.blob), a=document.createElement("a"); a.href=u; a.download=wpdf.name; document.body.appendChild(a); a.click(); setTimeout(()=>{ URL.revokeObjectURL(u); a.remove(); },3000); $("#dlgWPdf").hidden=true; };
 function exportWords(kind){
   const gs=wordGroups(); if(!gs.length){ toast("生字本還是空的。"); return; }
   if(kind==="csv"){
@@ -2667,6 +2734,7 @@ function exportWords(kind){
   }
   toast("已匯出 "+gs.length+" 個字");
 }
+$("#expPdf").onclick=$("#expPdf2").onclick=exportWordsPDF;
 $("#expCsv").onclick=$("#expCsv2").onclick=()=>exportWords("csv");
 $("#expAnki").onclick=$("#expAnki2").onclick=()=>exportWords("anki");
 
