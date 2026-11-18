@@ -133,6 +133,21 @@ body.side #viewer{margin-right:calc(var(--sideW) + 20px)}
 .dhead h1{font-family:var(--f-hand);font-size:38px;font-weight:700;margin:0;letter-spacing:.03em}
 .dsearch{flex:1;max-width:340px;min-width:200px;font:16px var(--f-ui);border:2.5px solid var(--line);border-radius:var(--r2);padding:10px 16px;background:var(--chrome);color:var(--ink);box-shadow:var(--hard)}
 .words{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.rvbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r1);box-shadow:var(--hard);padding:12px 16px;margin:14px 0 4px}
+.rvbar .rvt{font-size:16px}.rvbar .rvt b{font-size:22px;color:var(--accent)}.rvbar .rvs{display:block;font-size:13px;color:var(--muted)}
+.rvbar button{border:2.5px solid var(--line);border-radius:999px;padding:8px 18px;font:inherit;font-weight:700;cursor:pointer}
+.rvbar button:disabled{opacity:.45;cursor:default}
+#dlgRv .dlgc{display:flex;flex-direction:column;gap:12px;align-items:stretch;text-align:center}
+.rvprog{font-size:13px;color:var(--muted);display:flex;justify-content:space-between;align-items:center}
+.rvcard{border:2.5px dashed var(--line);border-radius:var(--r1);padding:22px 16px;min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.rvw{font-size:34px;font-weight:700}
+.rvans{display:flex;flex-direction:column;gap:6px;align-items:center}.rvans ol{text-align:left;margin:4px 0;padding-left:22px}
+.rvans .note{text-align:left;font-size:14px}
+.rvbtns{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.rvbtns button,.rvflip{border:2.5px solid var(--line);border-radius:14px;padding:10px 6px;font:inherit;font-weight:700;cursor:pointer;background:var(--chrome);color:var(--ink)}
+.rvbtns small{display:block;font-weight:400;font-size:12px;color:var(--muted)}
+.rvbtns [data-g="0"]{background:#F4D9D6;color:#1E1A17}.rvbtns [data-g="2"]{background:#DDEBD5;color:#1E1A17}
+.wbad{background:#FFF4D6;color:#1E1A17;border:2px solid var(--line);border-radius:12px;padding:10px 12px;margin:6px 0;font-size:14px;line-height:1.6;text-align:left}
 .wcard{background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r1);box-shadow:var(--hard);padding:14px 18px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .wtop{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .wtop b{font-family:var(--f-en);font-size:23px;font-weight:600;color:var(--accent)}
@@ -145,6 +160,7 @@ body.side #viewer{margin-right:calc(var(--sideW) + 20px)}
 /* bottom tab bar */
 .tabbar{position:fixed;z-index:15;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(620px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:6px;background:var(--chrome);border:2.5px solid var(--line);border-radius:26px 22px 28px 24px;box-shadow:var(--hard-lg)}
 .tabbar button{font:inherit;font-size:12.5px;font-weight:700;border:2.5px solid transparent;background:transparent;color:var(--muted);border-radius:18px 14px 20px 16px;padding:6px 4px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
+.tabbar button{position:relative}.tabbar .tbadge{position:absolute;top:0;right:calc(50% - 22px);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;font-weight:700;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1;border:2px solid var(--paper,#FFFBF3)}
 .tabbar svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .tabbar button[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:#1E1A17}
 
@@ -349,6 +365,8 @@ body.annon #pop.side{bottom:calc(120px + env(safe-area-inset-bottom,0px))}
 #capLayer{position:fixed;z-index:40;cursor:crosshair;background:rgba(30,26,23,.12);touch-action:none}
 #capBox{position:absolute;border:2.5px dashed var(--accent);background:rgba(155,47,53,.1)}
 .caphint{position:absolute;left:50%;bottom:16px;transform:translateX(-50%);width:max-content;max-width:calc(100% - 24px);font:600 14px/1.5 var(--f-ui);background:#1E1A17;color:#fff;border-radius:12px;padding:8px 14px;text-align:center;pointer-events:none}.caphint b{color:var(--mustard)}
+#ocrBar{position:sticky;top:8px;z-index:6;display:flex;gap:12px;align-items:center;max-width:760px;margin:8px auto 12px;background:var(--paper,#FFFBF3);border:2.5px solid #1E1A17;border-radius:16px;padding:12px 14px;box-shadow:4px 4px 0 #1E1A17}#ocrBar[hidden]{display:none}#ocrBar .mini{width:42px;height:50px;flex:none}#ocrBar .ocrt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;font-size:14px;line-height:1.5}#ocrBar .ocrt span{color:var(--muted)}#ocrBar button{flex:none;border:2.5px solid var(--line);border-radius:999px;padding:9px 18px;font:inherit;font-weight:700;cursor:pointer;background:var(--accent);color:var(--accent-ink)}#ocrBar button:disabled{opacity:.6;cursor:default}
+@media (max-width:560px){#ocrBar{flex-wrap:wrap}#ocrBar button{width:100%}}
 .capcancel{position:absolute;top:10px;left:50%;transform:translateX(-50%);font:700 14px var(--f-ui);border:2.5px solid #1E1A17;border-radius:12px;background:var(--mustard);color:#1E1A17;padding:6px 12px;cursor:pointer}
 /* highlight colors */
 .tl span.mk-y,#article .ap.mk-y{background:rgba(242,190,30,.4)}
@@ -407,6 +425,8 @@ body.desk.barsoff.reading{padding-left:0}
 body.desk .tabbar,body.desk.split .tabbar,body.desk.annon .tabbar{display:flex}
 body.desk.barsoff.reading .tabbar{display:none}
 body.desk .tabbar{left:0;top:0;bottom:0;transform:none;width:var(--navW);flex-direction:column;gap:6px;border-radius:0;border:0;border-right:2.5px solid var(--line);box-shadow:none;padding:calc(84px + env(safe-area-inset-top,0px)) 10px calc(14px + env(safe-area-inset-bottom,0px))}
+body.desk .tabbar .tbadge{position:static;margin-left:auto}
+body.desk.navmini .tabbar .tbadge{position:absolute;top:2px;right:6px;margin:0}
 body.desk .tabbar button{flex-direction:row;justify-content:flex-start;gap:12px;font-size:15px;padding:10px 12px;border-radius:14px 12px 15px 11px}
 body.desk .tabbar button:not([aria-current]):hover{background:var(--soft);color:var(--ink)}
 body.desk.navmini .tabbar button{justify-content:center;font-size:0;gap:0}
@@ -426,7 +446,8 @@ body.desk .tb button:hover:not(:disabled),body.desk .act:hover,body.desk .tool:h
 /* home: two columns */
 body.desk #home{max-width:1180px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);grid-template-areas:"greet sect" "cards sect" "banner sect";column-gap:44px;row-gap:22px;align-items:start}
 body.desk #home .greet{grid-area:greet} body.desk #home .cards{grid-area:cards} body.desk #home #keyBanner{grid-area:banner} body.desk #home .sect{grid-area:sect;padding-top:14px}
-body.desk .hstats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+body.desk .hstats .hrv{background:color-mix(in srgb,var(--accent) 12%,transparent)}
+.hstats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
 .hstats button{flex:1;min-width:140px;text-align:left;font:inherit;color:var(--ink);background:var(--chrome);border:2.5px solid var(--line);border-radius:var(--r2);box-shadow:var(--hard);padding:10px 14px;cursor:pointer;display:flex;flex-direction:column}
 .hstats b{font-size:22px;font-family:var(--f-hand)} .hstats small{color:var(--muted);font-size:13px}
 body.desk .drophint{display:block;grid-column:1/-1;text-align:center;font-size:13.5px;color:var(--muted);border:2px dashed var(--line);border-radius:14px;padding:10px;opacity:.75}
@@ -639,6 +660,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
       <input class="dsearch" id="dictSearch" type="search" placeholder="搜尋英文或中文…" aria-label="搜尋生字">
       <div class="dexp"><button id="expCsv">匯出 Excel</button><button id="expAnki">匯出 Anki</button></div>
     </div>
+    <div class="rvbar" id="rvBar" hidden><span class="rvt"><b id="rvDue">0</b> 個字今天該複習<span class="rvs" id="rvSub"></span></span><button class="primary" id="rvGo">開始複習</button></div>
     <div class="words" id="words"></div>
   </div>
 
@@ -666,6 +688,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <div class="db mewrap" id="meSettings"></div>
   </div>
 
+  <div id="ocrBar" hidden><svg class="mini" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><div class="ocrt"><b id="ocrTitle">這份 PDF 是掃描的圖片</b><span id="ocrSub">Pip 讀不到裡面的文字。</span></div><button class="primary" id="ocrGo">用 AI 辨識文字</button></div>
   <div id="pages" hidden></div>
   <div id="article" hidden></div>
 </div>
@@ -674,7 +697,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   <button data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>首頁</button>
   <button data-tab="read"><svg viewBox="0 0 24 24"><path d="M12 6c-2-1.3-4.7-2-8-2v14c3.3 0 6 .7 8 2 2-1.3 4.7-2 8-2V4c-3.3 0-6 .7-8 2z"/><path d="M12 6v14"/></svg>閱讀</button>
   <button data-tab="lib"><svg viewBox="0 0 24 24"><path d="M4 5h4v15H4zM10 5h4v15h-4z"/><path d="M16 6l3.6-1 3 14.5-3.6 1z"/></svg>書庫</button>
-  <button data-tab="dict"><svg viewBox="0 0 24 24"><path d="M6 3h11a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2V5a2 2 0 0 1 1-2z"/><path d="M5 19a2 2 0 0 0 2 2h11v-4"/><path d="M9 8h6M9 11h4"/></svg>生字本</button>
+  <button data-tab="dict"><svg viewBox="0 0 24 24"><path d="M6 3h11a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2V5a2 2 0 0 1 1-2z"/><path d="M5 19a2 2 0 0 0 2 2h11v-4"/><path d="M9 8h6M9 11h4"/></svg>生字本<span class="tbadge" id="rvBadge" hidden></span></button>
   <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1.2-4 4.2-6 7.5-6s6.3 2 7.5 6"/></svg>我的</button>
   <button class="navtog" data-tab="tog" aria-label="收合或展開選單"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>收合選單</button>
 </nav>
@@ -818,6 +841,13 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
     <p>貼上文章網址，Pip會抓下內文讓你點選翻譯。</p>
     <input id="urlInput" type="url" inputmode="url" autocomplete="off" placeholder="https://…">
     <div class="row"><button data-close>取消</button><button class="primary" id="urlGo">匯入</button></div>
+  </div>
+</div>
+<div class="dlg" id="dlgRv" hidden>
+  <div class="dlgc" role="dialog" aria-label="複習生字">
+    <div class="rvprog"><span id="rvProg"></span><button class="lk" data-close>結束</button></div>
+    <div class="rvcard" id="rvCard"></div>
+    <div id="rvAct"></div>
   </div>
 </div>
 <div class="dlg" id="dlgAsk" hidden>
@@ -999,7 +1029,7 @@ const P_PHRASE=(ph,sen)=>"你是給台灣大學生用的英漢學術字典。請
 const P_ASK=(full,hist,q)=>"你是 Pip，協助台灣大學生閱讀英文文件的助理。請只根據下面的文件內容，用台灣繁體中文回答使用者的問題；文件裡沒有提到的，直接說文件沒有提到，不要猜測。回答要簡潔，必要時引用原文的關鍵句（保留英文）。"+P_REF()+"\n\n===文件開始===\n"+full+"\n===文件結束===\n\n"+(hist?"先前的對話：\n"+hist+"\n\n":"")+"使用者的問題："+q;
 const P_CITE=(style,info,head)=>"請根據下面這份文件開頭的內容，找出作者、年份、標題、期刊或出版者、卷期、頁碼、DOI 等書目資訊，並用「"+style+"」格式寫出參考文獻條目。只輸出兩部分：第一行是完整的參考文獻條目；接著用「- 」條列你不確定或找不到的欄位（都找得到就寫「- 資訊完整」）。不要其他說明。\n\n"+info+"\n\n文件開頭：\n"+head;
 function parseArr(t){ const a=t.indexOf("["), b=t.lastIndexOf("]"); if(a<0||b<a) return null; try{ return JSON.parse(t.slice(a,b+1)); }catch(e){ return null; } }
-const P_DICT=w=>"你是給台灣大學生用的英漢學術字典。請解釋英文單字「"+w+"」。只回傳 JSON，不要其他文字，格式：{\"lemma\":\"原形\",\"ipa\":\"音標\",\"pos\":\"詞性（中文，如 名詞）\",\"senses\":[\"最多3個常見中文釋義，台灣繁體\"],\"note\":\"學術用法或常見搭配的簡短提醒，沒有就給空字串\"}";
+const P_DICT=(w,ctx)=>"你是給台灣大學生用的英漢學術字典。請解釋英文單字「"+w+"」"+(ctx?"（它出現在這句：「"+ctx+"」）":"")+"。只回傳 JSON，不要其他文字，格式：{\"lemma\":\"原形\",\"ipa\":\"音標\",\"pos\":\"詞性（中文，如 名詞）\",\"senses\":[\"最多3個常見中文釋義，台灣繁體\"],\"note\":\"學術用法或常見搭配的簡短提醒，沒有就給空字串\"}。如果「"+w+"」不是真實存在的英文單字、專有名詞或常見縮寫（例如是被切斷的單字片段或亂碼），或在句子裡它其實只是某個較長單字的一部分，不要硬解釋，只回傳 {\"invalid\":true}";
 const P_HERE=(w,s)=>"英文單字「"+w+"」在下面這個句子裡是什麼意思？只輸出一行台灣繁體中文解釋，30 字以內，不要其他文字。\n句子："+s;
 const P_REF=()=>doc&&doc.type==="pdf"?"文章裡的〔p.N〕標記是頁碼。每個重點、發現或引用後面用（p.N）標出它在第幾頁，例如「信任度下降（p.4）」；不確定頁碼就不要標。":"文章裡的〔第N段〕標記是段落編號。每個重點後面用（第N段）標出出處；不確定就不要標。";
 const P_SUM0="請用台灣繁體中文整理以下英文文章，讓大學生能快速掌握重點。依序使用這些小標題（每個小標題一行，以 ## 開頭），內容用條列（- 開頭）或短句：\n## 一句話重點\n## 研究問題\n## 方法與資料\n## 主要發現\n## 結論與限制\n## 關鍵術語（每條格式：英文｜中文｜一句說明）\n如果文章不是研究論文，省略不適用的小標題。不要開場白、不要結語。";
@@ -1007,7 +1037,7 @@ const P_SUM_=()=>P_SUM0+P_REF()+"\n\n文章：\n";
 function parseJSON(t){ const a=t.indexOf("{"), b=t.lastIndexOf("}"); if(a<0||b<a) throw {code:"http",message:"字典回傳格式有誤，請再試一次"}; return JSON.parse(t.slice(a,b+1)); }
 
 let dict={}; try{ dict=JSON.parse(store.get("yidu:dict")||"{}")||{}; }catch(e){ dict={}; }
-const saveDict=()=>{ store.set("yidu:dict",JSON.stringify(dict)); $("#dictCount").textContent=Object.keys(dict).length; syncSoon(); };
+const saveDict=()=>{ store.set("yidu:dict",JSON.stringify(dict)); $("#dictCount").textContent=Object.keys(dict).length; syncSoon(); if(typeof updRvBadge==="function") updRvBadge(); };
 $("#dictCount").textContent=Object.keys(dict).length;
 
 /* ================= Recent documents (IndexedDB) ================= */
@@ -1053,9 +1083,10 @@ function rowHTML(r,showFolder){
 }
 async function renderRecent(){
   const box=$("#recent"), rows=(await allDocs()).sort((a,b)=>(b.time||0)-(a.time||0));
-  if(!rows.length){ box.innerHTML='<div class="empty"><svg class="mini" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span>還沒有讀過文件。按上面的「開啟檔案」開始，或先<button class="lnk" id="sampleBtn">試試示範論文</button>。</span></div>'; $("#sampleBtn").onclick=openSample; return; }
+  if(!rows.length){ box.innerHTML='<div class="empty"><svg class="mini" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span>還沒有讀過文件。按上面的「開啟檔案」開始，或先<button class="lnk" id="sampleBtn">試試示範論文</button>。</span></div>'; $("#sampleBtn").onclick=openSample; let rv0=0; try{ rv0=Object.keys(dict).length?Math.min(dueGroups().all.length,20):0; }catch(e){} $("#hStats").innerHTML=rv0?'<button data-go="rv" class="hrv"><b>'+rv0+'</b><small>今天可以複習的字 ›</small></button>':""; return; }
   const lim=document.body.classList.contains("desk")?8:5;
-  $("#hStats").innerHTML='<button data-go="lib"><b>'+rows.length+'</b><small>書庫裡的文件 ›</small></button><button data-go="dict"><b>'+wordGroups().length+'</b><small>生字本裡的字 ›</small></button>';
+  let rvN=0; try{ rvN=Object.keys(dict).length?Math.min(dueGroups().all.length,20):0; }catch(e){}
+  $("#hStats").innerHTML='<button data-go="lib"><b>'+rows.length+'</b><small>書庫裡的文件 ›</small></button><button data-go="dict"><b>'+wordGroups().length+'</b><small>生字本裡的字 ›</small></button>'+(rvN?'<button data-go="rv" class="hrv"><b>'+rvN+'</b><small>今天可以複習的字 ›</small></button>':"");
   box.innerHTML=rows.slice(0,lim).map(r=>rowHTML(r,true)).join("")
     +'<div class="more">'+(rows.length>lim?'<button class="lnk" id="seeAll">查看書庫全部 '+rows.length+' 份 ›</button> · ':"")+'<button class="lnk" id="sampleBtn">開啟示範論文</button></div>';
   $("#sampleBtn").onclick=openSample; if($("#seeAll")) $("#seeAll").onclick=goLib;
@@ -1272,6 +1303,7 @@ function wordGroups(){
   return [...seen.values()].sort((a,b)=>(b.t-a.t)||a.head.localeCompare(b.head));
 }
 function renderWords(){
+  renderRvBar();
   const q=$("#dictSearch").value.trim().toLowerCase(), box=$("#words");
   let gs=wordGroups();
   if(q) gs=gs.filter(g=>g.keys.some(k=>k.includes(q))||(g.e.senses||[]).some(x=>String(x).includes(q)));
@@ -1279,8 +1311,103 @@ function renderWords(){
   box.innerHTML=gs.map((g,i)=>'<article class="wcard"><div class="wtop"><b lang="en">'+esc(g.head)+'</b><button class="spk wsay" data-w="'+esc(g.head)+'" aria-label="聽發音">'+SPK+"</button>"+(g.e.ipa?'<span class="wm">'+esc(g.e.ipa)+"</span>":"")+(g.e.pos?'<span class="chip">'+esc(g.e.pos)+"</span>":"")+'</div><div class="ms">'+esc((g.e.senses||[]).join("；"))+"</div>"+(g.e.note?'<div class="nt">'+esc(g.e.note)+"</div>":"")+'<button class="wdel" data-keys="'+esc(g.keys.join(","))+'">從生字本移除</button></article>').join("");
 }
 $("#dictSearch").addEventListener("input",renderWords);
+/* ---- 複習（間隔重複）：忘了→今天再出現；有點印象→間隔稍微拉長；記得→間隔變成約 2.5 倍 ---- */
+let srs=(()=>{ try{ return JSON.parse(store.get("yidu:srs")||"null")||{}; }catch(e){ return {}; } })();
+const saveSrs=()=>{ store.set("yidu:srs",JSON.stringify(srs)); syncSoon(); };
+const dayStart=t=>{ const d=new Date(t); d.setHours(0,0,0,0); return d.getTime(); };
+const DAY=864e5;
+function dueGroups(){
+  const now=Date.now(), end=dayStart(now)+DAY, gs=wordGroups(), old=[], fresh=[];
+  for(const g of gs){ const s=srs[g.head]; if(!s) fresh.push(g); else if((s.due||0)<end) old.push(g); }
+  old.sort((a,b)=>(srs[a.head].due||0)-(srs[b.head].due||0));
+  return {old,fresh,all:old.concat(fresh)};
+}
+function nextIv(s,g){ const iv=s&&s.iv||0; if(g===0) return 0; if(g===1) return Math.max(1,Math.round(iv*1.2)); return !iv?1:iv<3?3:Math.round(iv*2.5); }
+const ivTxt=d=>d<=0?"今天":d===1?"明天":d<30?d+" 天後":Math.round(d/30)+" 個月後";
+function renderRvBar(){
+  const bar=$("#rvBar"); if(!bar) return;
+  const n=Object.keys(dict).length; bar.hidden=!n; if(!n) return;
+  const d=dueGroups(), cnt=Math.min(d.all.length,20);
+  $("#rvDue").textContent=cnt;
+  $("#rvSub").textContent=cnt?(d.old.length?"其中 "+Math.min(d.old.length,20)+" 個是之前學過、該複習的":"都是新收進來的字"):"今天都複習完了，明天再來 🎉";
+  $("#rvGo").disabled=!cnt;
+  updRvBadge();
+}
+function updRvBadge(){ const b=$("#rvBadge"); if(!b) return; let n=0; try{ if(Object.keys(dict).length) n=Math.min(dueGroups().all.length,20); }catch(e){} b.hidden=!n; b.textContent=n>9?"9+":String(n); }
+let RV=null;
+function startReview(){
+  const d=dueGroups(); const list=d.all.slice(0,20);
+  if(!list.length){ toast("今天沒有要複習的字。"); return; }
+  RV={list,i:0,done:0,flip:false,again:new Set()}; $("#dlgRv").hidden=false; drawRv();
+}
+function drawRv(){
+  const card=$("#rvCard"), act=$("#rvAct");
+  if(!RV) return;
+  if(RV.i>=RV.list.length){
+    $("#rvProg").textContent="完成";
+    card.innerHTML='<svg class="mini" viewBox="0 0 200 240" aria-hidden="true" style="width:72px;height:86px"><use href="#pip"/></svg><b style="font-size:20px">今天複習完了！</b><span class="muted">複習了 '+RV.done+" 個字，記住的字會隔久一點再出現。</span>";
+    act.innerHTML='<button class="rvflip primary" data-close style="width:100%">好</button>'; renderRvBar(); return;
+  }
+  const g=RV.list[RV.i], e=g.e, s=srs[g.head];
+  $("#rvProg").textContent=(RV.i+1)+" / "+RV.list.length+(s?"":"　新字");
+  let c='<span class="rvw" lang="en">'+esc(g.head)+'</span><button class="spk" data-rv="say" aria-label="聽發音">'+SPK+"</button>";
+  if(RV.flip){
+    c+='<div class="rvans">'+(e.ipa||e.pos?'<div>'+(e.ipa?'<span class="wm">'+esc(e.ipa)+"</span> ":"")+(e.pos?'<span class="chip">'+esc(e.pos)+"</span>":"")+"</div>":"")+
+      ((e.senses||[]).length?'<ol>'+e.senses.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ol>":"")+(e.note&&!/沒有特別/.test(e.note)?'<div class="note"><span class="lab">用法提醒</span>'+esc(e.note)+"</div>":"")+"</div>";
+    act.innerHTML='<div class="rvbtns">'+[["忘了",0],["有點印象",1],["記得",2]].map(([t,q])=>'<button data-g="'+q+'">'+t+"<small>"+ivTxt(nextIv(s,q))+"</small></button>").join("")+"</div>";
+  } else {
+    c+='<span class="muted">先想想看它是什麼意思</span>';
+    act.innerHTML='<button class="rvflip" data-rv="flip" style="width:100%">看答案</button>';
+  }
+  card.innerHTML=c;
+}
+function gradeRv(q){
+  const g=RV.list[RV.i], s=Object.assign({iv:0,n:0},srs[g.head]||{}), now=Date.now(), iv=nextIv(s,q);
+  s.iv=iv; s.n=(s.n||0)+1; s.r=now; s.due=q===0?now:dayStart(now)+iv*DAY;
+  srs[g.head]=s; saveSrs();
+  if(q===0&&!RV.again.has(g.head)){ RV.again.add(g.head); RV.list.push(g); }
+  else RV.done++;
+  RV.i++; RV.flip=false; drawRv();
+}
+$("#rvGo").onclick=startReview;
+$("#dlgRv").addEventListener("click",e=>{
+  const b=e.target.closest("[data-rv],[data-g]"); if(!b||!RV) return;
+  if(b.dataset.rv==="say") speak(RV.list[RV.i].head);
+  else if(b.dataset.rv==="flip"){ RV.flip=true; drawRv(); }
+  else if(b.dataset.g!=null) gradeRv(+b.dataset.g);
+});
+document.addEventListener("keydown",e=>{
+  if(!RV||$("#dlgRv").hidden||RV.i>=RV.list.length) return;
+  if(e.key===" "||e.key==="Enter"){ if(!RV.flip){ e.preventDefault(); RV.flip=true; drawRv(); } }
+  else if(RV.flip&&/^[123]$/.test(e.key)) gradeRv(+e.key-1);
+});
 $("#words").addEventListener("click",e=>{ const b=e.target.closest("[data-keys]"); if(!b) return; const wd=getJSON("yidu:wdel",{}); b.dataset.keys.split(",").forEach(k=>{ delete dict[k]; wd[k]=Date.now(); }); store.set("yidu:wdel",JSON.stringify(wd)); saveDict(); renderWords(); });
 function save(){ if(!doc) return; store.set(doc.key, JSON.stringify(doc.paras.map(p=>p.zh||""))); doc.meta.t=Date.now(); store.set("yidu:meta:"+doc.key,JSON.stringify(doc.meta)); syncSoon(); }
+const normT=t=>String(t||"").toLowerCase().replace(/[^a-z0-9\u4e00-\u9fff]+/g,"");
+/* 文件的段落切法改變時（例如 PDF 解析改進），用段落內容把舊的翻譯、螢光筆、段落筆記和手寫筆記接回來 */
+async function migrateKey(d){
+  try{
+    if(!d||!d.key||store.get("yidu:mig:"+d.key)) return;
+    const pre=d.key.replace(/:\d+$/,"")+":", olds=[];
+    for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k&&k!==d.key&&k.startsWith(pre)&&/^\d+$/.test(k.slice(pre.length))) olds.push(k); }
+    if(!olds.length){ store.set("yidu:mig:"+d.key,"1"); return; }
+    const T={}; (await DB.all()).forEach(r=>{ if(!r||!r.key) return; const tx=Array.isArray(r.texts)?r.texts:Array.isArray(r.paras)?r.paras.map(p=>typeof p==="string"?p:(p&&p.t)||""):null; if(tx) T[r.key]=tx; });
+    const idx={}; d.paras.forEach((p,i)=>{ const k=normT(p.t); if(k&&idx[k]==null) idx[k]=i; });
+    olds.sort((a,b)=>((getJSON("yidu:meta:"+b,{}).t)||0)-((getJSON("yidu:meta:"+a,{}).t)||0));
+    let moved=0; const cur=d.meta||normMeta({});
+    for(const ok of olds){
+      const tx=T[ok], zh=getJSON(ok,[]), m=normMeta(getJSON("yidu:meta:"+ok,{}));
+      if(Array.isArray(tx)) tx.forEach((t,i)=>{ const j=idx[normT(t)]; if(j==null) return;
+        if(zh[i]&&!d.paras[j].zh){ d.paras[j].zh=zh[i]; moved++; }
+        if(m.hl[i]!=null&&cur.hl[j]==null){ cur.hl[j]=m.hl[i]; moved++; }
+        if(m.notes[i]!=null&&cur.notes[j]==null){ cur.notes[j]=m.notes[i]; moved++; }
+        if(m.bm.includes(i)&&!cur.bm.includes(j)){ cur.bm.push(j); moved++; } });
+      try{ const n=await DB.nget(ok), here=await DB.nget(d.key); if(n&&!here){ n.key=d.key; await DB.nput(n); moved++; } }catch(e){}
+    }
+    store.set("yidu:mig:"+d.key,"1");
+    if(moved&&doc===d){ d.meta=cur; save(); applyMarks(); if(d.dual&&typeof updDz==="function") d.paras.forEach((p,i)=>p.zh&&updDz(i)); toast("已把這份文件之前的翻譯和筆記接回來"); }
+  }catch(e){}
+}
 function normMeta(m){ m=m||{}; m.bm=Array.isArray(m.bm)?m.bm:[]; m.hl=m.hl&&typeof m.hl==="object"?m.hl:{}; m.notes=m.notes&&typeof m.notes==="object"?m.notes:{}; return m; }
 function loadMeta(){ doc.meta=normMeta(getJSON("yidu:meta:"+doc.key,{})); }
 function saveMeta(){ if(!doc) return; doc.meta.t=Date.now(); store.set("yidu:meta:"+doc.key,JSON.stringify(doc.meta)); if(!store.get(doc.key)) store.set(doc.key,"[]"); syncSoon(); }
@@ -1299,7 +1426,7 @@ function restorePos(){
     else if(ps.f&&ps.f>0.02){ viewer.scrollTop=ps.f*viewer.scrollHeight; toast("已跳到上次讀到的位置"); } });
 }
 function restore(){ try{ const s=JSON.parse(store.get(doc.key)||"null"); if(Array.isArray(s)) s.forEach((z,i)=>{ if(doc.paras[i]&&z) doc.paras[i].zh=z; }); }catch(e){} }
-function resetUI(){ closePop(); hideSel(); sumCtl&&sumCtl.abort(); fullCtl&&fullCtl.abort(); fullState.msg=""; $("#sumOut").innerHTML=""; $("#sumGo").textContent="產生摘要"; $("#citeOut").innerHTML=""; $("#citeCopy").hidden=true; $("#drawer").hidden=true; articleEl.classList.remove("dual"); }
+function resetUI(){ $("#ocrBar").hidden=true; closePop(); hideSel(); sumCtl&&sumCtl.abort(); fullCtl&&fullCtl.abort(); fullState.msg=""; $("#sumOut").innerHTML=""; $("#sumGo").textContent="產生摘要"; $("#citeOut").innerHTML=""; $("#citeCopy").hidden=true; $("#drawer").hidden=true; articleEl.classList.remove("dual"); }
 function showLoading(t){ const l=$("#loading"); l.textContent=t; l.hidden=false; }
 function hideLoading(){ $("#loading").hidden=true; }
 
@@ -1352,6 +1479,7 @@ async function openPdf(buf,name,meta){
   const keep=buf.slice(0);
   const pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;
   const pages=[]; let all=[];
+  const rid0=meta.sample?"":(meta.id||("pdf:"+name+":"+keep.byteLength)), ocr=rid0?getJSON("yidu:ocr:"+rid0,null):null;
   for(let n=1;n<=pdf.numPages;n++){
     if(myGen!==gen) return;
     showLoading("正在讀取第 "+n+" / "+pdf.numPages+" 頁…");
@@ -1370,6 +1498,8 @@ async function openPdf(buf,name,meta){
       last={s:it.str,x,y,w,z,tr:it.transform,para:-1,el:null,r:null}; items.push(last);
     });
     items.forEach(it=>{ it.s=it.s.replace(/\s+$/,""); });
+    if(!items.length&&ocr&&Array.isArray(ocr[n-1])) ocr[n-1].forEach(l=>{ const [s,x,y,w,z]=l; if(s&&String(s).trim()) items.push({s:String(s),x,y,w,z,tr:[z,0,0,z,x,y],para:-1,el:null,r:null,ocr:true}); });
+    if(items.length&&items[0].ocr){ const zs=items.map(i=>i.z).sort((a,b)=>a-b), med=zs[Math.floor(zs.length/2)]; items.forEach(i=>{ if(Math.abs(i.z-med)<med*0.3){ i.z=med; i.tr=[med,0,0,med,i.x,i.y]; } }); }
     const pg={n:n-1,page,w:vp.width,h:vp.height,items,el:null,task:null,rendered:false};
     pages.push(pg);
     if(!items.length) continue;
@@ -1397,9 +1527,12 @@ async function openPdf(buf,name,meta){
   buildPages(); hideLoading(); viewer.scrollTop=0;
   doc.sub=pdf.numPages+" 頁"; setTitle(name, doc.sub); updatePageNum(); restorePos();
   const pp=[]; pages.forEach(pg=>pg.items.forEach(it=>{ if(it.para>=0&&pp[it.para]==null) pp[it.para]=pg.n; })); doc.pp=pp;
+  await migrateKey(doc); if(!doc||doc.rid!==rid) return;
   loadNote(doc);
   if(!meta.sample) saveRecent({id:rid,kind:"pdf",name,src:meta.src||"",data:keep.byteLength<60e6?keep:null,cloudId:meta.cloudId||"",key:doc.key,texts:paras.map(p=>p.t),pp});
-  if(!paras.length) toast("這份 PDF 讀不到文字，可能是掃描的圖片檔，目前無法點選翻譯。");
+  doc.raw=keep; doc.openMeta=meta;
+  const blank=pages.filter(pg=>!pg.items.length).length;
+  if(blank&&blank>=pages.length/2) showOcrBar(blank);
 }
 function buildPages(){
   io&&io.disconnect();
@@ -1582,6 +1715,60 @@ function hitItem(pageEl,cx,cy){
   return best;
 }
 
+/* ---- 掃描 PDF：用 AI 辨識文字（OCR），結果存起來，下次開啟不用再辨識 ---- */
+const P_OCR="This is an image of one page of a scanned document. Transcribe ALL of its text line by line, in reading order (for a two-column layout, finish the left column before the right one). Keep the original language, spelling and end-of-line hyphens; do not translate or summarize. Return ONLY a JSON array, no other text, like [{\"t\":\"text of the line\",\"b\":[ymin,xmin,ymax,xmax]}], where b is the bounding box of that line on the image, normalized to 0-1000. Return [] if the page has no text.";
+function showOcrBar(n){ $("#ocrTitle").textContent="這份 PDF 是掃描的圖片"; $("#ocrSub").textContent="Pip 讀不到裡面的文字。可以用 AI 辨識（"+n+" 頁，每頁約 10–20 秒），辨識完就能像一般 PDF 一樣點字翻譯。"; $("#ocrGo").disabled=false; $("#ocrGo").textContent="用 AI 辨識文字"; $("#ocrBar").hidden=false; }
+async function aiImage(prompt,b64,max){
+  if(navigator.onLine===false) throw {code:"offline"};
+  if(S.engine==="gemini"){
+    if(!S.gkey) throw {code:"no_key"};
+    const res=await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+GEM_MODEL+":generateContent",{method:"POST",headers:{"content-type":"application/json","x-goog-api-key":S.gkey},
+      body:JSON.stringify({contents:[{role:"user",parts:[{inline_data:{mime_type:"image/jpeg",data:b64}},{text:prompt}]}],generationConfig:{maxOutputTokens:max,temperature:0}})}).catch(()=>{ throw {code:"net"}; });
+    if(!res.ok){ let d=null; try{ d=await res.json(); }catch(e){} const er=d&&(Array.isArray(d)?d[0]:d).error; throw {code:"http",gem:true,status:res.status,message:er&&er.message||""}; }
+    const d=await res.json(), c=d.candidates&&d.candidates[0];
+    return c&&c.content&&c.content.parts?c.content.parts.map(x=>x.text||"").join(""):"";
+  }
+  if(!S.key) throw {code:"no_key"};
+  const res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",headers:{"content-type":"application/json","x-api-key":S.key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
+    body:JSON.stringify({model:S.model,max_tokens:max,messages:[{role:"user",content:[{type:"image",source:{type:"base64",media_type:"image/jpeg",data:b64}},{type:"text",text:prompt}]}]})}).catch(()=>{ throw {code:"net"}; });
+  if(!res.ok){ let d=null; try{ d=await res.json(); }catch(e){} throw {code:"http",status:res.status,message:d&&d.error&&d.error.message||""}; }
+  const d=await res.json(); return (d.content||[]).filter(b=>b.type==="text").map(b=>b.text).join("");
+}
+function ocrLines(txt,vp){
+  const a=txt.indexOf("["), b=txt.lastIndexOf("]"); if(a<0||b<a) return [];
+  let arr; try{ arr=JSON.parse(txt.slice(a,b+1)); }catch(e){ return []; }
+  const out=[];
+  for(const l of arr){ if(!l||!l.t||!Array.isArray(l.b)||l.b.length<4) continue;
+    let [y0,x0,y1,x1]=l.b.map(Number); if(![y0,x0,y1,x1].every(isFinite)||y1<=y0||x1<=x0) continue;
+    const X0=x0/1000*vp.width, X1=x1/1000*vp.width, Y0=y0/1000*vp.height, Y1=y1/1000*vp.height, hh=Y1-Y0;
+    const pt=vp.convertToPdfPoint(X0,Y1-hh*0.18), z=Math.max(4,hh*0.8);
+    out.push([String(l.t).trim(),pt[0],pt[1],X1-X0,z]); }
+  return out;
+}
+async function runOcr(){
+  const d=doc; if(!d||d.type!=="pdf"||!d.raw) return;
+  const rid=d.rid||("pdf:"+d.name+":"+d.raw.byteLength), key="yidu:ocr:"+rid, cache=getJSON(key,{})||{};
+  const todo=d.pages.filter(pg=>!pg.items.length&&!Array.isArray(cache[pg.n]));
+  $("#ocrGo").disabled=true;
+  try{
+    for(let i=0;i<todo.length;i++){
+      if(doc!==d) return;
+      const pg=todo[i]; $("#ocrTitle").textContent="正在辨識第 "+(i+1)+" / "+todo.length+" 頁…"; $("#ocrGo").textContent="辨識中…";
+      const vp1=pg.page.getViewport({scale:1}), sc=Math.min(2.5,1600/Math.max(vp1.width,vp1.height)), vp=pg.page.getViewport({scale:sc});
+      const c=document.createElement("canvas"); c.width=Math.floor(vp.width); c.height=Math.floor(vp.height);
+      const cx=c.getContext("2d"); cx.fillStyle="#fff"; cx.fillRect(0,0,c.width,c.height);
+      await pg.page.render({canvasContext:cx,viewport:vp}).promise;
+      const b64=c.toDataURL("image/jpeg",0.82).split(",")[1];
+      const txt=await aiImage(P_OCR,b64,8000);
+      cache[pg.n]=ocrLines(txt,vp1); store.set(key,JSON.stringify(cache));
+    }
+  }catch(e){ handleErr(e); $("#ocrTitle").textContent="辨識到一半停住了"; $("#ocrGo").disabled=false; $("#ocrGo").textContent="繼續辨識"; return; }
+  if(doc!==d) return;
+  const got=Object.values(cache).reduce((n,a)=>n+(Array.isArray(a)?a.length:0),0);
+  if(!got){ toast("AI 在這份 PDF 裡沒有辨識到文字。"); $("#ocrBar").hidden=true; return; }
+  toast("辨識完成，現在可以點字翻譯了"); await openPdf(d.raw.slice(0),d.name,d.openMeta||{});
+}
+$("#ocrGo").onclick=runOcr;
 /* ---- text documents ---- */
 function textParas(s){
   s=String(s||"").replace(/\r/g,"");
@@ -1598,8 +1785,8 @@ function openText(name,ps,meta){
   $("#zoomVal").textContent=Math.round(zoom*100)+"%"; renderArticle();
   hideLoading(); viewer.scrollTop=0;
   doc.sub=meta.src?hostOf(meta.src):ps.length+" 段"; setTitle(name, doc.sub); restorePos();
-  loadNote(doc);
-  saveRecent({id:rid,kind:meta.kind||(meta.src?"url":"text"),name,src:meta.src||"",paras:ps,cloudId:meta.cloudId||"",key:doc.key});
+  const dd=doc; migrateKey(dd).then(()=>{ if(doc!==dd) return; loadNote(dd);
+  saveRecent({id:rid,kind:meta.kind||(meta.src?"url":"text"),name,src:meta.src||"",paras:ps,cloudId:meta.cloudId||"",key:dd.key}); });
 }
 
 /* ---- page number / zoom ---- */
@@ -1846,7 +2033,8 @@ function drawPop(fresh){
     if(e){ if(e.ipa) h+='<span class="wm">'+esc(e.ipa)+"</span>"; if(e.lemma&&e.lemma.toLowerCase()!==pop.word.toLowerCase()) h+='<span class="wm">原形 '+esc(e.lemma)+"</span>"; if(e.pos) h+='<span class="chip">'+esc(e.pos)+"</span>"; }
     h+="</div>";
     if(pop.phrase&&OD&&OD.p[pop.phrase]) h+='<button class="phr" data-a="phrase"><span class="lab">這裡是片語</span><b lang="en">'+esc(pop.phrase)+"</b>　"+esc(TW(OD.p[pop.phrase]))+" ›</button>";
-    if(!e) h+=pop.wordErr?errBlock(pop.wordErr):'<p class="muted" style="margin:6px 0">'+(pop.loadingDict?"正在載入離線字典（第一次需要幾秒）…":"字典沒有這個字，請 AI 解釋中…")+"</p>";
+    if(!e&&pop.wordBad) h+='<div class="wbad">「'+esc(pop.word)+'」'+(pop.aiBad?"看起來不是完整的英文單字，AI 也查不到。":"不在字典裡，可能只是單字的一小段。")+'<br>可能是 PDF 把字切斷了，試著點這個字的其他位置，或直接翻譯整段。</div><div class="row" style="margin-top:0"><button class="hb" data-a="back">翻譯整段</button>'+(pop.aiBad?"":'<button class="hb" data-a="force">還是請 AI 查查看</button>')+"</div>";
+    else if(!e) h+=pop.wordErr?errBlock(pop.wordErr):'<p class="muted" style="margin:6px 0">'+(pop.loadingDict?"正在載入離線字典（第一次需要幾秒）…":"字典沒有這個字，請 AI 解釋中…")+"</p>";
     else{
       if(e.senses.length) h+='<ol class="senses">'+e.senses.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ol>";
       if(e.note) h+='<div class="note"><span class="lab">用法提醒</span>'+esc(e.note)+"</div>";
@@ -1909,6 +2097,7 @@ $("#pop").addEventListener("click",e=>{
   else if(a==="back") showParaView();
   else if(a==="here") askHere();
   else if(a==="ai") aiMore();
+  else if(a==="force"){ pop.force=true; pop.wordBad=false; startWord(); }
   else if(a==="say") speak(pop.word);
   else if(a==="sayph") speak(pop.phrase);
   else if(a==="phrase"){ pop.view="phrase"; pop.phAI=null; pop.phErr=null; showMark(null); openPhrase(); }
@@ -1949,6 +2138,19 @@ async function plainPara(){
   catch(e){ handleErr(e); }
   finally{ cur.plainBusy=false; if(pop===cur) drawPop(); }
 }
+function quickBad(w){ if(/^[A-Z]/.test(w)) return false; return w.length<=2||!/[aeiouy]/i.test(w); }
+function isFragment(w,t){
+  if(!t||!w) return false; const e=w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&");
+  return !new RegExp("(^|[^A-Za-z])"+e+"([^A-Za-z]|$)","i").test(t)&&new RegExp(e,"i").test(t);
+}
+/* 舊版本可能把切斷的字（ur、ge…）當成單字收進生字本，開啟時清掉 */
+(function(){ try{ const wd=JSON.parse(store.get("yidu:wdel")||"null")||{}; let n=0; for(const [k,e] of Object.entries(dict)){ if(e&&e.src==="ai"&&/^[a-z]{1,2}$/.test(k)){ delete dict[k]; wd[k]=Date.now(); n++; } } if(n){ store.set("yidu:wdel",JSON.stringify(wd)); store.set("yidu:dict",JSON.stringify(dict)); } }catch(e){} })();
+function looksBad(w){
+  if(/^[A-Z]/.test(w)&&w.length>2) return false;
+  if(w.length<=2) return true;
+  if(!/[aeiouy]/i.test(w)) return !/^[A-Z]+$/.test(w);
+  return w.length<=3;
+}
 async function startWord(){
   const cur=pop, key=cur.word.toLowerCase();
   if(cur.entry) return;
@@ -1958,9 +2160,12 @@ async function startWord(){
   if(OD&&cur.sentence) cur.phrase=findPhrase(cur.sentence,cur.word);
   if(dict[key]){ cur.entry=dict[key]; drawPop(); return; }
   if(OD){ const e=odEntry(cur.word); if(e){ e.t=Date.now(); dict[key]=e; saveDict(); cur.entry=e; drawPop(); return; } }
-  cur.wordErr=null; drawPop();
+  if(!cur.force&&(OD?looksBad(cur.word):quickBad(cur.word))){ cur.wordBad=true; drawPop(); return; }
+  if(!cur.force&&isFragment(cur.word,doc&&doc.paras[cur.pid]&&doc.paras[cur.pid].t)){ cur.wordBad=true; drawPop(); return; }
+  cur.wordErr=null; cur.wordBad=false; drawPop();
   try{
-    const r=parseJSON(await claude(P_DICT(cur.word),{max:400}));
+    const r=parseJSON(await claude(P_DICT(cur.word,cur.sentence),{max:400}));
+    if(r&&r.invalid){ cur.wordBad=true; cur.aiBad=true; if(pop===cur) drawPop(); return; }
     const e={lemma:String(r.lemma||""),ipa:String(r.ipa||""),pos:String(r.pos||""),senses:Array.isArray(r.senses)?r.senses.slice(0,3).map(String):[],note:String(r.note||""),src:"ai"};
     if(e.senses.length){ e.t=Date.now(); dict[key]=e; saveDict(); }
     cur.entry=e;
@@ -2409,7 +2614,7 @@ async function collectLocal(){
   try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(!k||!k.startsWith("yidu:doc:")) continue; docs[k]={zh:getJSON(k,[]),meta:getJSON("yidu:meta:"+k,{})}; } }catch(e){}
   let rec=[]; try{ rec=(await DB.all()).map(r=>({id:r.id,kind:r.kind,name:r.name,src:r.src||"",time:r.time,cloudId:r.cloudId||"",folder:r.folder||"",ft:r.ft||0,nt:r.nt||0,added:r.added||0})); }catch(e){}
   const ids=new Set(rec.map(r=>r.id)); rec=rec.concat(getJSON("yidu:cloud",[]).filter(c=>!ids.has(c.id)));
-  return {v:1,t:Date.now(),words:dict,wdel:getJSON("yidu:wdel",{}),docs,recent:rec,folders:folders(),rdel:getJSON("yidu:rdel",{}),notes:getJSON("yidu:nidx",{})};
+  return {v:1,t:Date.now(),words:dict,wdel:getJSON("yidu:wdel",{}),srs:getJSON("yidu:srs",{}),docs,recent:rec,folders:folders(),rdel:getJSON("yidu:rdel",{}),notes:getJSON("yidu:nidx",{})};
 }
 function mergeSync(L,R){
   if(!R||!R.v) return L;
@@ -2435,12 +2640,14 @@ function mergeSync(L,R){
   const FL=L.folders||{list:[],del:{}}, FR=R.folders||{list:[],del:{}}, fd=Object.assign({},FR.del||{}); for(const [k,t] of Object.entries(FL.del||{})) fd[k]=Math.max(fd[k]||0,t);
   const fm=new Map(); for(const f of [...(FR.list||[]),...(FL.list||[])]){ const o=fm.get(f.id); if(!o||(f.t||0)>(o.t||0)) fm.set(f.id,Object.assign({},f)); }
   out.folders={list:[...fm.values()].filter(f=>!(fd[f.id]&&fd[f.id]>=(f.t||0))),del:fd};
+  out.srs=Object.assign({},R.srs||{}); for(const [k,v] of Object.entries(L.srs||{})) if(!out.srs[k]||(v.r||0)>(out.srs[k].r||0)) out.srs[k]=v;
   out.notes=Object.assign({},L.notes||{}); for(const [k,v] of Object.entries(R.notes||{})) if(!out.notes[k]||(v.t||0)>(out.notes[k].t||0)) out.notes[k]=v;
   return out;
 }
 async function applyMerged(M){
   dict=M.words||{}; store.set("yidu:dict",JSON.stringify(dict)); $("#dictCount").textContent=Object.keys(dict).length;
   store.set("yidu:wdel",JSON.stringify(M.wdel||{}));
+  if(M.srs){ srs=M.srs; store.set("yidu:srs",JSON.stringify(srs)); if(typeof view!=="undefined"&&view==="dict") renderRvBar(); }
   for(const [k,d] of Object.entries(M.docs||{})){ if(d.zh&&d.zh.some(Boolean)) store.set(k,JSON.stringify(d.zh)); else if(!store.get(k)) store.set(k,"[]"); if(d.meta&&d.meta.t) store.set("yidu:meta:"+k,JSON.stringify(d.meta)); }
   store.set("yidu:cloud",JSON.stringify(M.recent||[]));
   if(M.folders) store.set("yidu:folders",JSON.stringify(M.folders));
@@ -3333,7 +3540,7 @@ function applyDesk(){
 }
 if(deskMQ.addEventListener) deskMQ.addEventListener("change",applyDesk); else if(deskMQ.addListener) deskMQ.addListener(applyDesk);
 addEventListener("resize",()=>{ if(isDesk()) deskLayout(); });
-$("#hStats").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(!b) return; if(b.dataset.go==="lib") goLib(); else goDict(); });
+$("#hStats").addEventListener("click",e=>{ const b=e.target.closest("[data-go]"); if(!b) return; if(b.dataset.go==="lib") goLib(); else if(b.dataset.go==="rv"){ goDict(); setTimeout(startReview,150); } else goDict(); });
 applyDesk();
 
 /* ---- hover tooltips ---- */
@@ -3440,7 +3647,7 @@ let tt=null;
 function toast(m){ const t=$("#toast"); t.textContent=m; t.hidden=false; clearTimeout(tt); tt=setTimeout(()=>t.hidden=true,4200); }
 
 try{ Object.defineProperty(window,"__pip",{value:{get doc(){ return doc; },get view(){ return view; },buildExport:s=>buildExport(s),toDOCX,toPPTX,toTXT,toPDFiOS,mapPNG}}); }catch(e){}
-goHome();
+goHome(); try{ updRvBadge(); }catch(e){}
 // Windows：在檔案總管對 PDF 按右鍵「開啟檔案 → Pip」時，直接打開那個檔案
 if("launchQueue" in window){ try{ window.launchQueue.setConsumer(async p=>{ if(p.files&&p.files.length){ const f=await p.files[0].getFile(); $("#drawer").hidden=true; openFile(f); } }); }catch(e){} }
 })();
