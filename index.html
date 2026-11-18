@@ -1357,7 +1357,19 @@ async function openPdf(buf,name,meta){
     showLoading("正在讀取第 "+n+" / "+pdf.numPages+" 頁…");
     const page=await pdf.getPage(n), vp=page.getViewport({scale:1}), tc=await page.getTextContent();
     const items=[];
-    tc.items.forEach(it=>{ if(it.str&&it.str.trim()) items.push({s:it.str,x:it.transform[4],y:it.transform[5],w:it.width||0,z:Math.abs(it.transform[3])||Math.abs(it.transform[0])||it.height||10,tr:it.transform,para:-1,el:null,r:null}); });
+    /* 有些 PDF 會把一個字拆成好幾段（例如 ur｜ge｜ntly），同一行、緊貼在一起的片段先接回去 */
+    let last=null;
+    tc.items.forEach(it=>{
+      if(!it.str) return;
+      const z=Math.abs(it.transform[3])||Math.abs(it.transform[0])||it.height||10, x=it.transform[4], y=it.transform[5], w=it.width||0;
+      if(last&&!it.transform[1]&&!it.transform[2]&&!last.tr[1]&&!last.tr[2]&&Math.abs(y-last.y)<Math.min(z,last.z)*0.3&&Math.abs(z-last.z)<Math.max(z,last.z)*0.25){
+        const gap=x-(last.x+last.w);
+        if(gap>-Math.min(z,last.z)*0.3&&gap<Math.min(z,last.z)*0.12){ last.s+=it.str; last.w=Math.max(last.w,x+w-last.x); return; }
+      }
+      if(!it.str.trim()){ if(last&&!/\s$/.test(last.s)&&Math.abs(y-last.y)<last.z*0.3) last.s+=" "; return; }
+      last={s:it.str,x,y,w,z,tr:it.transform,para:-1,el:null,r:null}; items.push(last);
+    });
+    items.forEach(it=>{ it.s=it.s.replace(/\s+$/,""); });
     const pg={n:n-1,page,w:vp.width,h:vp.height,items,el:null,task:null,rendered:false};
     pages.push(pg);
     if(!items.length) continue;
@@ -2315,6 +2327,7 @@ $("#wipe").onclick=async()=>{
 const GCID="650874095623-3vmnr9k2r8vneqveb6mdv63sho5chino.apps.googleusercontent.com";
 const GSCOPE="openid email profile https://www.googleapis.com/auth/drive.appdata";
 const G={token:null,exp:0,client:null};
+const AUTHW="https://pip-auth.yuuu1223hmh.workers.dev"; /* Pip 登入續約伺服器網址（Cloudflare Worker）；空白＝每小時重新連線的舊方式 */
 try{ const t=JSON.parse(sessionStorage.getItem("yidu:gtok")||store.get("yidu:gtok")||"null"); if(t&&t.exp>Date.now()+60000){ G.token=t.t; G.exp=t.exp; } }catch(e){}
 function setToken(t,sec){ G.token=t; G.exp=Date.now()+(sec||3600)*1000; const v=JSON.stringify({t,exp:G.exp}); try{ sessionStorage.setItem("yidu:gtok",v); }catch(e){} store.set("yidu:gtok",v); }
 const gValid=()=>!!G.token&&G.exp>Date.now()+60000;
@@ -2324,6 +2337,12 @@ const gValid=()=>!!G.token&&G.exp>Date.now()+60000;
     const p=new URLSearchParams(h.slice(1));
     if(p.get("access_token")&&p.get("state")&&p.get("state")===store.get("yidu:gstate")){ setToken(p.get("access_token"),+p.get("expires_in")||3600); store.set("yidu:gsigned","1"); setTimeout(()=>{ fetchProfile(); syncNow(); },800); }
     else if(p.get("error")) setTimeout(()=>toast("Google 登入沒有完成。"),600);
+    try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
+  }
+  if(/pip_at=|pip_err=/.test(h)){
+    const p=new URLSearchParams(h.slice(1));
+    if(p.get("pip_at")&&p.get("pip_n")&&p.get("pip_n")===store.get("yidu:gstate")){ setToken(p.get("pip_at"),+p.get("pip_exp")||3600); if(p.get("pip_rt")) store.set("yidu:grt",p.get("pip_rt")); store.set("yidu:gsigned","1"); setTimeout(()=>{ fetchProfile(); syncNow(); },800); }
+    else setTimeout(()=>toast("Google 登入沒有完成。"),600);
     try{ history.replaceState(null,"",location.pathname+location.search); }catch(e){}
   }
 })();
@@ -2338,8 +2357,23 @@ function loadGIS(){
   if(document.getElementById("gisjs")) return;
   const sc=document.createElement("script"); sc.id="gisjs"; sc.src="https://accounts.google.com/gsi/client"; sc.async=true; sc.onload=initGIS; document.head.appendChild(sc);
 }
+let gRef=null;
+function gRefresh(){
+  if(!AUTHW||!store.get("yidu:grt")||!navigator.onLine) return Promise.resolve(false);
+  if(gRef) return gRef;
+  gRef=fetch(AUTHW+"/auth/refresh",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rt:store.get("yidu:grt")})})
+    .then(async r=>{ const j=await r.json().catch(()=>({}));
+      if(r.ok&&j.access_token){ setToken(j.access_token,+j.expires_in||3600); return true; }
+      if(r.status===400) store.del("yidu:grt");
+      return false; })
+    .catch(()=>false).finally(()=>{ gRef=null; renderSync(); });
+  return gRef;
+}
 function gSignIn(){
   if(!navigator.onLine){ toast("目前沒有網路。"); return; }
+  if(AUTHW){ const a=new Uint8Array(12); crypto.getRandomValues(a); const st=Array.from(a,x=>x.toString(16).padStart(2,"0")).join(""); store.set("yidu:gstate",st);
+    const pf=getJSON("yidu:gprof",null), q={return:location.origin+location.pathname,nonce:st}; if(pf&&pf.email) q.hint=pf.email;
+    location.href=AUTHW+"/auth/start?"+new URLSearchParams(q); return; }
   if(!G.client){ loadGIS(); toast("正在準備 Google 登入，請再按一次。"); return; }
   const pf=getJSON("yidu:gprof",null), o={prompt:store.get("yidu:gsigned")?"":"consent"}; if(pf&&pf.email) o.login_hint=pf.email; G.client.requestAccessToken(o);
 }
@@ -2348,8 +2382,10 @@ function gRedirect(){
   location.href="https://accounts.google.com/o/oauth2/v2/auth?"+new URLSearchParams({client_id:GCID,redirect_uri:location.origin+location.pathname,response_type:"token",scope:GSCOPE,include_granted_scopes:"true",state:st});
 }
 async function gfetch(url,opt){
-  opt=opt||{}; if(!gValid()) throw {code:"gauth"};
-  const r=await fetch(url,Object.assign({},opt,{headers:Object.assign({},opt.headers||{},{Authorization:"Bearer "+G.token})}));
+  opt=opt||{}; if(!gValid()) await gRefresh(); if(!gValid()) throw {code:"gauth"};
+  const go=()=>fetch(url,Object.assign({},opt,{headers:Object.assign({},opt.headers||{},{Authorization:"Bearer "+G.token})}));
+  let r=await go();
+  if(r.status===401&&await gRefresh()) r=await go();
   if(r.status===401){ G.token=null; try{ sessionStorage.removeItem("yidu:gtok"); }catch(e){} store.del("yidu:gtok"); throw {code:"gauth"}; }
   if(!r.ok){ let m=""; try{ m=(await r.json()).error.message; }catch(e){} throw {code:"gdrive",status:r.status,message:m}; }
   return r;
@@ -2428,6 +2464,7 @@ let syncing=false, syncT=null;
 function syncSoon(){ if(!store.get("yidu:gsigned")) return; store.set("yidu:dirty","1"); clearTimeout(syncT); syncT=setTimeout(()=>{ if(gValid()) syncNow(true); else renderSync(); },6000); }
 async function syncNow(quiet){
   if(syncing) return;
+  if(!gValid()) await gRefresh();
   if(!gValid()){ renderSync(); if(!quiet){ toast("請先連線 Google。"); openDrawer("set"); } return; }
   syncing=true; renderSync();
   try{
@@ -2480,7 +2517,7 @@ $("#meSettings").appendChild($("#paneSet")); $("#paneSet").hidden=false;
 $("#gIn").onclick=gSignIn; $("#syncChip").onclick=()=>{ if(!syncing) gSignIn(); };
 $("#gSync").onclick=()=>syncNow();
 $("#gRedirect").onclick=gRedirect;
-$("#gOut").onclick=()=>{ try{ if(G.token&&window.google&&google.accounts) google.accounts.oauth2.revoke(G.token,()=>{}); }catch(e){} G.token=null; G.exp=0; try{ sessionStorage.removeItem("yidu:gtok"); }catch(e){} store.del("yidu:gtok"); store.del("yidu:gsigned"); store.del("yidu:gprof"); renderSync(); toast("已登出，資料仍留在這台裝置和你的雲端硬碟。"); };
+$("#gOut").onclick=()=>{ const grt=store.get("yidu:grt"); if(AUTHW&&grt){ fetch(AUTHW+"/auth/revoke",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({rt:grt})}).catch(()=>{}); } store.del("yidu:grt"); try{ if(G.token&&window.google&&google.accounts) google.accounts.oauth2.revoke(G.token,()=>{}); }catch(e){} G.token=null; G.exp=0; try{ sessionStorage.removeItem("yidu:gtok"); }catch(e){} store.del("yidu:gtok"); store.del("yidu:gsigned"); store.del("yidu:gprof"); renderSync(); toast("已登出，資料仍留在這台裝置和你的雲端硬碟。"); };
 document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="hidden"&&syncT&&gValid()){ clearTimeout(syncT); syncT=null; syncNow(true); } });
 async function uploadRecent(id){
   if(!gValid()){ toast("請先連線 Google，才能上傳檔案。"); openDrawer("set"); return; }
@@ -2522,8 +2559,9 @@ addEventListener("online",()=>{ toast("已連上網路"+(store.get("yidu:gsigned
 addEventListener("offline",()=>toast("目前離線：已下載的文件、翻譯紀錄和離線字典都還能用"));
 try{ if(navigator.storage&&navigator.storage.persist) navigator.storage.persisted().then(p=>{ if(!p) navigator.storage.persist(); }); }catch(e){}
 if(store.get("yidu:gsigned")&&gValid()) setTimeout(()=>syncNow(true),2500);
-setInterval(()=>{ if(store.get("yidu:gsigned")) renderSync(); },60000);
-document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&store.get("yidu:gsigned")){ renderSync(); if(gValid()&&store.get("yidu:dirty")) syncNow(true); } });
+setInterval(()=>{ if(!store.get("yidu:gsigned")) return; if(store.get("yidu:grt")&&G.exp-Date.now()<5*60000) gRefresh(); else renderSync(); },60000);
+if(store.get("yidu:gsigned")&&!gValid()&&store.get("yidu:grt")) gRefresh().then(ok=>{ if(ok) syncNow(true); });
+document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==="visible"&&store.get("yidu:gsigned")){ renderSync(); if(store.get("yidu:dirty")||G.exp-Date.now()<5*60000) (gValid()?Promise.resolve(true):gRefresh()).then(ok=>{ if(ok&&store.get("yidu:dirty")) syncNow(true); }); } });
 
 
 /* ================= Notes, handwriting, PDF annotation ================= */
