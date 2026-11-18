@@ -52,6 +52,9 @@
 .lab2{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
 .mewrap .accsw{display:flex;gap:12px;flex-wrap:wrap}
 .mewrap .accsw button{width:38px;height:38px;min-width:38px;padding:0;border-radius:50%!important;border:2px solid transparent!important;background:var(--c)!important;cursor:pointer}
+.mewrap .accsw{padding-bottom:18px}
+.mewrap .accsw button{position:relative}
+.mewrap .accsw button[data-def]::after{content:attr(data-def);position:absolute;left:50%;top:44px;transform:translateX(-50%);font-size:11px;color:var(--muted);font-weight:700;white-space:nowrap}
 .mewrap .accsw button[aria-checked="true"]{outline:3px solid var(--ink);outline-offset:2px}
 :root{--f-zh:var(--f-ui)}
 :root[data-zhfont="kai"]{--f-zh:var(--f-pip)}
@@ -972,18 +975,20 @@ body.zhdoc #article .ap{text-align:justify}
       <section data-mt="look">
         <h3>主題</h3>
         <select id="theme" aria-label="主題">
-          <option value="auto">跟著裝置（自動）</option>
+          <option value="auto">跟著裝置（自動，預設）</option>
           <option value="light">淺色</option>
           <option value="dark">深色</option>
         </select>
         <h3 style="margin-top:16px">強調色</h3>
-        <div class="accsw" id="accSw" role="radiogroup" aria-label="強調色"><button type="button" role="radio" data-c="navy" style="--c:#27496D" aria-label="墨藍"></button><button type="button" role="radio" data-c="plum" style="--c:#6B4A7A" aria-label="紫褐"></button><button type="button" role="radio" data-c="ochre" style="--c:#B8642A" aria-label="赭橙"></button><button type="button" role="radio" data-c="green" style="--c:#3C6E4F" aria-label="森綠"></button><button type="button" role="radio" data-c="rose" style="--c:#8E4B56" aria-label="玫瑰褐"></button></div>
+        <div class="accsw" id="accSw" role="radiogroup" aria-label="強調色"><button type="button" role="radio" data-c="wine" data-def="預設" style="--c:#9B2F35" aria-label="酒紅（預設）"></button><button type="button" role="radio" data-c="navy" style="--c:#27496D" aria-label="墨藍"></button><button type="button" role="radio" data-c="plum" style="--c:#6B4A7A" aria-label="紫褐"></button><button type="button" role="radio" data-c="ochre" style="--c:#B8642A" aria-label="赭橙"></button><button type="button" role="radio" data-c="green" style="--c:#3C6E4F" aria-label="森綠"></button><button type="button" role="radio" data-c="rose" style="--c:#8E4B56" aria-label="玫瑰褐"></button></div>
+        <p class="hintline" id="accName"></p>
         <h3 style="margin-top:16px">譯文字體</h3>
         <select id="zhfont" aria-label="譯文字體">
-          <option value="song">宋體（書卷氣，預設）</option>
+          <option value="song">昭源宋體（預設）</option>
           <option value="kai">楷體（手寫感）</option>
           <option value="hei">黑體（清晰、適合小字）</option>
         </select>
+        <p class="hintline">英文固定使用 Newsreader，不受這個選項影響。</p>
         <label class="swrow" for="zhs" style="margin-top:12px"><span>譯文字體大小</span><b id="zhsVal"></b></label>
         <input id="zhs" type="range" min="14" max="24" step="0.5">
         <div class="zhprev">本文探討民眾對歐盟執委會的信任。</div>
@@ -992,20 +997,20 @@ body.zhdoc #article .ap{text-align:justify}
         <h3>翻譯</h3>
         <label class="lab2" for="tone">翻譯語氣</label>
         <select id="tone"><option value="formal">學術正式（預設）</option><option value="plain">白話好懂</option></select>
-        <label class="swrow" for="termsOn"><span>譯文裡的術語附上英文<br><small class="hintline">例如：寬容共識（permissive consensus）</small></span><input id="termsOn" type="checkbox"></label>
+        <label class="swrow" for="termsOn"><span>譯文裡的術語附上英文<br><small class="hintline">預設：開。例如：寬容共識（permissive consensus）</small></span><input id="termsOn" type="checkbox"></label>
         <label class="lab2" for="sumLvl">摘要詳細程度</label>
         <select id="sumLvl"><option value="short">簡短（只要重點）</option><option value="std">標準（預設）</option><option value="long">詳細</option></select>
       </section>
       <section data-mt="learn">
         <h3>閱讀</h3>
-        <label class="swrow" for="focusOn"><span>專注模式<br><small class="hintline">打開文件時自動隱藏工具列，閱讀畫面也可以隨時按「隱藏」</small></span><input id="focusOn" type="checkbox"></label>
+        <label class="swrow" for="focusOn"><span>專注模式<br><small class="hintline">預設：關。打開文件時自動隱藏工具列，閱讀畫面也可以隨時按「隱藏」</small></span><input id="focusOn" type="checkbox"></label>
       </section>
       <section data-mt="learn">
         <h3>生字本</h3>
         <label class="lab2" for="prefSort">預設排序</label>
-        <select id="prefSort"><option value="time">最新加入</option><option value="az">字母順序</option><option value="stat">熟悉度（新字優先）</option></select>
-        <label class="swrow" for="autoSpeak"><span>點單字自動發音</span><input id="autoSpeak" type="checkbox"></label>
-        <label class="swrow" for="autoAdd"><span>查完自動加入生字本<br><small class="hintline">關掉後，要按字典卡上的「加入生字本」才會收</small></span><input id="autoAdd" type="checkbox"></label>
+        <select id="prefSort"><option value="time">最新加入（預設）</option><option value="az">字母順序</option><option value="stat">熟悉度（新字優先）</option></select>
+        <label class="swrow" for="autoSpeak"><span>點單字自動發音<br><small class="hintline">預設：關</small></span><input id="autoSpeak" type="checkbox"></label>
+        <label class="swrow" for="autoAdd"><span>查完自動加入生字本<br><small class="hintline">預設：開。關掉後，要按字典卡上的「加入生字本」才會收</small></span><input id="autoAdd" type="checkbox"></label>
         <label class="lab2" for="goal">每日複習目標</label>
         <select id="goal"><option value="10">每次 10 個字</option><option value="20">每次 20 個字（預設）</option><option value="30">每次 30 個字</option><option value="50">每次 50 個字</option></select>
       </section>
@@ -2769,11 +2774,12 @@ $("#citeGo").onclick=async()=>{
 $("#citeCopy").onclick=()=>{ const line=citeText.split("\n")[0]; try{ navigator.clipboard.writeText(line).then(()=>toast("已複製引用"),()=>toast("無法複製，請手動選取。")); }catch(e){ toast("無法複製，請手動選取。"); } };
 
 /* ---- appearance & reading settings ---- */
-Object.assign(S,{tone:store.get("yidu:tone")||"formal",sumLvl:store.get("yidu:sumlvl")||"std",autoSpeak:store.get("yidu:autospeak")==="1",autoAdd:store.get("yidu:autoadd")!=="0",goal:+(store.get("yidu:goal")||20),accent:(a=>(!a||a==="wine")?"navy":a)(store.get("yidu:accent")),zhfont:store.get("yidu:zhfont")||"song",theme:store.get("yidu:theme")||"auto",zhs:+(store.get("yidu:zhs")||17.5),focus:store.get("yidu:focus")==="1",termsEn:store.get("yidu:terms")!=="0"});
+Object.assign(S,{tone:store.get("yidu:tone")||"formal",sumLvl:store.get("yidu:sumlvl")||"std",autoSpeak:store.get("yidu:autospeak")==="1",autoAdd:store.get("yidu:autoadd")!=="0",goal:+(store.get("yidu:goal")||20),accent:store.get("yidu:accent")||"wine",zhfont:store.get("yidu:zhfont")||"song",theme:store.get("yidu:theme")||"auto",zhs:+(store.get("yidu:zhs")||17.5),focus:store.get("yidu:focus")==="1",termsEn:store.get("yidu:terms")!=="0"});
 function applyLook(){
   const r=document.documentElement;
   if(S.theme==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",S.theme);
-  r.setAttribute("data-accent",S.accent);
+  if(S.accent==="wine") r.removeAttribute("data-accent"); else r.setAttribute("data-accent",S.accent);
+  { const nm={wine:"酒紅（預設）",navy:"墨藍",plum:"紫褐",ochre:"赭橙",green:"森綠",rose:"玫瑰褐"}; const el=$("#accName"); if(el) el.textContent="目前：" + (nm[S.accent]||"酒紅（預設）"); }
   if(S.zhfont==="song") r.removeAttribute("data-zhfont"); else r.setAttribute("data-zhfont",S.zhfont);
   document.querySelectorAll("#accSw button").forEach(b=>b.setAttribute("aria-checked",String(b.dataset.c===S.accent)));
   r.style.setProperty("--zhsize",S.zhs+"px"); $("#zhsVal").textContent=S.zhs+" px";
