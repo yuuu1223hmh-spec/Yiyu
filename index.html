@@ -513,6 +513,11 @@ body.desk.side:not(.split) #pop.side{right:12px;width:calc(var(--sideW) - 6px);b
 .tl span.mk:not(.mk-y):not(.mk-b):not(.mk-g):not(.mk-r),#article .ap.mk:not(.mk-y):not(.mk-b):not(.mk-g):not(.mk-r){background:rgba(242,190,30,.4)}
 .tl span.hl,#article .ap.hl{background:var(--hl)}
 .spk{flex:none;width:32px;height:32px;border-radius:50%;border:1px solid var(--line);background:var(--chrome);color:var(--ink);display:inline-grid;place-items:center;cursor:pointer;align-self:center}
+.dlgc .spk,.spk{box-sizing:border-box}
+.dlgc .spk{width:36px;height:36px;padding:0!important;border-radius:50%!important}
+.rvsp{display:flex;gap:10px;align-items:center;justify-content:center}
+.accbtn{flex:none;align-self:center;min-width:32px;height:32px;padding:0 8px;border:1px solid var(--line);border-radius:16px;background:var(--chrome);color:var(--ink);font:inherit;font-size:13px;font-weight:700;cursor:pointer}
+.dlgc .accbtn{padding:0 10px!important;border-radius:16px!important;box-shadow:none!important;font-size:13px}
 .spk svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
 .phr{display:block;width:100%;text-align:left;margin:4px 0 8px;background:var(--soft);color:var(--ink);border:1px dotted var(--line);border-radius:12px;padding:8px 10px;font-size:15px;line-height:1.6}
 .phr b{font-family:var(--f-en);font-size:16px;color:var(--accent)}
@@ -1009,6 +1014,8 @@ body.zhdoc #article .ap{text-align:justify}
         <h3>生字本</h3>
         <label class="lab2" for="prefSort">預設排序</label>
         <select id="prefSort"><option value="time">最新加入（預設）</option><option value="az">字母順序</option><option value="stat">熟悉度（新字優先）</option></select>
+        <label class="lab2" for="voiceSel">發音口音</label>
+        <select id="voiceSel"><option value="us">美式（預設）</option><option value="gb">英式</option></select>
         <label class="swrow" for="autoSpeak"><span>點單字自動發音<br><small class="hintline">預設：關</small></span><input id="autoSpeak" type="checkbox"></label>
         <label class="swrow" for="autoAdd"><span>查完自動加入生字本<br><small class="hintline">預設：開。關掉後，要按字典卡上的「加入生字本」才會收</small></span><input id="autoAdd" type="checkbox"></label>
         <label class="lab2" for="goal">每日複習目標</label>
@@ -1634,7 +1641,7 @@ function drawRv(){
   const g=RV.list[RV.i], e=g.e, s=srs[g.head];
   $("#rvProg").textContent=(RV.i+1)+" / "+RV.list.length+(s?"":"　新字");
   const zt=e.kind==="zh";
-  let c='<span class="rvno">NO. '+String(RV.i+1).padStart(2,"0")+'</span><svg class="rvpip" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span class="rvw"'+(zt?' style="font-family:var(--f-ui);font-size:28px"':' lang="en"')+'>'+esc(zt?(e.lemma||g.head):g.head)+'</span>'+(zt?"":'<button class="spk" data-rv="say" aria-label="聽發音">'+SPK+"</button>");
+  let c='<span class="rvno">NO. '+String(RV.i+1).padStart(2,"0")+'</span><svg class="rvpip" viewBox="0 0 200 240" aria-hidden="true"><use href="#pip"/></svg><span class="rvw"'+(zt?' style="font-family:var(--f-ui);font-size:28px"':' lang="en"')+'>'+esc(zt?(e.lemma||g.head):g.head)+'</span>'+(zt?"":'<span class="rvsp"><button class="spk" data-rv="say" aria-label="聽發音">'+SPK+'</button><button class="accbtn" data-rv="acc" aria-label="切換英式或美式發音">'+voiceTxt()+"</button></span>");
   if(RV.flip){
     c+='<div class="rvans">'+(e.ipa||e.pos?'<div>'+(e.ipa?'<span class="wm">'+esc(e.ipa)+"</span> ":"")+(e.pos?'<span class="chip">'+esc(e.pos)+"</span>":"")+"</div>":"")+
       ((e.senses||[]).length?'<ol>'+e.senses.map(x=>"<li>"+esc(x)+"</li>").join("")+"</ol>":"")+(e.note&&!/沒有特別/.test(e.note)?'<div class="note"><span class="lab">用法提醒</span>'+esc(e.note)+"</div>":"")+"</div>";
@@ -1657,6 +1664,7 @@ $("#rvGo").onclick=startReview;
 $("#dlgRv").addEventListener("click",e=>{
   const b=e.target.closest("[data-rv],[data-g]"); if(!b||!RV) return;
   if(b.dataset.rv==="say") speak(RV.list[RV.i].head);
+  else if(b.dataset.rv==="acc"){ toggleVoice(); drawRv(); speak(RV.list[RV.i].head); }
   else if(b.dataset.rv==="flip"){ RV.flip=true; drawRv(); }
   else if(b.dataset.g!=null) gradeRv(+b.dataset.g);
 });
@@ -2216,12 +2224,16 @@ function findPhrase(sentence,word){
 
 /* ================= Speech ================= */
 let speaking=false;
+const voiceTxt=()=>S.voice==="gb"?"英":"美";
+function toggleVoice(){ S.voice=S.voice==="gb"?"us":"gb"; store.set("yidu:voice",S.voice); const sel=$("#voiceSel"); if(sel) sel.value=S.voice; }
 const SPK='<svg viewBox="0 0 24 24"><path d="M4 9h4l5-4v14l-5-4H4z"/><path d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/></svg>';
 function speak(text,onend){
   if(!("speechSynthesis" in window)){ toast("這個裝置不支援語音朗讀。"); return; }
   try{ speechSynthesis.cancel(); }catch(e){}
-  const u=new SpeechSynthesisUtterance(text); u.lang="en-US"; u.rate=text.length>40?0.95:0.85;
-  const vs=speechSynthesis.getVoices(); const v=vs.find(x=>/^en[-_]US/i.test(x.lang))||vs.find(x=>/^en/i.test(x.lang)); if(v) u.voice=v;
+  const gb=S.voice==="gb", tag=gb?"en-GB":"en-US", re=gb?/^en[-_]GB/i:/^en[-_]US/i;
+  const u=new SpeechSynthesisUtterance(text); u.lang=tag; u.rate=text.length>40?0.95:0.85;
+  const vs=speechSynthesis.getVoices(); const v=vs.find(x=>re.test(x.lang))||vs.find(x=>/^en/i.test(x.lang)); if(v) u.voice=v;
+  if(gb&&vs.length&&!vs.some(x=>re.test(x.lang))&&!speak.warned){ speak.warned=1; toast("這台裝置沒有英式語音，改用其他英文語音。"); }
   u.onend=u.onerror=()=>{ speaking=false; onend&&onend(); };
   speaking=true; speechSynthesis.speak(u);
 }
@@ -2319,7 +2331,7 @@ function drawPop(fresh){
   if(pop.view==="word"){
     const e=pop.entry;
     h+='<div class="ph"><span class="pl">單字</span><div class="pa">'+PEEK+backBtn+X+"</div></div>";
-    h+='<div class="wh"><span class="ww" lang="en">'+esc(pop.word)+'</span><button class="spk" data-a="say" aria-label="聽發音">'+SPK+"</button>";
+    h+='<div class="wh"><span class="ww" lang="en">'+esc(pop.word)+'</span><button class="spk" data-a="say" aria-label="聽發音">'+SPK+'</button><button class="accbtn" data-a="acc" aria-label="切換英式或美式發音">'+voiceTxt()+"</button>";
     if(e){ if(e.ipa) h+='<span class="wm">'+esc(e.ipa)+"</span>"; if(e.lemma&&e.lemma.toLowerCase()!==pop.word.toLowerCase()) h+='<span class="wm">原形 '+esc(e.lemma)+"</span>"; if(e.pos) h+='<span class="chip">'+esc(e.pos)+"</span>"; }
     h+="</div>";
     if(pop.phrase&&OD&&OD.p[pop.phrase]) h+='<button class="phr" data-a="phrase"><span class="lab">這裡是片語</span><b lang="en">'+esc(pop.phrase)+"</b>　"+esc(TW(OD.p[pop.phrase]))+" ›</button>";
@@ -2397,6 +2409,7 @@ $("#pop").addEventListener("click",e=>{
   else if(a==="ai") aiMore();
   else if(a==="force"){ pop.force=true; pop.wordBad=false; startWord(); }
   else if(a==="say") speak(pop.word);
+  else if(a==="acc"){ toggleVoice(); drawPop(); speak(pop.word); }
   else if(a==="addw"){ const e=pop.entry; if(e){ e.t=Date.now(); e.from=e.from||wordFrom(pop); dict[pop.word.toLowerCase()]=e; saveDict(); drawPop(); toast("已加入生字本"); } }
   else if(a==="sayph") speak(pop.phrase);
   else if(a==="phrase"){ pop.view="phrase"; pop.phAI=null; pop.phErr=null; showMark(null); openPhrase(); }
@@ -2774,7 +2787,7 @@ $("#citeGo").onclick=async()=>{
 $("#citeCopy").onclick=()=>{ const line=citeText.split("\n")[0]; try{ navigator.clipboard.writeText(line).then(()=>toast("已複製引用"),()=>toast("無法複製，請手動選取。")); }catch(e){ toast("無法複製，請手動選取。"); } };
 
 /* ---- appearance & reading settings ---- */
-Object.assign(S,{tone:store.get("yidu:tone")||"formal",sumLvl:store.get("yidu:sumlvl")||"std",autoSpeak:store.get("yidu:autospeak")==="1",autoAdd:store.get("yidu:autoadd")!=="0",goal:+(store.get("yidu:goal")||20),accent:store.get("yidu:accent")||"wine",zhfont:store.get("yidu:zhfont")||"song",theme:store.get("yidu:theme")||"auto",zhs:+(store.get("yidu:zhs")||17.5),focus:store.get("yidu:focus")==="1",termsEn:store.get("yidu:terms")!=="0"});
+Object.assign(S,{voice:store.get("yidu:voice")==="gb"?"gb":"us",tone:store.get("yidu:tone")||"formal",sumLvl:store.get("yidu:sumlvl")||"std",autoSpeak:store.get("yidu:autospeak")==="1",autoAdd:store.get("yidu:autoadd")!=="0",goal:+(store.get("yidu:goal")||20),accent:store.get("yidu:accent")||"wine",zhfont:store.get("yidu:zhfont")||"song",theme:store.get("yidu:theme")||"auto",zhs:+(store.get("yidu:zhs")||17.5),focus:store.get("yidu:focus")==="1",termsEn:store.get("yidu:terms")!=="0"});
 function applyLook(){
   const r=document.documentElement;
   if(S.theme==="auto") r.removeAttribute("data-theme"); else r.setAttribute("data-theme",S.theme);
@@ -2794,6 +2807,7 @@ $("#tone").value=S.tone; $("#sumLvl").value=S.sumLvl; $("#prefSort").value=wSort
 $("#tone").onchange=()=>{ S.tone=$("#tone").value; store.set("yidu:tone",S.tone); };
 $("#sumLvl").onchange=()=>{ S.sumLvl=$("#sumLvl").value; store.set("yidu:sumlvl",S.sumLvl); };
 $("#prefSort").onchange=()=>{ wSort=$("#prefSort").value; store.set("yidu:wsort",wSort); $("#wSort").value=wSort; renderWords(); };
+$("#voiceSel").value=S.voice; $("#voiceSel").onchange=()=>{ S.voice=$("#voiceSel").value; store.set("yidu:voice",S.voice); };
 $("#autoSpeak").onchange=()=>{ S.autoSpeak=$("#autoSpeak").checked; store.set("yidu:autospeak",S.autoSpeak?"1":"0"); };
 $("#autoAdd").onchange=()=>{ S.autoAdd=$("#autoAdd").checked; store.set("yidu:autoadd",S.autoAdd?"1":"0"); };
 $("#goal").onchange=()=>{ S.goal=+$("#goal").value; store.set("yidu:goal",String(S.goal)); renderRvBar(); };
