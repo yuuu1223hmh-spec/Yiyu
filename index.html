@@ -196,7 +196,7 @@ body.side #viewer{margin-right:calc(var(--sideW) + 20px)}
 .tabbar{position:fixed;z-index:15;left:50%;transform:translateX(-50%);bottom:calc(12px + env(safe-area-inset-bottom,0px));width:min(620px,calc(100% - 24px));display:grid;grid-template-columns:repeat(5,1fr);gap:6px;padding:6px;background:var(--chrome);border:1px solid var(--line);border-radius:4px;box-shadow:var(--hard-lg)}
 .tabbar button{font:inherit;font-size:12.5px;font-weight:700;border:1px solid transparent;background:transparent;color:var(--muted);border-radius:4px;padding:6px 4px 5px;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer}
 .tabbar button{position:relative}.tabbar .tbadge{position:absolute;top:0;right:calc(50% - 22px);box-sizing:border-box;display:inline-flex;align-items:center;justify-content:center;min-width:20px;height:20px;padding:0 5px;border-radius:10px;font-weight:700;background:var(--accent);color:var(--accent-ink);font-size:11px;line-height:1;border:2px solid var(--paper,#FFFBF3)}
-.tabbar svg{width:24px;height:24px;stroke:currentColor;fill:none;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tabbar svg{width:25px;height:25px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
 .tabbar button[aria-current="page"]{background:var(--accent);color:var(--accent-ink);border-color:#1E1A17}
 
 /* translation card: floating (portrait) / bottom sheet (phone) / right column (landscape iPad) */
@@ -397,6 +397,44 @@ body.annon .tabbar{display:none}
 #annBar{position:fixed;z-index:17;left:0;right:0;margin:0 auto;width:max-content;bottom:calc(12px + env(safe-area-inset-bottom,0px));max-width:calc(100vw - 24px);background:var(--chrome);border:1px solid var(--line);border-radius:var(--r1);box-shadow:var(--hard-lg);padding:8px 10px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 body.annon #focusExit{display:none}
 body.annon #pop.side{bottom:calc(120px + env(safe-area-inset-bottom,0px))}
+
+/* ---- v29 筆記工具列（左側直立）---- */
+.inkbar{position:relative;display:block}
+.irail{display:flex;flex-direction:column;gap:2px}
+.inkbar .it{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;min-width:48px;min-height:44px;padding:5px 4px;border:1.5px solid transparent;border-radius:8px;background:none;color:var(--ink);font:inherit;font-size:11px;font-weight:600;line-height:1.2;cursor:pointer}
+.inkbar .it.on{border-color:#1E1A17;background:var(--mustard)}
+.inkbar .it:disabled{opacity:.35;cursor:default}
+.inkbar .it svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.irail .ivr{height:1px;background:var(--line);margin:4px 6px;flex:none}
+.ipop{position:absolute;z-index:40;left:100%;top:6px;margin-left:8px;background:var(--chrome);border:1.5px solid #1E1A17;border-radius:10px;padding:10px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--hard-lg);width:max-content;max-width:min(260px,calc(100vw - 100px))}
+.ipop[hidden]{display:none}
+.ipop .ig{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.ipop .icol{max-width:220px}
+.inkbar button.th{width:46px;height:34px;min-height:34px;padding:0;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--line);border-radius:8px;background:var(--chrome)}
+.inkbar button.th.on{border-color:#1E1A17;background:var(--mustard)}
+.inkbar button.th i{display:block;width:26px;background:var(--ink);border-radius:99px;height:3px}
+.istab{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}
+.istab input{flex:1;min-width:90px;accent-color:var(--accent)}
+.istab b{min-width:22px;text-align:right;font-variant-numeric:tabular-nums}
+.npwrap{flex:1;display:flex;min-height:0;position:relative}
+.npwrap[hidden]{display:none}
+.npwrap .npbody{flex:1;min-width:0}
+#npRail{flex:none;position:relative;z-index:6}
+#npRail[hidden]{display:none}
+body.sland #npRail{border-right:1px solid var(--line);padding:6px 4px}
+body.sport .npwrap{flex-direction:column}
+body.sport #npRail{border-bottom:1px solid var(--line);padding:4px 6px}
+body.sport #npRail .irail{flex-direction:row;flex-wrap:wrap}
+body.sport #npRail .it{min-width:42px}
+body.sport #npRail .ivr{width:1px;height:auto;align-self:stretch;margin:4px 4px}
+body.sport #npRail .ipop{left:6px;top:100%;margin:6px 0 0}
+#annBar .irail{flex-direction:row;flex-wrap:wrap}
+#annBar .irail .ivr{width:1px;height:auto;align-self:stretch;margin:4px 4px}
+#annBar .it span{display:none}
+#annBar .it{min-width:42px}
+#annBar [data-nm]{display:none}
+#annBar .ipop{left:50%;transform:translateX(-50%);top:auto;bottom:100%;margin:0 0 10px}
+@media (max-height:560px){ body.sland #npRail .it span{display:none} body.sland #npRail .it{min-height:38px} }
 #annBar .done{background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:700;border:1px solid var(--line);border-radius:11px;padding:3px 12px;min-height:32px;cursor:pointer}
 #capLayer{position:fixed;z-index:40;cursor:crosshair;background:rgba(30,26,23,.12);touch-action:none}
 #capBox{position:absolute;border:1px dashed var(--accent);background:rgba(155,47,53,.1)}
@@ -602,6 +640,8 @@ body.desk .tabbar button[aria-current="page"]::after{left:0;right:auto;top:8px;b
 .here{background:transparent;border:0;border-left:3px solid var(--accent);border-radius:0;padding:4px 0 4px 12px}
 .foot,.hist{border-top-style:dotted}
 #wmark{background:rgba(246,210,62,.28);outline:none;box-shadow:inset 0 -2.5px 0 var(--accent);border-radius:0}
+#wmark{background:none!important;outline:none!important;box-shadow:none!important;left:0!important;top:0!important;width:0!important;height:0!important;border-radius:0!important}
+#wmark .wmb{position:fixed;background:rgba(246,210,62,.34);box-shadow:inset 0 -2.5px 0 var(--accent);pointer-events:none}
 .dlgc{border-radius:6px;box-shadow:var(--hard-lg)}
 .dlgc h2,.dh b{font-family:var(--f-hand);font-weight:700}
 .pipsay,.sidempty span,.jsay{font-family:var(--f-pip)}
@@ -786,7 +826,6 @@ body.zhdoc #article .ap{text-align:justify}
     <button class="x" id="npClose" aria-label="關閉筆記">✕</button>
   </div>
   <div class="nbar" id="npBar">
-    <button data-nm="text">打字</button><button data-nm="ink">手寫</button><span class="sep"></span>
     <span class="nbar" id="txtTools" style="padding:0;border:0">
       <button data-cmd="bold" aria-label="粗體"><b>B</b></button>
       <button data-cmd="h">標題</button>
@@ -798,15 +837,18 @@ body.zhdoc #article .ap{text-align:justify}
       <button data-cmd="cap" id="capBtn">擷取畫面</button>
       <span class="tcolors" id="tColors" hidden><button class="dot" data-tc="#1E1A17" style="--c:#1E1A17" aria-label="黑"></button><button class="dot" data-tc="#5B5652" style="--c:#5B5652" aria-label="深灰"></button><button class="dot" data-tc="#E8452C" style="--c:#E8452C" aria-label="番茄紅"></button><button class="dot" data-tc="#2F6FD0" style="--c:#2F6FD0" aria-label="藍"></button><button class="dot" data-tc="#2E9A55" style="--c:#2E9A55" aria-label="綠"></button><button class="dot" data-tc="#F08A24" style="--c:#F08A24" aria-label="橘"></button><button class="dot" data-tc="#8A4FD0" style="--c:#8A4FD0" aria-label="紫"></button><button class="dot" data-tc="#D9A400" style="--c:#D9A400" aria-label="芥末黃"></button></span>
     </span>
-    <span id="npInkSlot"></span>
   </div>
-  <div class="npbody" id="npBody"><div class="nsheet" id="nSheet"><div id="nText" contenteditable="true" spellcheck="false" data-ph="在這裡打字做筆記，會自動儲存。切到「手寫」是另一張可以用觸控筆寫的筆記紙。"></div><canvas id="nInk"></canvas></div></div>
+  <div class="npwrap" id="npWrap"><div id="npRail"></div><div class="npbody" id="npBody"><div class="nsheet" id="nSheet"><div id="nText" contenteditable="true" spellcheck="false" data-ph="在這裡打字做筆記，會自動儲存。切到「手寫」是另一張可以用觸控筆寫的筆記紙。"></div><canvas id="nInk"></canvas></div></div></div>
   <div class="nptr" id="npTr" hidden>在左邊點單字或段落，翻譯會顯示在這裡。</div>
 </aside>
 <div id="annBar" hidden><span id="annSlot"></span><button class="done" id="annDone">完成</button></div>
 <div id="inkBar" class="inkbar">
-  <div class="ig"><span class="seg"><button data-it="pen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20l1-4L16 5l3 3L8 19z"/><path d="M14 7l3 3"/></svg>筆</button><button data-it="hl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14l6-8 4 3-6 8z"/><path d="M9 14l-2 4 4-1M5 21h8"/></svg>螢光</button><button data-it="eraser"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 14l8-8 6 6-6 6H8z"/><path d="M10 20h9"/></svg>擦</button></span><span class="vr"></span><span class="seg"><button data-is="0">細</button><button data-is="1">中</button><button data-is="2">粗</button></span><span class="sp"></span><button data-iu="undo" aria-label="復原">↶</button><button data-iu="redo" aria-label="重做">↷</button></div>
-  <div class="ig"><button class="dot" data-ic="#3E3B39" style="--c:#3E3B39" aria-label="炭灰"></button><button class="dot" data-ic="#8C8782" style="--c:#8C8782" aria-label="霧灰"></button><button class="dot" data-ic="#B7676B" style="--c:#B7676B" aria-label="豆沙紅"></button><button class="dot" data-ic="#6F8CA3" style="--c:#6F8CA3" aria-label="霧藍"></button><button class="dot" data-ic="#8AA088" style="--c:#8AA088" aria-label="鼠尾草綠"></button><button class="dot" data-ic="#D39A6A" style="--c:#D39A6A" aria-label="杏橘"></button><button class="dot" data-ic="#9A86A8" style="--c:#9A86A8" aria-label="藕紫"></button><button class="dot" data-ic="#CDB57A" style="--c:#CDB57A" aria-label="奶茶黃"></button><label class="dot custom" aria-label="自訂顏色"><input type="color" id="inkCustom" value="#6F8CA3"></label><span class="sp"></span><button class="swt" data-if="1" role="switch"><i></i>手指也能畫</button></div>
+  <div class="irail"><button class="it" data-it="pen"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.6 7.6"/><circle cx="11" cy="11" r="2"/></svg><span>鋼筆</span></button><button class="it" data-it="pencil"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17 3a2.83 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg><span>鉛筆</span></button><button class="it" data-it="hl"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 11-6 6v3h9l3-3"/><path d="m22 12-4.6 4.6a2 2 0 0 1-2.8 0l-5.2-5.2a2 2 0 0 1 0-2.8L14 4"/></svg><span>螢光</span></button><button class="it" data-it="eraser"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg><span>橡皮擦</span></button><button class="it" data-nm="text" id="itText"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7V5h16v2"/><path d="M12 5v14"/><path d="M9 19h6"/></svg><span>打字</span></button><i class="ivr"></i><button class="it" data-iu="undo" aria-label="上一步"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg><span>上一步</span></button><button class="it" data-iu="redo" aria-label="下一步"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m15 14 5-5-5-5"/><path d="M20 9H9.5a5.5 5.5 0 0 0 0 11H13"/></svg><span>下一步</span></button><button class="it" data-if="1" role="switch" aria-label="手指也能畫"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 11V6a2 2 0 0 0-4 0"/><path d="M14 10V4a2 2 0 0 0-4 0v2"/><path d="M10 10.5V6a2 2 0 0 0-4 0v8"/><path d="M18 8a2 2 0 1 1 4 0v6a8 8 0 0 1-8 8h-2c-2.8 0-4.5-.86-5.99-2.34l-3.6-3.6a2 2 0 0 1 2.83-2.82L7 15"/></svg><span id="fingerL">手指 關</span></button></div>
+  <div class="ipop" id="inkPop" hidden>
+    <div class="ig"><button class="th" data-is="0" aria-label="細"><i></i></button><button class="th" data-is="1" aria-label="中"><i></i></button><button class="th" data-is="2" aria-label="粗"><i></i></button></div>
+    <div class="ig icol"><button class="dot" data-ic="#3E3B39" style="--c:#3E3B39" aria-label="炭灰"></button><button class="dot" data-ic="#8C8782" style="--c:#8C8782" aria-label="霧灰"></button><button class="dot" data-ic="#B7676B" style="--c:#B7676B" aria-label="豆沙紅"></button><button class="dot" data-ic="#6F8CA3" style="--c:#6F8CA3" aria-label="霧藍"></button><button class="dot" data-ic="#8AA088" style="--c:#8AA088" aria-label="鼠尾草綠"></button><button class="dot" data-ic="#D39A6A" style="--c:#D39A6A" aria-label="杏橘"></button><button class="dot" data-ic="#9A86A8" style="--c:#9A86A8" aria-label="藕紫"></button><button class="dot" data-ic="#CDB57A" style="--c:#CDB57A" aria-label="奶茶黃"></button><label class="dot custom" aria-label="自訂顏色"><input type="color" id="inkCustom" value="#6F8CA3"></label></div>
+    <label class="istab">防抖 <input type="range" id="inkStab" min="0" max="100" step="5"><b id="inkStabV"></b></label>
+  </div>
 </div>
 <div id="capLayer" hidden><div id="capBox" hidden></div><div class="caphint">用手指、筆或滑鼠<b>拖出一個框</b>，放開就會貼進右邊（下面）的筆記</div><button class="capcancel" id="capCancel">取消擷取</button></div>
 
@@ -876,11 +918,11 @@ body.zhdoc #article .ap{text-align:justify}
 </div>
 
 <nav class="tabbar" aria-label="主要分頁">
-  <button data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M4 11l8-6 8 6v8a1 1 0 0 1-1 1h-4v-6h-6v6H5a1 1 0 0 1-1-1z"/></svg>首頁</button>
-  <button data-tab="read"><svg viewBox="0 0 24 24"><path d="M12 6c-2-1.3-4.7-2-8-2v14c3.3 0 6 .7 8 2 2-1.3 4.7-2 8-2V4c-3.3 0-6 .7-8 2z"/><path d="M12 6v14"/></svg>閱讀</button>
-  <button data-tab="lib"><svg viewBox="0 0 24 24"><path d="M4 5h4v15H4zM10 5h4v15h-4z"/><path d="M16 6l3.6-1 3 14.5-3.6 1z"/></svg>文件庫</button>
-  <button data-tab="dict"><svg viewBox="0 0 24 24"><path d="M6 3h11a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2V5a2 2 0 0 1 1-2z"/><path d="M5 19a2 2 0 0 0 2 2h11v-4"/><path d="M9 8h6M9 11h4"/></svg>生字本<span class="tbadge" id="rvBadge" hidden></span></button>
-  <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8.5" r="4"/><path d="M4.5 20.5c1.2-4 4.2-6 7.5-6s6.3 2 7.5 6"/></svg>我的</button>
+  <button data-tab="home" aria-current="page"><svg viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></svg>首頁</button>
+  <button data-tab="read"><svg viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6"/><path d="M9 17h4"/></svg>閱讀</button>
+  <button data-tab="lib"><svg viewBox="0 0 24 24"><path d="M4 4v16"/><path d="M8 8v12"/><path d="M12 5v15"/><path d="m16 6 4 14"/></svg>文件庫</button>
+  <button data-tab="dict"><svg viewBox="0 0 24 24"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H19a1 1 0 0 1 1 1v18a1 1 0 0 1-1 1H6.5a1 1 0 0 1 0-5H20"/><path d="M10 2v8l3-3 3 3V2"/></svg>生字本<span class="tbadge" id="rvBadge" hidden></span></button>
+  <button data-tab="me"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>我的</button>
   <button class="navtog" data-tab="tog" aria-label="收合或展開選單"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>收合選單</button>
 </nav>
 
@@ -1787,7 +1829,7 @@ async function openPdf(buf,name,meta){
         if(gap>-Math.min(z,last.z)*0.3&&gap<Math.min(z,last.z)*0.12){ last.s+=it.str; last.w=Math.max(last.w,x+w-last.x); return; }
       }
       if(!it.str.trim()){ if(last&&!/\s$/.test(last.s)&&Math.abs(y-last.y)<last.z*0.3) last.s+=" "; return; }
-      last={s:it.str,x,y,w,z,tr:it.transform,para:-1,el:null,r:null}; items.push(last);
+      last={s:it.str,x,y,w,z,tr:it.transform,fn:it.fontName,para:-1,el:null,r:null}; items.push(last);
     });
     items.forEach(it=>{ it.s=it.s.replace(/\s+$/,""); });
     if(!items.length&&ocr&&Array.isArray(ocr[n-1])) ocr[n-1].forEach(l=>{ const [s,x,y,w,z]=l; if(s&&String(s).trim()) items.push({s:String(s),x,y,w,z,tr:[z,0,0,z,x,y],para:-1,el:null,r:null,ocr:true}); });
@@ -1982,12 +2024,14 @@ async function renderPage(pg){
   pg.task=null; pg.rendered=true;
   const tl=document.createElement("div"); tl.className="tl"; tl.dataset.p=pg.n;
   const frag=document.createDocumentFragment();
+  /* 文字層改用 PDF 內嵌的原字型量寬度，每個字的位置才會和畫面上的字對得上 */
+  const famOf=fn=>{ try{ if(fn&&pg.page.commonObjs.has(fn)){ const f=pg.page.commonObjs.get(fn); if(f&&f.loadedName) return '"'+f.loadedName+'",sans-serif'; } }catch(e){} return "sans-serif"; };
   pg.items.forEach((it,k)=>{
     const tx=pdfjsLib.Util.transform(vp.transform,it.tr), fh=Math.hypot(tx[2],tx[3])||it.z*scale;
     const left=tx[4], top=tx[5]-fh, tw=it.w*scale;
     const sp=document.createElement("span"); sp.textContent=it.s; sp.dataset.i=k;
-    sp.style.left=left+"px"; sp.style.top=top+"px"; sp.style.fontSize=fh+"px"; sp.style.fontFamily="sans-serif";
-    measure.font=fh+"px sans-serif"; const mw=measure.measureText(it.s).width;
+    sp.style.left=left+"px"; sp.style.top=top+"px"; sp.style.fontSize=fh+"px"; const fam=famOf(it.fn); sp.style.fontFamily=fam;
+    measure.font=fh+"px "+fam; const mw=measure.measureText(it.s).width;
     if(mw>0&&tw>0) sp.style.transform="scaleX("+(tw/mw)+")";
     if(it.para>=0&&doc.meta&&doc.meta.hl[it.para]) sp.classList.add("mk","mk-"+hlCol(doc.meta.hl[it.para]));
     if(it.para>=0&&pop&&pop.kind==="para"&&pop.pid===it.para&&pop.view==="main") sp.classList.add("hl");
@@ -2242,7 +2286,27 @@ function stopSpeak(){ try{ speechSynthesis.cancel(); }catch(e){} speaking=false;
 /* ================= Popup ================= */
 let pop=null;
 const wmark=document.createElement("div"); wmark.id="wmark"; wmark.hidden=true; document.body.appendChild(wmark);
-function showMark(r){ if(!r){ wmark.hidden=true; return; } Object.assign(wmark.style,{left:(r.left-3)+"px",top:(r.top-2)+"px",width:(r.width+6)+"px",height:(r.height+4)+"px"}); wmark.hidden=false; }
+let wmTrack=null, wmRaf=0;
+function wmDraw(){
+  if(!wmTrack) return;
+  if(!wmTrack.node.isConnected){ showMark(null); return; }
+  let rs=[]; try{ const rg=document.createRange(); rg.setStart(wmTrack.node,wmTrack.a); rg.setEnd(wmTrack.node,wmTrack.b); rs=[...rg.getClientRects()].filter(r=>r.width>.5&&r.height>.5); }catch(e){}
+  const key=rs.map(r=>[r.left,r.top,r.width,r.height].map(v=>Math.round(v*10)).join(",")).join("|");
+  if(key!==wmTrack.key){ wmTrack.key=key; wmark.textContent=""; rs.forEach(r=>{ const d=document.createElement("div"); d.className="wmb"; d.style.cssText="left:"+(r.left-1)+"px;top:"+(r.top-1)+"px;width:"+(r.width+2)+"px;height:"+(r.height+2)+"px"; wmark.appendChild(d); }); }
+  wmRaf=requestAnimationFrame(wmDraw);
+}
+/* 標記框：直接跟著那段文字的位置走（每一幀重新量），縮放、重新排版、彈窗開啟後都不會跑掉 */
+function showMark(x){
+  cancelAnimationFrame(wmRaf); wmTrack=null; wmark.textContent="";
+  if(!x||!x.node){ wmark.hidden=true; return; }
+  wmTrack={node:x.node,a:x.a,b:x.b,key:""}; wmark.hidden=false; wmDraw();
+}
+function markPhrase(cur){
+  if(!cur||pop!==cur||!cur.mk||!cur.phrase) return;
+  const {node,a,b}=cur.mk; if(!node||!node.isConnected) return;
+  const tl=node.textContent.toLowerCase(), ph=String(cur.phrase).toLowerCase(); let i=-1;
+  while((i=tl.indexOf(ph,i+1))>=0){ if(i<=a&&i+ph.length>=b){ showMark({node,a:i,b:i+ph.length}); return; } }
+}
 function sentenceIn(t,w){
   const re=/[^.!?]+(?:[.!?]+["”’)]*|$)\s*/g, wr=new RegExp("\\b"+w.replace(/[.*+?^${}()|[\]\\]/g,"\\$&")+"\\b","i"); let m;
   while((m=re.exec(t))) if(wr.test(m[0])) return m[0].trim().slice(0,600);
@@ -2265,7 +2329,7 @@ function wordAt(x,y){
     else if(a===0&&/^[a-z]/.test(w)){ const pv=sp.previousElementSibling, m=pv&&pv.textContent.match(/([A-Za-z]+)-\s*$/); if(m) w=m[1]+w; }
   }
   w=w.replace(/['’-]+$/,"");
-  return WORD.test(w)&&w.length>1?{w,rect}:null;
+  return WORD.test(w)&&w.length>1?{w,rect,node,a,b}:null;
 }
 function setHL(pid){
   document.querySelectorAll(".hl").forEach(x=>x.classList.remove("hl"));
@@ -2479,7 +2543,7 @@ async function startWord(){
   if(!OD){ cur.loadingDict=true; drawPop(); await withTimeout(loadDict(),10000); cur.loadingDict=false; }
   await withTimeout(loadCC(),5000);
   if(pop!==cur) return;
-  if(OD&&cur.sentence) cur.phrase=findPhrase(cur.sentence,cur.word);
+  if(OD&&cur.sentence){ cur.phrase=findPhrase(cur.sentence,cur.word); markPhrase(cur); }
   if(dict[key]){ cur.entry=dict[key]; drawPop(); autoSay(cur); return; }
   if(OD){ const e=odEntry(cur.word); if(e){ e.t=Date.now(); e.from=wordFrom(cur); if(S.autoAdd!==false){ dict[key]=e; saveDict(); } cur.entry=e; drawPop(); autoSay(cur); return; } }
   if(!cur.force&&(OD?looksBad(cur.word):quickBad(cur.word))){ cur.wordBad=true; drawPop(); return; }
@@ -2621,7 +2685,8 @@ viewer.addEventListener("click",e=>{
   if(pid<0){ if(!e.target.closest(".dz")) closePop(); return; }
   const wa=wordAt(e.clientX,e.clientY);
   openPara(pid,wa?wa.w:"",e.clientX,e.clientY);
-  showMark(wa&&pop&&pop.view==="word"?wa.rect:null);
+  if(wa&&pop&&pop.view==="word") pop.mk={node:wa.node,a:wa.a,b:wa.b};
+  showMark(wa&&pop&&pop.view==="word"?wa:null);
 });
 let scT=null;
 viewer.addEventListener("scroll",()=>{ hideSel(); showMark(null); savePos(); if(scT) return; scT=requestAnimationFrame(()=>{ scT=null; updatePageNum(); placePop(); }); },{passive:true});
@@ -3166,10 +3231,11 @@ document.addEventListener("visibilitychange",()=>{ if(document.visibilityState==
 
 /* ================= Notes, handwriting, PDF annotation ================= */
 const hashS=s=>{ let h=0; for(const c of String(s)) h=(h*31+c.charCodeAt(0))>>>0; return h.toString(36); };
-const INK=Object.assign({tool:"pen",color:"#3E3B39",size:1,finger:false},(()=>{ try{ return JSON.parse(store.get("yidu:ink")||"{}")||{}; }catch(e){ return {}; } })());
+const INK=Object.assign({tool:"pen",color:"#3E3B39",size:1,finger:false,stab:55},(()=>{ try{ return JSON.parse(store.get("yidu:ink")||"{}")||{}; }catch(e){ return {}; } })());
 { const M={"#1e1a17":"#3E3B39","#5b5652":"#8C8782","#e8452c":"#B7676B","#2f6fd0":"#6F8CA3","#2e9a55":"#8AA088","#f08a24":"#D39A6A","#8a4fd0":"#9A86A8","#d9a400":"#CDB57A"}; const m=M[String(INK.color).toLowerCase()]; if(m) INK.color=m; }
 const saveInk=()=>store.set("yidu:ink",JSON.stringify(INK));
-const PEN_W=[1.6,3,5], HL_W=[10,16,26];
+const PEN_W=[1.6,3,5], PENCIL_W=[2.4,3.8,6], HL_W=[10,16,26];
+const inkW=t=>t==="hl"?HL_W:t==="pencil"?PENCIL_W:PEN_W;
 let npOpen=false, npTab="note", noteMode=store.get("yidu:nmode")==="ink"?"ink":"text", annOn=false, penSeen=false;
 function normNote(n){ n=n||{}; n.html=n.html||""; n.ink=Array.isArray(n.ink)?n.ink:[]; n.ann=n.ann&&typeof n.ann==="object"?n.ann:{}; n.t=n.t||0; n.h=n.h||0; return n; }
 async function loadNote(d){
@@ -3195,8 +3261,51 @@ const htmlText=h=>(new DOMParser().parseFromString(String(h||"").replace(/<img[^
 /* ---- ink drawing ---- */
 function sizeCanvas(cv,w,h){ const d=Math.min(devicePixelRatio||1,2); w=Math.max(1,Math.round(w)); h=Math.max(1,Math.round(h)); cv.width=Math.round(w*d); cv.height=Math.round(h*d); cv.style.width=w+"px"; cv.style.height=h+"px"; }
 const pf=p=>0.45+(p==null?0.5:p)*1.1;
+/* 新版筆跡（v:2）：先把輸入點做防抖平滑，再依壓力或速度決定粗細；舊筆跡照舊方式畫，不受影響 */
+const _clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+function _rng(a){ return function(){ a|=0; a=a+0x6D2B79F5|0; let t=Math.imul(a^a>>>15,1|a); t=t+Math.imul(t^t>>>7,61|t)^t; return((t^t>>>14)>>>0)/4294967296; }; }
+function inkPrep(s,k){
+  const R=s.pts; if(!R.length) return [];
+  const kk=Math.min(.9,(s.st==null?55:s.st)/100*.92); let sx=R[0][0],sy=R[0][1],sw=null; const out=[];
+  for(let i=0;i<R.length;i++){
+    const x=R[i][0],y=R[i][1],p=R[i][2]==null?.5:R[i][2];
+    if(i){ sx+=(x-sx)*(1-kk); sy+=(y-sy)*(1-kk); }
+    let f;
+    if(s.r) f=s.t==="pencil"?.75+p*.7:.5+p*1.0;
+    else { const v=i?Math.hypot(x-R[i-1][0],y-R[i-1][1])*k:0; f=s.t==="pen"?_clamp(1.25-v/38,.55,1.15):1; if(i<4&&s.t==="pen") f*=.6+i*.1; }
+    sw=sw==null?f:sw+(f-sw)*.28; out.push([sx,sy,sw,p]);
+  }
+  if(kk>0&&out.length>1){ const l=R[R.length-1], e=out[out.length-1]; for(let t=1;t<=3;t++) out.push([e[0]+(l[0]-e[0])*t/3,e[1]+(l[1]-e[1])*t/3,e[2]*(1-t*.12),e[3]]); }
+  return out;
+}
+function drawStroke2(ctx,s,k){
+  const Q=inkPrep(s,k); if(!Q.length) return; const B=s.w*k;
+  ctx.save(); ctx.lineCap="round"; ctx.lineJoin="round"; ctx.strokeStyle=ctx.fillStyle=s.c;
+  if(s.t==="hl"){
+    ctx.globalAlpha=.33; ctx.lineWidth=B; ctx.beginPath(); ctx.moveTo(Q[0][0]*k,Q[0][1]*k);
+    if(Q.length===1) ctx.lineTo(Q[0][0]*k+.5,Q[0][1]*k);
+    for(let i=1;i<Q.length;i++){ const a=Q[i-1],b=Q[i]; ctx.quadraticCurveTo(a[0]*k,a[1]*k,(a[0]+b[0])/2*k,(a[1]+b[1])/2*k); }
+    ctx.stroke(); ctx.restore(); return;
+  }
+  if(Q.length===1){ ctx.beginPath(); ctx.arc(Q[0][0]*k,Q[0][1]*k,Math.max(.6,B*Q[0][2]/2),0,7); ctx.fill(); ctx.restore(); return; }
+  const rnd=_rng(s.sd||1); let px=Q[0][0]*k,py=Q[0][1]*k;
+  for(let i=1;i<Q.length;i++){
+    const a=Q[i-1],b=Q[i],ax=a[0]*k,ay=a[1]*k,mx=(a[0]+b[0])/2*k,my=(a[1]+b[1])/2*k,w=B*(a[2]+b[2])/2;
+    if(s.t==="pencil"){
+      const al=s.r?.4+_clamp(b[3],0,1)*.5:.62;
+      ctx.globalAlpha=al*.7; ctx.lineWidth=w*.65; ctx.beginPath(); ctx.moveTo(px,py); ctx.quadraticCurveTo(ax,ay,mx,my); ctx.stroke();
+      const len=Math.hypot(mx-px,my-py), n=Math.max(1,Math.ceil(len/1.3));
+      for(let t=0;t<n;t++){ const u=(t+1)/n, x=px+(mx-px)*u, y=py+(my-py)*u;
+        for(let j=0;j<3;j++){ ctx.globalAlpha=(.25+rnd()*.35)*al; const an=rnd()*6.283, r=rnd()*w*.55; ctx.beginPath(); ctx.arc(x+Math.cos(an)*r,y+Math.sin(an)*r,w*(.1+rnd()*.18),0,7); ctx.fill(); } }
+    } else { ctx.lineWidth=w; ctx.beginPath(); ctx.moveTo(px,py); ctx.quadraticCurveTo(ax,ay,mx,my); ctx.stroke(); }
+    px=mx; py=my;
+  }
+  const l=Q[Q.length-1]; if(s.t!=="pencil"){ ctx.lineWidth=B*l[2]; ctx.beginPath(); ctx.moveTo(px,py); ctx.lineTo(l[0]*k,l[1]*k); ctx.stroke(); }
+  ctx.restore();
+}
 function drawStroke(ctx,s,k){
   const P=s.pts; if(!P||!P.length) return;
+  if(s.v===2){ drawStroke2(ctx,s,k); return; }
   ctx.save(); ctx.lineCap="round"; ctx.lineJoin="round"; ctx.strokeStyle=s.c; ctx.fillStyle=s.c;
   if(s.t==="hl"){
     ctx.globalAlpha=.33; ctx.lineWidth=s.w*k; ctx.beginPath(); ctx.moveTo(P[0][0]*k,P[0][1]*k);
@@ -3251,7 +3360,8 @@ function attachInk(S){
     e.preventDefault(); try{ cv.setPointerCapture(e.pointerId); }catch(err){} pid=e.pointerId;
     const p=pos(e);
     if(INK.tool==="eraser"){ cur={erase:true,removed:[]}; eraseAt(S,p,cur); return; }
-    cur={t:INK.tool==="hl"?"hl":"pen",c:INK.color,w:Math.round((INK.tool==="hl"?HL_W:PEN_W)[INK.size]/S.k()*100)/100,pts:[p],hp:p};
+    const tt=INK.tool==="hl"?"hl":INK.tool==="pencil"?"pencil":"pen";
+    cur={v:2,t:tt,c:INK.color,w:Math.round(inkW(tt)[INK.size]/S.k()*100)/100,st:INK.stab,r:e.pointerType==="pen",sd:(Math.random()*1e9)|0,pts:[p],hp:p};
     paintSurface(S,cur); holdArm();
   });
   cv.addEventListener("pointermove",e=>{
@@ -3282,16 +3392,24 @@ noteS.cv=$("#nInk"); attachInk(noteS);
 
 /* ---- ink toolbar ---- */
 function syncInkBar(){
-  document.querySelectorAll("#inkBar [data-it]").forEach(b=>b.classList.toggle("on",b.dataset.it===INK.tool));
+  const inkOn=annOn||noteMode==="ink", tt=INK.tool==="eraser"?"pen":INK.tool;
+  document.querySelectorAll("#inkBar [data-it]").forEach(b=>b.classList.toggle("on",inkOn&&b.dataset.it===INK.tool));
   document.querySelectorAll("#inkBar [data-ic]").forEach(b=>b.classList.toggle("on",b.dataset.ic.toLowerCase()===INK.color.toLowerCase()));
-  document.querySelectorAll("#inkBar [data-is]").forEach(b=>b.classList.toggle("on",+b.dataset.is===INK.size));
-  $('#inkBar [data-if]').classList.toggle("on",!!INK.finger);
+  document.querySelectorAll("#inkBar [data-is]").forEach(b=>{ const w=inkW(tt)[+b.dataset.is], i=b.firstElementChild; b.classList.toggle("on",+b.dataset.is===INK.size); i.style.height=Math.min(14,w*(tt==="hl"?.7:1.15))+"px"; i.style.opacity=tt==="hl"?".45":"1"; });
+  $('#inkBar [data-if]').classList.toggle("on",!!INK.finger); $("#fingerL").textContent=INK.finger?"手指 開":"手指 關";
+  document.querySelectorAll("#inkBar [data-iu],#inkBar [data-if]").forEach(b=>{ b.disabled=!inkOn; });
+  $("#inkStab").value=INK.stab; $("#inkStabV").textContent=INK.stab;
   const cu=$("#inkCustom").closest(".dot"); cu.classList.toggle("on",![...document.querySelectorAll("#inkBar [data-ic]")].some(b=>b.dataset.ic.toLowerCase()===INK.color.toLowerCase()));
   document.body.classList.toggle("inkfinger",!!INK.finger);
 }
 $("#inkBar").addEventListener("click",e=>{
-  const b=e.target.closest("button"); if(!b) return;
-  if(b.dataset.it){ INK.tool=b.dataset.it; }
+  const b=e.target.closest("button"); if(!b||b.disabled) return;
+  if(b.dataset.it){
+    const t=b.dataset.it;
+    if(!annOn&&noteMode!=="ink"){ INK.tool=t; noteMode="ink"; store.set("yidu:nmode","ink"); $("#nText").blur(); showNpTab(); sizeNote(); $("#inkPop").hidden=true; }
+    else if(INK.tool===t&&t!=="eraser") $("#inkPop").hidden=!$("#inkPop").hidden;
+    else { INK.tool=t; $("#inkPop").hidden=true; }
+  }
   else if(b.dataset.ic){ INK.color=b.dataset.ic; if(INK.tool==="eraser") INK.tool="pen"; }
   else if(b.dataset.is){ INK.size=+b.dataset.is; }
   else if(b.dataset.iu==="undo") inkUndo();
@@ -3299,10 +3417,13 @@ $("#inkBar").addEventListener("click",e=>{
   else if(b.dataset.if){ INK.finger=!INK.finger; toast(INK.finger?"手指也能畫了（要捲動請用兩指）":"手指改回捲動，觸控筆和滑鼠才會畫"); }
   saveInk(); syncInkBar();
 });
+$("#inkStab").addEventListener("input",e=>{ INK.stab=+e.target.value; $("#inkStabV").textContent=INK.stab; saveInk(); });
+document.addEventListener("pointerdown",e=>{ if(!$("#inkPop").hidden&&!e.target.closest("#inkBar")) $("#inkPop").hidden=true; },true);
 $("#inkCustom").addEventListener("input",e=>{ INK.color=e.target.value; if(INK.tool==="eraser") INK.tool="pen"; saveInk(); syncInkBar(); });
 function placeInkBar(){
-  if(annOn) $("#annSlot").appendChild($("#inkBar")); else $("#npInkSlot").appendChild($("#inkBar"));
-  $("#npInkSlot").hidden=annOn||noteMode!=="ink"; $("#inkBar").hidden=!(annOn||(npOpen&&noteMode==="ink"));
+  const ib=$("#inkBar");
+  if(annOn) $("#annSlot").appendChild(ib); else $("#npRail").appendChild(ib);
+  $("#npRail").hidden=annOn||npTab!=="note"; ib.hidden=!(annOn||(npOpen&&npTab==="note")); $("#inkPop").hidden=true;
 }
 document.addEventListener("keydown",e=>{ if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==="z"&&(annOn||(npOpen&&noteMode==="ink"))&&!(e.target.closest&&e.target.closest("input,textarea,[contenteditable=true]"))){ e.preventDefault(); e.shiftKey?inkRedo():inkUndo(); } });
 
@@ -3331,7 +3452,7 @@ function layoutSplit(){
 function relayoutDoc(){ if(doc&&doc.type==="pdf"&&!doc.dual&&view==="pdf"){ const p=curPage(); buildPages(); gotoPage(p,true); } }
 function showNpTab(){
   document.querySelectorAll("[data-nt]").forEach(b=>b.classList.toggle("on",b.dataset.nt===npTab));
-  const tr=npTab==="tr"; $("#npBar").hidden=tr; $("#npBody").hidden=tr; $("#npTr").hidden=!tr;
+  const tr=npTab==="tr"; $("#npBar").hidden=tr||noteMode==="ink"; $("#npWrap").hidden=tr; $("#npBody").hidden=tr; $("#npTr").hidden=!tr;
   document.querySelectorAll("[data-nm]").forEach(b=>b.classList.toggle("on",b.dataset.nm===noteMode));
   $("#txtTools").hidden=noteMode!=="text"; $("#nText").contentEditable=noteMode==="text"&&!tr?"true":"false";
   $("#capBtn").hidden=!(doc&&doc.type==="pdf");
@@ -3983,7 +4104,7 @@ viewer.addEventListener("contextmenu",e=>{
   if(pid<0&&!selT) return;
   e.preventDefault(); $("#tip").hidden=true;
   const wa=selT?null:wordAt(e.clientX,e.clientY);
-  ctx={pid,word:wa?wa.w:"",rect:wa?wa.rect:null,x:e.clientX,y:e.clientY,sel:selT};
+  ctx={pid,word:wa?wa.w:"",rect:wa?wa.rect:null,wa,x:e.clientX,y:e.clientY,sel:selT};
   const m=doc.meta, items=[];
   if(selT){ items.push('<button data-c="sel">'+(WORD.test(selT)?"查這個字":"翻譯選取的文字")+"</button>",'<button data-c="copysel">複製</button>'); if(pid>=0) items.push('<div class="ctxsep"></div>'); }
   if(pid>=0){
@@ -4005,7 +4126,7 @@ $("#ctxMenu").addEventListener("click",e=>{
   if(isDeskR()&&["sel","word","para","plain","note"].includes(c)&&dTab!=="tr"&&dTab!=="note") setDTab("tr");
   if(c==="sel"){ if(selPending){ const p=selPending; openSel(p.t,p.r,p.ctx); } else toast("請重新選取一次。"); }
   else if(c==="copysel") copy(ctx.sel);
-  else if(c==="word"){ closePop(); openPara(pid,ctx.word,ctx.x,ctx.y); showMark(ctx.rect&&pop&&pop.view==="word"?ctx.rect:null); }
+  else if(c==="word"){ closePop(); openPara(pid,ctx.word,ctx.x,ctx.y); if(ctx.wa&&pop&&pop.view==="word") pop.mk={node:ctx.wa.node,a:ctx.wa.a,b:ctx.wa.b}; showMark(ctx.wa&&pop&&pop.view==="word"?ctx.wa:null); }
   else if(c==="para"){ closePop(); openPara(pid,"",ctx.x,ctx.y); }
   else if(c==="plain"){ closePop(); openPara(pid,"",ctx.x,ctx.y); plainPara(); }
   else if(c==="mk"){ const k=b.dataset.k; if(k) doc.meta.hl[pid]=k; else delete doc.meta.hl[pid]; saveMeta(); applyMarks(); if(pop&&pop.pid===pid) drawPop(); toast(k?"已畫成「"+MKN[k]+"」重點":"已取消重點"); }
