@@ -2287,10 +2287,37 @@ function stopSpeak(){ try{ speechSynthesis.cancel(); }catch(e){} speaking=false;
 let pop=null;
 const wmark=document.createElement("div"); wmark.id="wmark"; wmark.hidden=true; document.body.appendChild(wmark);
 let wmTrack=null, wmRaf=0;
+/* PDF：文字層的字型和畫面上的字對不準，所以直接看畫面（canvas）上字與字之間的空白，找出每個字真正的位置 */
+function pdfBox(node,a,b){
+  try{
+    const sp=node.parentElement; if(!sp||!sp.parentElement||!sp.parentElement.classList.contains("tl")) return null;
+    const pageEl=sp.closest(".page"), cvs=pageEl&&pageEl.querySelector("canvas:not(.ink)"); if(!cvs) return null;
+    const t=node.textContent, toks=[], re=/\S+/g; let m; while((m=re.exec(t))) toks.push({s:m.index,e:m.index+m[0].length});
+    const ia=toks.findIndex(k=>a>=k.s&&a<k.e), ib=toks.findIndex(k=>b-1>=k.s&&b-1<k.e); if(ia<0||ib<0) return null;
+    const cr=cvs.getBoundingClientRect(), sr=sp.getBoundingClientRect(); if(!cr.width||!sr.width||!sr.height) return null;
+    const kx=cvs.width/cr.width, ky=cvs.height/cr.height, fh=sr.height;
+    const x0=Math.max(0,Math.floor((sr.left-cr.left)*kx)), x1=Math.min(cvs.width,Math.ceil((sr.right-cr.left)*kx));
+    const y0=Math.max(0,Math.floor((sr.bottom-.78*fh-cr.top)*ky)), y1=Math.min(cvs.height,Math.ceil((sr.bottom+.02*fh-cr.top)*ky));
+    if(x1-x0<4||y1-y0<2) return null;
+    const W=x1-x0, H=y1-y0, d=cvs.getContext("2d").getImageData(x0,y0,W,H).data, ink=new Uint8Array(W);
+    for(let y=0;y<H;y++) for(let x=0;x<W;x++){ const i=(y*W+x)*4; if(d[i+3]>40&&(d[i]+d[i+1]+d[i+2])/3<195) ink[x]=1; }
+    const gaps=(g)=>{ const cl=[]; let st=-1,last=-1; for(let x=0;x<W;x++){ if(ink[x]){ if(st<0) st=x; else if(x-last>g){ cl.push([st,last]); st=x; } last=x; } } if(st>=0) cl.push([st,last]); return cl; };
+    let cl=null; for(const f of [.16,.13,.2,.11,.24,.09,.28]){ const c=gaps(f*fh*kx); if(c.length===toks.length){ cl=c; break; } }
+    if(!cl) return null;
+    const wt=ch=>/[A-Za-z0-9\u00C0-\u024F]/.test(ch)?1:.4;
+    const part=(tk,from,to)=>{ let tot=0,pre=0,upto=0; for(let i=tk.s;i<tk.e;i++){ const w=wt(t[i]); tot+=w; if(i<from) pre+=w; if(i<to) upto+=w; } return [pre/tot,upto/tot]; };
+    const A=cl[ia], B=cl[ib], pa=part(toks[ia],a,Math.min(b,toks[ia].e)), pb=part(toks[ib],Math.max(a,toks[ib].s),Math.min(b,toks[ib].e));
+    const L=A[0]+(A[1]-A[0]+1)*pa[0], R=B[0]+(B[1]-B[0]+1)*pb[1];
+    const toClient=px=>cr.left+(x0+px)/kx;
+    return {sp, fl:(toClient(L)-sr.left)/sr.width, fr:(toClient(R)-sr.left)/sr.width};
+  }catch(e){ return null; }
+}
 function wmDraw(){
   if(!wmTrack) return;
   if(!wmTrack.node.isConnected){ showMark(null); return; }
-  let rs=[]; try{ const rg=document.createRange(); rg.setStart(wmTrack.node,wmTrack.a); rg.setEnd(wmTrack.node,wmTrack.b); rs=[...rg.getClientRects()].filter(r=>r.width>.5&&r.height>.5); }catch(e){}
+  let rs=[];
+  if(wmTrack.pdf){ const sr=wmTrack.pdf.sp.getBoundingClientRect(); if(sr.width>0) rs=[{left:sr.left+wmTrack.pdf.fl*sr.width,top:sr.bottom-.9*sr.height,width:(wmTrack.pdf.fr-wmTrack.pdf.fl)*sr.width,height:1.12*sr.height}]; }
+  else try{ const rg=document.createRange(); rg.setStart(wmTrack.node,wmTrack.a); rg.setEnd(wmTrack.node,wmTrack.b); rs=[...rg.getClientRects()].filter(r=>r.width>.5&&r.height>.5); }catch(e){}
   const key=rs.map(r=>[r.left,r.top,r.width,r.height].map(v=>Math.round(v*10)).join(",")).join("|");
   if(key!==wmTrack.key){ wmTrack.key=key; wmark.textContent=""; rs.forEach(r=>{ const d=document.createElement("div"); d.className="wmb"; d.style.cssText="left:"+(r.left-1)+"px;top:"+(r.top-1)+"px;width:"+(r.width+2)+"px;height:"+(r.height+2)+"px"; wmark.appendChild(d); }); }
   wmRaf=requestAnimationFrame(wmDraw);
@@ -2299,7 +2326,7 @@ function wmDraw(){
 function showMark(x){
   cancelAnimationFrame(wmRaf); wmTrack=null; wmark.textContent="";
   if(!x||!x.node){ wmark.hidden=true; return; }
-  wmTrack={node:x.node,a:x.a,b:x.b,key:""}; wmark.hidden=false; wmDraw();
+  wmTrack={node:x.node,a:x.a,b:x.b,key:"",pdf:pdfBox(x.node,x.a,x.b)}; wmark.hidden=false; wmDraw();
 }
 function markPhrase(cur){
   if(!cur||pop!==cur||!cur.mk||!cur.phrase) return;
