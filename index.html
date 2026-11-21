@@ -386,6 +386,49 @@ body.nink #nInk{pointer-events:auto;touch-action:pan-x pan-y}
 body.nink.inkfinger #nInk,body.annon.inkfinger .page canvas.ink{touch-action:none}
 .plink{display:inline;font-family:var(--f-en);font-style:italic;font-weight:600;font-size:.92em;color:var(--accent);padding:0 1px;margin:0 1px;text-decoration:none;cursor:pointer;white-space:nowrap}
 .plink::before{content:"〔"}.plink::after{content:"〕"}
+/* 點引用文獻 */
+.cl{position:absolute;inset:0;pointer-events:none}
+.citeul{position:absolute;pointer-events:auto;cursor:pointer;border-bottom:1.5px dotted rgba(155,47,53,.6);border-radius:2px}
+.citeul:hover,.citeul.on{background:rgba(246,210,62,.3)}
+body.annon .cl,body.annon .citeul{pointer-events:none}
+#article .cite{text-decoration:underline dotted rgba(155,47,53,.6);text-decoration-thickness:1.5px;text-underline-offset:4px;cursor:pointer;border-radius:2px}
+#article .cite.on,#article .cite:hover{background:rgba(246,210,62,.3)}
+#citeCard{position:fixed;z-index:115;width:min(380px,calc(100vw - 20px));background:var(--chrome);border:1.5px solid #1E1A17;border-radius:10px;box-shadow:var(--hard-lg,0 10px 28px rgba(0,0,0,.18));padding:12px 14px;font-family:var(--f-ui)}
+#citeCard[hidden]{display:none}
+#citeCard .chd{display:flex;align-items:center;gap:8px;border-bottom:1.5px solid #1E1A17;padding-bottom:6px;margin-bottom:8px}
+#citeCard .chd b{flex:1;color:var(--accent);font-size:13px;letter-spacing:.1em}
+#citeCard .chd span{font-size:12px;color:var(--muted);font-family:var(--f-en);max-width:55%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#citeCard .cx{border:0;background:none;font-size:20px;cursor:pointer;line-height:1;color:var(--ink)}
+#citeCard .ce{font-size:14px;line-height:1.6;padding:4px 0;font-family:var(--f-en),var(--f-ui)}
+#citeCard .ce+.ce{border-top:1px dotted var(--line);margin-top:6px;padding-top:8px}
+#citeCard .cacts{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+#citeCard .cacts button{font:inherit;font-size:13.5px;font-weight:600;border:1.5px solid #1E1A17;background:var(--chrome);border-radius:8px;padding:5px 11px;cursor:pointer;color:var(--ink)}
+#citeCard .cacts button.pri{background:var(--accent);color:#fff;border-color:var(--accent)}
+#citeBack{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:110;box-shadow:0 6px 18px rgba(0,0,0,.2)}
+#citeBack[hidden]{display:none}
+/* 原文對照：上標註腳 */
+button.srcfn,.srcfn{all:unset;display:inline-block;box-sizing:border-box;padding:0 2px;margin:0 1px;font:700 .68em/1 var(--f-en);color:var(--accent);vertical-align:.55em;cursor:pointer;min-width:12px;text-align:center;border-radius:3px}
+button.srcfn.warn,.srcfn.warn{color:#b07800}
+button.srcfn:hover,button.srcfn:focus-visible{text-decoration:underline;outline:none}
+#srcSheet{position:fixed;left:0;right:0;bottom:0;z-index:120;display:flex;justify-content:center;pointer-events:none}
+#srcSheet[hidden]{display:none}
+.srcpop{pointer-events:auto;width:min(560px,100%);max-height:78vh;overflow:auto;background:var(--chrome);border:1.5px solid #1E1A17;border-radius:14px 14px 0 0;box-shadow:0 -8px 30px rgba(0,0,0,.2);padding:12px 14px calc(16px + env(safe-area-inset-bottom))}
+@media(min-width:700px){#srcSheet{bottom:24px}.srcpop{border-radius:14px;padding-bottom:16px}}
+.srcpop .shd{display:flex;align-items:center;gap:8px;border-bottom:1.5px solid #1E1A17;padding-bottom:8px;margin-bottom:8px}
+.srcpop .shd b{flex:1;color:var(--accent);font-size:15px}
+.srcpop .sx{border:0;background:none;font-size:22px;line-height:1;cursor:pointer;padding:2px 6px;color:var(--ink)}
+.srcpop .sctx{font-size:14px;color:var(--muted);padding:6px 8px;border-left:3px solid var(--line);margin:4px 0}
+.srcpop .scur{font-size:16px;padding:8px 10px;border-left:3px solid var(--accent);background:#FBF5E6;border-radius:0 8px 8px 0;margin:6px 0}
+.srcpop .sctx small,.srcpop .scur small{display:block;font-size:11px;color:var(--muted);margin-bottom:2px}
+.srcpop .snum{background:rgba(246,210,62,.5);border-radius:3px;padding:0 1px;font-weight:700}
+.srcpop .scond{text-decoration:underline;text-decoration-color:var(--accent);text-decoration-thickness:2px;text-underline-offset:3px;font-weight:700}
+.srcpop .sq{border:1.5px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;font-size:14px;background:#FDFBF5}
+.srcpop .sq .qs{color:var(--muted);font-size:13px;margin-bottom:4px}
+.srcpop .qr.w{color:#7a4d00}.srcpop .qr.ok{color:#2f5a27}
+.srcpop .qn{font-size:12px;color:var(--muted);margin-top:4px}
+.srcpop .slg{font-size:12px;color:var(--muted);display:flex;gap:12px;margin:6px 0 2px}
+.srcpop .sacts{display:flex;gap:10px;align-items:center;margin-top:10px;flex-wrap:wrap}
+.srcpop .smore{font:inherit;font-size:13px;color:var(--muted);border:0;background:none;text-decoration:underline;cursor:pointer;padding:0}
 .ncap{margin:8px 0;padding:6px;border:1px solid var(--line);border-radius:10px;background:#fff;display:inline-block;max-width:100%}
 .ncap img{display:block;max-width:100%;height:auto}
 .ncap figcaption{font-size:12.5px;margin-top:4px;color:#555}
@@ -477,6 +520,16 @@ body.sport #npRail .ipop{left:6px;top:100%;margin:6px 0 0}
 .expck{display:flex;flex-direction:column;gap:6px;margin:6px 0 12px}
 .expck label{display:flex;align-items:center;gap:10px;font-size:15px;border:1px solid var(--line);border-radius:12px;padding:8px 12px;background:var(--chrome);cursor:pointer}
 .expck label.off{opacity:.45;cursor:default}
+#expCite{border:1.5px solid var(--line);border-radius:12px;padding:10px 12px;margin:0 0 12px;background:var(--chrome)}
+#expCite[hidden]{display:none}
+.ecrow{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin:6px 0}
+.ecseg{display:inline-flex;border:1.5px solid #1E1A17;border-radius:8px;overflow:hidden}
+.ecseg button{font:inherit;font-size:13.5px;font-weight:600;border:0;border-radius:0;background:var(--chrome);padding:5px 12px;cursor:pointer;min-height:0}
+.ecseg button+button{border-left:1.5px solid #1E1A17}.ecseg button.on{background:var(--mustard)}
+.ecmeta{display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:13.5px;margin:8px 0;background:#FBF7EE;border:1px solid var(--line);border-radius:8px;padding:10px}
+.ecmeta label{color:var(--muted);align-self:center}
+.ecmeta input{font:inherit;font-size:13.5px;border:1px solid var(--line);border-radius:6px;padding:4px 7px;background:#fff;width:100%;min-width:0}
+#ecOut{white-space:pre-wrap;font:14px/1.7 var(--f-ui);background:#fff;border:1px solid var(--line);border-radius:8px;padding:10px;margin:6px 0;max-height:240px;overflow:auto}
 .expck input{width:20px;height:20px;accent-color:var(--accent)}
 .expck small{margin-left:auto;color:var(--muted);font-size:12.5px}
 #expMsg{min-height:1.2em}
@@ -1151,6 +1204,22 @@ body.zhdoc #article .ap{text-align:justify}
     <h2 id="expTitle">匯出</h2>
     <p>要放進哪些內容？</p>
     <div class="expck" id="expItems"></div>
+    <div id="expCite" hidden>
+      <div class="ecrow"><span class="lab" style="margin:0">引用格式</span><div class="ecseg" id="ecFmt"><button data-cf="apa">APA 第 7 版</button><button data-cf="chi">Chicago 作者-年份</button></div></div>
+      <div class="ecmeta" id="ecMeta">
+        <label>作者</label><input data-bm="authors" placeholder="例：張佑宗、魏志展／Wendt, A.">
+        <label>年份</label><input data-bm="year">
+        <label>篇名</label><input data-bm="title">
+        <label>期刊</label><input data-bm="journal">
+        <label>卷（期）</label><input data-bm="vol" placeholder="例：29（1）">
+        <label>頁碼</label><input data-bm="pages" placeholder="例：55-111">
+        <label>DOI</label><input data-bm="doi">
+      </div>
+      <div class="ecrow"><button id="ecAI">用 AI 讀出文件資訊</button><span class="hintline" id="ecMsg" style="margin:0"></span></div>
+      <div class="ecrow" style="justify-content:space-between"><b style="font-size:14px">複製出來的樣子</b><button class="primary" id="ecCopy">複製</button></div>
+      <pre id="ecOut"></pre>
+      <p class="hintline">頁碼會換成期刊上的頁碼（依「頁碼」欄的起始頁推算）。AI 讀出的資訊可能有錯，請對照論文第一頁確認。</p>
+    </div>
     <span class="lab">格式</span>
     <div class="chips" id="expFmt"><button data-ef="docx">Word</button><button data-ef="pptx">PPT</button><button data-ef="pdf">PDF</button><button data-ef="txt">TXT</button></div>
     <p class="hintline" id="expHint" style="margin-top:8px"></p>
@@ -1160,6 +1229,9 @@ body.zhdoc #article .ap{text-align:justify}
 </div>
 <div id="printView"></div>
 <div id="toast" role="status" aria-live="polite" hidden></div>
+<div id="citeCard" hidden role="dialog" aria-label="參考文獻"></div>
+<button id="citeBack" class="primary" hidden>↩ 回到剛剛讀的地方</button>
+<div id="srcSheet" hidden><div class="srcpop" id="srcPop" role="dialog" aria-label="原文"></div></div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"></script>
@@ -1311,7 +1383,7 @@ const P_CITE=(style,info,head)=>"請根據下面這份文件開頭的內容，�
 function parseArr(t){ const a=t.indexOf("["), b=t.lastIndexOf("]"); if(a<0||b<a) return null; try{ return JSON.parse(t.slice(a,b+1)); }catch(e){ return null; } }
 const P_DICT=(w,ctx)=>"你是給台灣大學生用的英漢學術字典。請解釋英文單字「"+w+"」"+(ctx?"（它出現在這句：「"+ctx+"」）":"")+"。只回傳 JSON，不要其他文字，格式：{\"lemma\":\"原形\",\"ipa\":\"音標\",\"pos\":\"詞性（中文，如 名詞）\",\"senses\":[\"最多3個常見中文釋義，台灣繁體\"],\"note\":\"學術用法或常見搭配的簡短提醒，沒有就給空字串\"}。如果「"+w+"」不是真實存在的英文單字、專有名詞或常見縮寫（例如是被切斷的單字片段或亂碼），或在句子裡它其實只是某個較長單字的一部分，不要硬解釋，只回傳 {\"invalid\":true}";
 const P_HERE=(w,s)=>"英文單字「"+w+"」在下面這個句子裡是什麼意思？只輸出一行台灣繁體中文解釋，30 字以內，不要其他文字。\n句子："+s;
-const P_REF=()=>doc&&doc.type==="pdf"?"文章裡的〔p.N〕標記是頁碼。每個重點、發現或引用後面用（p.N）標出它在第幾頁，例如「信任度下降（p.4）」；不確定頁碼就不要標。":"文章裡的〔第N段〕標記是段落編號。每個重點後面用（第N段）標出出處；不確定就不要標。";
+const P_REF=()=>doc&&doc.type==="pdf"?"文章裡的〔p.N〕標記是頁碼，〔第N段〕標記是段落編號。每個重點、發現或引用後面用（第N段）標出它出自哪一段，例如「信任度下降（第12段）」；跨好幾段就寫（第12、13段）；不確定就不要標。":"文章裡的〔第N段〕標記是段落編號。每個重點後面用（第N段）標出出處；不確定就不要標。";
 const P_SUM0="請用台灣繁體中文整理以下英文文章，讓大學生能快速掌握重點。依序使用這些小標題（每個小標題一行，以 ## 開頭），內容用條列（- 開頭）或短句：\n## 一句話重點\n## 研究問題\n## 方法與資料\n## 主要發現\n## 結論與限制\n## 關鍵術語（每條格式：英文｜中文｜一句說明）\n如果文章不是研究論文，省略不適用的小標題。不要開場白、不要結語。";
 const sumLvlTxt=()=>S.sumLvl==="short"?"\n篇幅要精簡：每個小標題最多 2 條，整體控制在 300 字內。":S.sumLvl==="long"?"\n請詳細一點：每個小標題可以多列幾條，附上重要數據與論點。":"";
 const P_SUM_=()=>(ZH()?P_SUM0.replace("整理以下英文文章","整理以下文章").replace("## 關鍵術語（每條格式：英文｜中文｜一句說明）","## 關鍵概念（每條格式：名詞｜一句說明）"):P_SUM0)+sumLvlTxt()+P_REF()+"\n\n文章：\n";
@@ -1765,12 +1837,21 @@ function showLoading(t){ const l=$("#loading"); l.textContent=t; l.hidden=false;
 function hideLoading(){ $("#loading").hidden=true; }
 
 /* ---- PDF paragraph building ---- */
+const CJKE=/[\u3400-\u9fff，。、；：！？「」『』（）《》〈〉…—]/, CJKS=/[\u3400-\u9fff，。、；：！？「」『』（）《》〈〉…—]/;
+let refMode=false; /* 讀到「參考文獻」之後：每一條文獻是凸排，往左凸出的那行才是新的一條 */
+const REF_HEAD=/^(參考文獻|參考書目|引用文獻|References|Bibliography|Works Cited|Literature Cited)$/i;
+const CJK_END=/[。！？：」』）)]$/;
+/* 中英文都適用：把「H s i e h」「1 9 9 6」這種被拆開的字母、數字接回去 */
+const unspace=t=>t.replace(/(^|[^A-Za-z])((?:[A-Za-z] ){2,}[A-Za-z])(?=$|[^A-Za-z])/g,(m,a,b)=>a+b.replace(/ /g,"")).replace(/(^|\D)([12]) ([09]) (\d) (\d)(?=\D|$)/g,"$1$2$3$4$5");
+/* 正文字級：由大到小，第一個佔全頁兩成五以上字數的字級（註腳比正文小、標題字少） */
+const bodyZOf=(arr,len)=>{ const zc={}; let tot=0; for(const a of arr){ const k=Math.round(a.z*2)/2, n=len(a); zc[k]=(zc[k]||0)+n; tot+=n; } const ks=Object.keys(zc).map(Number).sort((a,b)=>b-a); return ks.find(k=>zc[k]>=tot*0.25)||ks[0]; };
+const cjkRatio=items=>{ let c=0,t=0; for(const it of items){ const m=it.s.match(/[\u3400-\u9fff]/g); c+=m?m.length:0; t+=it.s.replace(/\s/g,"").length; } return t?c/t:0; };
 function joinLines(parts){
   let s="";
-  for(const p of parts){ if(!s) s=p; else if(/[A-Za-z]-$/.test(s)&&/^[a-z]/.test(p)) s=s.slice(0,-1)+p; else s+=" "+p; }
+  for(const p of parts){ if(!s) s=p; else if(/[A-Za-z][-\u2010\u00AD]$/.test(s)&&/^[a-z]/.test(p)) s=s.slice(0,-1)+p; else if(CJKE.test(s.slice(-1))&&CJKS.test(p[0])) s+=p; else s+=" "+p; }
   return s.replace(/\s+/g," ").trim();
 }
-function groupParas(g){
+function groupParas(g,cjk){
   g=g.slice().sort((a,b)=>(b.y-a.y)||(a.x-b.x));
   const lines=[];
   for(const it of g){ const L=lines[lines.length-1];
@@ -1779,40 +1860,104 @@ function groupParas(g){
   for(const L of lines){
     L.items.sort((a,b)=>a.x-b.x); let t="",end=null;
     for(const it of L.items){ if(end!==null&&it.x-end>L.z*0.12&&!/\s$/.test(t)&&!/^\s/.test(it.s)) t+=" "; t+=it.s; end=Math.max(end===null?-1e9:end,it.x+it.w); }
-    L.t=t.replace(/\s+/g," ").trim(); L.x0=L.items[0].x; L.x1=end;
+    L.t=t.replace(/\s+/g," ").trim(); if(cjk) L.t=unspace(L.t); L.x0=L.items[0].x; L.x1=end;
   }
-  const gaps=[]; for(let k=1;k<lines.length;k++){ const d=lines[k-1].y-lines[k].y; if(d>0&&Math.abs(lines[k].z-lines[k-1].z)<0.5) gaps.push(d); }
+  /* 中文論文：行距只用正文字級的行來算，不讓註腳、表格的小字把基準拉低 */
+  const bodyZ=cjk?bodyZOf(lines,L=>L.t.length):null, bodyZA=bodyZOf(lines,L=>L.t.length);
+  const gaps=[]; for(let k=1;k<lines.length;k++){ const d=lines[k-1].y-lines[k].y; if(d>0&&Math.abs(lines[k].z-lines[k-1].z)<0.5&&(!cjk||Math.abs(lines[k].z-bodyZ)<0.6)) gaps.push(d); }
   gaps.sort((a,b)=>a-b); const lg=gaps.length?gaps[Math.floor(gaps.length/2)]:12;
+  /* 中文：每種字級各自算行距（正文、註腳行距不同） */
+  const zg={}; if(cjk) for(let k=1;k<lines.length;k++){ const d=lines[k-1].y-lines[k].y, kz=Math.round(lines[k].z*2)/2; if(d>0&&Math.abs(lines[k].z-lines[k-1].z)<0.5)(zg[kz]=zg[kz]||[]).push(d); }
+  const lgOf=z=>{ const a=zg[Math.round(z*2)/2]; if(!cjk||!a||a.length<2) return lg; a.sort((x,y)=>x-y); return a[Math.floor(a.length/2)]; };
   let minX=Infinity,maxX=-Infinity; for(const L of lines){ minX=Math.min(minX,L.x0); maxX=Math.max(maxX,L.x1); }
   const width=Math.max(1,maxX-minX), out=[]; let cur=null,prev=null;
   for(const L of lines){
     if(!L.t) continue;
     let brk=!cur;
     if(cur&&prev){ const d=prev.y-L.y;
-      if(d>lg*1.4||d<0) brk=true;
+      if(refMode&&L.x0<prev.x0-L.z*0.8) brk=true;
+      if(d>lgOf(L.z)*1.4||d<0) brk=true;
       if(Math.abs(L.z-prev.z)>1) brk=true;
-      if(L.x0-minX>L.z*0.9&&/[.?!:"”)]$/.test(prev.t)) brk=true;
+      if(!refMode&&L.x0-minX>L.z*0.9&&/[.?!:"”)]$/.test(prev.t)) brk=true;
       if((prev.x1-minX)<width*0.7&&/[.?!:"”]$/.test(prev.t)) brk=true;
+      if(cjk){ if(!refMode&&L.x0-minX>L.z*1.5&&CJK_END.test(prev.t)) brk=true;
+               if(!refMode&&(prev.x1-minX)<width*0.8&&CJK_END.test(prev.t)) brk=true;
+               if(/^[壹貳參肆伍陸柒捌玖拾][、．.]|^[一二三四五六七八九十]+[、．]|^（[一二三四五六七八九十]+）|^\d+[、．]\s*[\u3400-\u9fff]|^(表|圖)[一二三四五六七八九十\d]+/.test(L.t)) brk=true;
+               if(/^[壹貳參肆伍陸柒捌玖拾][、．.]|^[一二三四五六七八九十]+[、．]|^(摘要|關鍵字|參考文獻|附錄)/.test(prev.t)&&prev.t.length<30&&cur.parts.length===1) brk=true; }
       if(prev.t.length<70&&/^((\d+\.)+\d*|[IVX]+\.|[A-Z]\.)\s+[A-Z]/.test(prev.t)&&!/[.?!,;:]$/.test(prev.t)&&cur.parts.length===1) brk=true;
       if(/^(Abstract|Keywords|References|Introduction|Conclusions?|Acknowledg(e)?ments)$/i.test(prev.t)&&cur.parts.length===1) brk=true; }
-    if(brk){ cur={parts:[L.t],z:L.z,items:L.items.slice()}; out.push(cur); } else { cur.parts.push(L.t); cur.items.push(...L.items); }
+    /* 大字標題換行：同樣的大字級、行距正常，就算同一段（例如兩行的論文標題） */
+    if(brk&&cur&&prev&&cur.parts.length<4&&Math.abs(L.z-prev.z)<0.5&&L.z>=bodyZA*1.25&&prev.y-L.y>0&&prev.y-L.y<L.z*1.9) brk=false;
+    if(brk){ cur={parts:[L.t],z:L.z,items:L.items.slice(),ind:L.x0-minX>L.z*0.8}; out.push(cur); } else { cur.parts.push(L.t); cur.items.push(...L.items); }
+    if(REF_HEAD.test(L.t.replace(/\s/g,""))) refMode=true;
+    else if(refMode&&/^(附錄|Appendix)/i.test(L.t)&&L.t.length<40) refMode=false;
     prev=L;
   }
-  return out.map(c=>({t:joinLines(c.parts),z:c.z,items:c.items}));
+  return out.map(c=>({t:joinLines(c.parts),z:c.z,items:c.items,ind:c.ind}));
 }
 function mergeInto(all,next){
-  if(all.length&&next.length){ const a=all[all.length-1], b=next[0];
-    if(!/[.?!:"”)]$/.test(a.t)&&/^[a-z(]/.test(b.t)&&Math.abs(a.z-b.z)<0.6){ a.t=joinLines([a.t,b.t]); a.items=a.items.concat(b.items); next=next.slice(1); } }
+  if(all.length&&next.length){ const isEdge=q=>q.items.length&&q.items.every(i=>i.hf); let ai=all.length-1; while(ai>0&&(all[ai].fn||isEdge(all[ai]))) ai--; let bi=0; while(bi<next.length-1&&isEdge(next[bi])) bi++; const a=all[ai], b=next[bi];
+    const cjkJoin=CJKE.test(a.t.slice(-1))&&CJKS.test(b.t[0])&&!CJK_END.test(a.t)&&!/^[壹貳參肆伍陸柒捌玖拾一二三四五六七八九十][、．]/.test(b.t);
+    if(!a.fn&&((refMode&&b.ind)||cjkJoin||(!/[.?!:"”)]$/.test(a.t)&&/^[a-z(]/.test(b.t)))&&Math.abs(a.z-b.z)<0.6){ a.t=joinLines([a.t,b.t]); a.items=a.items.concat(b.items); next=next.slice(0,bi).concat(next.slice(bi+1)); } }
   return all.concat(next);
 }
 
+/* 有些 PDF（Word、Mac 轉出）會把「一、用、民」存成長得一樣的部首符號（⼀⽤⺠），搜尋、查字、翻譯都會出錯：換回正常的字（一個字換一個字，長度不變） */
+const RAD2={"⺠":"民","⻄":"西","⻑":"長","⻝":"食","⻘":"青","⻤":"鬼","⺟":"母","⺩":"王","⻣":"骨","⻩":"黃","⻨":"麥","⻢":"马","⻛":"风","⻔":"门","⻅":"见","⻉":"贝","⻋":"车","⻓":"长","⻜":"飞","⻥":"鱼","⻚":"页","⻦":"鸟","⻬":"齐","⻰":"龙","⻳":"龟","⻆":"角","⺮":"竹","⺶":"羊","⻊":"足","⺼":"肉","⻌":"辶","⻍":"辶","⺇":"几","⺈":"刀","⺊":"卜","⺋":"卩","⺌":"小","⺍":"小","⺎":"兀","⺏":"尢","⺐":"尢","⺑":"尢","⺒":"巳","⺓":"幺","⺔":"彐","⺖":"心","⺗":"心","⺘":"手","⺙":"攴","⺛":"无","⺝":"月","⺞":"歹","⺡":"水","⺢":"水","⺣":"火","⺤":"爪","⺥":"爪","⺦":"丬","⺧":"牛","⺨":"犬","⺪":"疋","⺫":"目","⺬":"示","⺭":"示","⺯":"糸","⺰":"纟","⺱":"网","⺲":"网","⺳":"网","⺴":"网","⺵":"网","⺷":"羊","⺸":"羊","⺹":"老","⺺":"肀","⺻":"聿","⺽":"臼","⺾":"艸","⺿":"艸","⻀":"艸","⻁":"虎","⻂":"衣","⻃":"西","⻅":"见","⻆":"角","⻇":"角","⻈":"讠","⻉":"贝","⻎":"辶","⻏":"阝","⻐":"釒","⻑":"長","⻒":"镸","⻓":"长","⻔":"门","⻕":"阜","⻖":"阝","⻗":"雨","⻙":"韦","⻞":"首","⻟":"食","⻠":"饣","⻡":"食","⻢":"马","⻣":"骨","⻤":"鬼","⻥":"鱼","⻦":"鸟","⻧":"卤","⻨":"麦","⻪":"黾","⻫":"齐","⻭":"齿","⻮":"齿","⻯":"龙","⻱":"龟","⻲":"龟"};
+const fixRad=t=>/[\u2E80-\u2FDF]/.test(t)?t.replace(/[\u2F00-\u2FDF]/g,c=>c.normalize("NFKC")).replace(/[\u2E80-\u2EFF]/g,c=>RAD2[c]||c):t;
+/* 讀壞的頁面：PDF 有字，但字型缺對照資料，讀出來是亂碼或空白 */
+const GARB=/[-�\u0000-\u0008\u000E-\u001F\u007F-\u009Fɐ-ͯҀ-ԯ֐-᷿Ⰰ-ⷿꀀ-꯿]/g;
+/* 字型載入失敗時，PDF.js 會整段略過那些字（連空白都不留），所以要看這頁用到的字型有沒有壞掉 */
+/* 缺字：有些 PDF 把字型裡沒有的字（例如「林啟耀」的啟）用線條畫出來，不是文字。
+   兩個中文字中間空了約一個字寬、而且那裡畫了圖形，就補一個「□」，讓人知道這裡少一個字 */
+/* 和正文印在一起的註腳數字（「…的影響。1過去…」）：標點後面緊接 1～2 位數字、再接中文，就把數字拿掉 */
+const stripFnNum=t=>t.replace(/([。，；：」）！？])(\d{1,2})(?=[\u3400-\u9fff])(?![\d\s]*[年月日號個位名歲次條項章節點時分秒週周屆期卷頁冊人])/g,(m,p,d,o)=>/[》〉\d]/.test(t[o-1]||"")?m:p);
+async function missingGlyphs(page,tcItems){
+  const cand=[], CJ=/[\u3400-\u9fff]/;
+  for(let k=1;k<tcItems.length;k++){
+    let j=k; while(j<tcItems.length&&tcItems[j].str!==undefined&&!tcItems[j].str.trim()) j++;
+    if(j>=tcItems.length) break;
+    const P=tcItems[k-1], N=tcItems[j]; if(!P.str||!N.str||!CJ.test(P.str.slice(-1))||!CJ.test(N.str[0])) continue;
+    const z=Math.abs(P.transform[0])||Math.abs(P.transform[3])||10, pe=P.transform[4]+(P.width||0), gap=N.transform[4]-pe;
+    if(Math.abs(N.transform[5]-P.transform[5])<z*0.3&&gap>z*0.7&&gap<z*1.6) cand.push({a:P.str.slice(-1),b:N.str[0],x:pe,y:P.transform[5],w:gap,z});
+    k=j;
+  }
+  if(!cand.length) return [];
+  let pairs=new Set();
+  try{ const ops=await page.getOperatorList(), O=pdfjsLib.OPS, G=new Set([O.constructPath,O.paintImageXObject,O.paintInlineImageXObject,O.paintImageMaskXObject,O.paintSolidColorImageMask].filter(v=>v!=null));
+    let last="", drew=false;
+    for(let k=0;k<ops.fnArray.length;k++){ const f=ops.fnArray[k];
+      if(f===O.showText){ const t=(ops.argsArray[k][0]||[]).map(g=>g&&g.unicode||"").join(""); if(!t.trim()) continue; if(last&&drew) pairs.add(last.slice(-1)+t.trim()[0]); last=t.trim(); drew=false; }
+      else if(G.has(f)) drew=true; }
+  }catch(e){ return []; }
+  return cand.filter(c=>pairs.has(c.a+c.b));
+}
+async function badFontOn(page){
+  try{ const ops=await page.getOperatorList(), S=pdfjsLib.OPS.setFont, seen=new Set();
+    for(let k=0;k<ops.fnArray.length;k++){ if(ops.fnArray[k]!==S) continue; const id=ops.argsArray[k][0]; if(seen.has(id)) continue; seen.add(id);
+      if(page.commonObjs.has(id)&&typeof page.commonObjs.get(id)==="string") return true; }
+  }catch(e){}
+  return false;
+}
+/* 常用漢字（Big5 常用字＋GB2312 一級字，共 6722 字）：正常的中文論文 98% 以上都是這些字；
+   字型對照錯掉時，讀出來的會是一堆罕用字，比例會超過一成 */
+const COMMON_HAN="一丁七万丈三上下不与丐丑专且丕世丘丙业丛东丝丞丟丢两严並丧个丫中丰串临丸丹为主丽举乃久么义之乌乍乎乏乐乒乓乔乖乘乙九乞也习乡书乩买乱乳乾亂了予争事二于亏云互五井亙亚些亞亟亡亢交亥亦产亨亩享京亭亮亲亳人亿什仁仃仄仅仆仇今介仍从仑仓仔仕他仗付仙仞仟代令以仪们仰仲仳件价任份仿企伉伊伋伍伎伏伐休伕众优伙会伞伟传伤伦伪伯估伴伶伸伺似伽佃但佇佈位低住佐佑体佔何佗余佚佛作佝佞你佣佩佬佯佰佳併佺佻佾使侃侄來侈例侍侏侑侖侗供依侠侣侥侦侧侨侩侮侯侵侶侷便係促俄俊俎俏俐俑俗俘俚保俞俟俠信俩俭修俯俱俳俸俺俾倀倆倉個倌倍倏們倒倔倖倘候倚借倡倣倥倦倨倩倪倫倭债值倾偃假偉偌偎偏偕做停健偭偯側偵偶偷偺偽偿傀傅傈傍傑傖傘備傚傢傣储催傭傯傲傳債傷傻傾僅僇僎像僑僕僖僚僥僧僩僭僮僱僳僵價僻儀儂億儅儈儉儐儒儔儕儘償儡優儲儳儷儸儻儼儿兀允元兄充兆兇先光克兌免兑兒兔兕兗党兜兢入內全兩八公六兮兰共关兴兵其具典兹养兼兽冀内冈冉冊册再冑冒冕冗写军农冠冢冤冥冪冬冯冰冲决况冶冷冻冽净凄准凉凋凌凍减凑凛凜凝几凡凤凭凯凰凱凳凶凸凹出击函凿刀刁刃分切刈刊刎刑划刖列刘则刚创初删判別刨利刪别刮到制刷券刹刺刻刽剁剂剃則削剋剌前剎剐剑剔剖剛剜剝剥剧剩剪副割剴創剷剽剿劂劃劇劈劉劊劍劑劓力劝办功加务劣动助努劫劬励劲劳劻劾势勁勃勇勉勋勒動勗勘務勛勝勞募勢勣勤勦勰勳勵勸勺勻勾勿匀包匆匈匍匏匐匕化北匙匝匠匡匣匪匯匱匹区医匾匿區十千卅升午卉半华协卑卒卓協单卖南博卜卞占卡卢卤卦卧卫卮卯印危即却卵卷卸卹卻卿厂厄厅历厉压厌厕厘厚厝原厢厥厦厨厩厭厲去县叁参參又叉及友双反发叔取受变叙叛叟叠叢口古句另叨叩只叫召叭叮可台叱史右叵叶号司叹叻叼吁吃各吆合吉吊吋同名后吏吐向吒吓吕吗君吝吞吟吠否吧吨吩含听吭吮启吱吳吴吵吶吸吹吻吼吾呀呂呃呆呈告呎呐呕员呛呜呢周呱味呵呶呷呸呻呼命咀咄咆咋和咎咏咐咒咕咖咙咚咦咧咨咩咪咫咬咯咱咳咸咻咽咿哀品哂哄哆哇哈哉响哎哑哗哟員哥哦哨哩哪哭哮哲哺哼哽唁唆唇唉唏唐唔唤唧唬售唯唱唳唷唸唾啁啃啄商啊問啕啖啗啜啞啟啡啣啤啥啦啪啮啸啻啼啾喀喂喃善喇喉喊喋喔喘喙喚喜喝喟喧喪喫喬單喱喲喳喷喻嗅嗆嗇嗉嗎嗑嗓嗚嗜嗟嗡嗣嗤嗥嗦嗨嗯嗶嗷嗽嗾嘀嘆嘈嘉嘍嘎嘐嘔嘖嘗嘘嘛嘟嘩嘮嘯嘰嘱嘲嘴嘶嘹嘻嘿噎噓噗噙噢噤噥器噩噪噫噬噯噱噴噶噸噹嚀嚅嚇嚎嚏嚐嚕嚣嚥嚨嚮嚴嚶嚷嚼囀囁囂囈囉囊囌囑囚四囝回因团囤囪囫园困囱围固国图囿圃圄圆圈圉國圍園圓圖團土圣在圩圬圭圯地圳场圻圾址均坊坍坎坏坐坑块坚坛坝坞坟坠坡坤坦坩坪坯坷坼垂垃垄型垒垓垛垠垢垣垦垫垮埂埃埋城埔域埠埤執培基堂堅堆堉堊堑堕堝堠堡堤堪堯堰報場堵塊塋塌塑塒塔塗塘塚塞塢填塭塵塹塽塾墀境墅墊墒墓墙墜增墟墦墨墩墮墳墾壁壅壇壎壑壓壕壘壙壞壟壢壤壩士壬壮壯声壳壶壹壺壽处备复夏夔夕外夙多夜够夠夢夤夥大天太夫夭央夯失头夷夸夹夺夾奄奇奈奉奋奎奏奐契奔奕奖套奘奚奠奢奥奧奩奪奭奮女奴奶奸她好妁如妃妄妆妇妈妊妍妒妓妖妙妝妞妣妤妥妨妮妯妳妹妻妾姅姆姊始姍姐姑姒姓委姘姚姜姣姥姦姨姪姬姻姿威娃娄娇娉娌娑娓娘娛娜娟娠娣娥娩娱娶娼婀婁婆婉婊婚婢婦婪婴婶婷婿媒媚媛媧媲媳媼媽媾嫁嫂嫉嫌嫖嫗嫘嫡嫣嫦嫩嫵嫻嬈嬉嬋嬌嬝嬤嬪嬰嬴嬸孀孃子孑孓孔孕字存孙孚孛孜孝孟季孤学孩孪孫孰孱孳孵學孺孽孿宁它宅宇守安宋完宏宗官宙定宛宜宝实宠审客宣室宥宦宪宫宮宰害宴宵家宸容宽宾宿寂寄寅密寇富寐寒寓寝寞察寡寢寤寥實寧寨審寫寬寮寰寵寶寸对寺寻导寿封射将將專尉尊尋對導小少尔尖尘尚尝尢尤尧尬就尷尸尹尺尼尽尾尿局屁层居屆屈屉届屋屍屎屏屐屑展屘屜屝属屠屡屢層履屨屬屯山屹屿岁岂岌岐岑岔岗岛岡岩岫岭岱岳岷岸岿峒峙峡峦峨峪峭峰峴島峻峽崁崆崇崎崑崔崖崗崙崛崢崤崧崩崭崴嵇嵌嵐嵩嵯嶄嶇嶔嶝嶸嶺嶼嶽巉巍巒巔巖川州巡巢工左巧巨巩巫差己已巳巴巷巽巾币市布帅帆师希帐帑帕帖帘帚帛帜帝帟帥带帧師席帮帳帶帷常帽幀幂幃幅幌幔幕幗幛幟幡幢幣幫干平年并幸幹幻幼幽幾广庄庆庇床序庐库应底庖店庙庚府庞废庠度座庫庭庵庶康庸庾廁廂廄廈廉廊廓廖廚廝廟廠廢廣廬廳延廷建廾廿开弁异弃弄弈弊弋式弒弓弔引弗弘弛弟张弥弦弧弩弭弯弱張強弹强弼彆彈彊彌彎归当录彗彙彝形彤彥彦彩彪彫彬彭彰影彷役彻彼彿往征径待徇很徉徊律後徐徑徒得徘徙徜從徠御徨復循徬微徵德徹徽心必忆忌忍忖志忘忙忝忠忧忪快忱念忸忻忽忿怀态怂怎怏怒怔怕怖怛怜思怠怡急性怨怩怪怫怯怵总恃恆恋恍恐恒恕恙恢恣恤恥恨恩恪恫恬恭息恰恳恶恼恿悄悅悉悌悍悔悖悚悟悠患悦您悬悯悲悴悵悶悸悻悼悽情惆惇惊惋惑惕惘惚惜惟惠惡惦惧惨惩惫惭惮惯惰惱想惴惶惹惺惻愀愁愆愈愉愍愎意愒愕愚愛愜感愣愤愧愴愷愾愿慄慇慈態慌慍慎慑慕慘慚慝慟慢慣慧慨慫慮慰慵慶慷慼慾憂憊憋憎憐憑憔憚憤憧憨憩憫憬憮憲憶憾懂懇懈應懊懋懍懒懣懦懲懵懶懷懸懺懼懾懿戀戈戊戌戍戎戏成我戒戕或战戚戛戟戡戢截戮戰戲戳戴戶户戾房所扁扇扈扉手才扎扑扒打扔托扛扣扦执扩扫扬扭扮扯扰扳扶批扼找承技抄抆抉把抑抒抓投抖抗折抚抛抠抡抢护报抨披抬抱抵抹押抽抿拂拄担拆拇拈拉拋拌拍拎拐拒拓拔拖拗拘拙拚招拜拟拢拣拥拦拧拨择括拭拮拯拱拳拴拷拼拽拾拿持挂指挈按挎挑挖挚挛挝挞挟挠挡挣挤挥挨挪挫振挺挽挾捂捅捆捉捌捍捎捏捐捕捞损捡换捣捧捨捩捫据捱捲捶捷捺捻掀掂掃掄掇授掉掌掏掐排掖掘掙掛掠採探掣接控推掩措掬掳掷掸掺揀揆揉揍描提插揖揚換握揣揩揪揭揮援揹揽搀搁搂搅搆損搏搐搓搔搖搗搜搞搪搬搭搴搶携搽搾摄摆摇摈摊摑摒摔摘摟摧摩摭摯摸摹摺摻撂撅撇撈撐撑撒撓撕撙撚撞撢撤撥撩撫撬播撮撰撲撳撵撻撼撾撿擁擂擄擅擇擊擋操擎擒擔擘據擞擠擢擦擬擭擰擱擲擴擷擺擻擾攀攆攏攒攔攘攙攜攝攣攤攪攫攬支收攸改攻放政故效敉敌敏救敔敕敖敗敘教敛敝敞敢散敦敬数敲整敵敷數斂斃文斋斌斐斑斕斗料斛斜斟斡斤斥斧斩斫斬断斯新斷方於施旁旅旋旌旎族旖旗无既日旦旧旨早旬旭旱时旷旺昀昂昆昇昊昌明昏易昔昕星映昤春昧昨昭是昱昼显晁時晃晅晉晋晌晏晒晓晕晚晝晞晤晦晨普景晰晴晶晷智晾暂暄暇暈暉暍暑暖暗暘暝暢暨暫暮暱暴暸暹曄曆曇曉曖曙曜曝曠曦曩曬曰曲曳更曷書曹曼曾替最會月有朋服朔朕朗望朝期朦朧木未末本札朮术朱朴朵机朽杀杂权杆杉李杏材村杓杖杗杜杞束杠条来杨杪杭杯杰東杲杳杵杷杼松板极构枇枉枋析枓枕林枚果枝枢枣枪枫枯枰枴架枷枸柄柏某柑柒染柔柙柚柜柝柞柠柢查柩柬柯柱柳柴柵柿栅标栈栋栏树栓栖栗栘校栩株样核根格栽桀桁桂桃桅框案桌桐桑桓桔档桥桨桩桶桿梁梂梃梅梆梓梔梗條梟梡梢梦梧梨梭梯械梱梳梵检棄棉棋棍棒棕棗棘棚棟棠棣棧森棱棲棵棹棺棻椅植椎椒椭椰椽椿楊楓楔楚楛楝楞楠楣楨楫業楮極楷楹楼概榆榔榕榛榜榣榦榨榫榭榮榴榷榻槁槃構槌槍槐槓槛槨槭槳槽樁樂樅樊樑樓標樞樟模樣横樱樵樸樹樺樽橄橇橈橋橘橙機橡橢橫橱橾檀檄檐檔檗檜檠檢檣檬檮檯檳檸檻櫂櫃櫓櫚櫛櫝櫥櫬櫺櫻欄權欐欖欠次欢欣欧欲欺欽款歇歉歌歎歐歙歜歟歡止正此步武歧歪歲歷歸歹死歼歿殃殆殉殊残殖殘殤殮殯殲殴段殷殺殼殿毀毁毅毆毋母每毒毓比毕毖毗毙毚毛毡毫毬毯毽氅氈氏氐民氓气氖氛氟氢氣氤氦氧氨氫氬氮氯氰氳水永氾汀汁求汇汉汍汎汐汕汗汙汛汝汞江池污汤汨汪汰汲汴汶汹決汽汾沁沂沃沅沆沈沉沌沍沏沐沒沔沖沘沙沛沟没沤沥沦沧沪沫沬沮沱河沸油治沼沽沾沿況泄泅泉泊泌泓法泖泗泛泜泞泠泡波泣泥注泪泯泰泱泳泵泻泼泽洁洋洌洎洒洗洛洞津洧洩洪洫洮洱洲洵洶洸洹活洼洽派流浅浆浇浊测济浑浓浙浚浥浦浩浪浬浮浴海浸浹涂涅涇消涉涊涌涎涓涔涕涛涝涟涡涣涤润涧涨涩涪涮涯液涵涸涼涿淀淄淅淆淇淋淌淑淒淖淘淙淚淞淡淤淦淨淪淫淬淮深淳淵混淹淺添清渊渍渐渔渗渙渚減渝渠渡渣渤渥渦温測渭港渲渴游渺渾湃湄湊湍湎湔湖湘湛湟湣湧湩湮湯湲湾湿溃溅溉源準溘溜溝溢溥溧溪溫溯溴溶溺溼滁滂滄滅滇滋滌滑滓滔滕滚滞满滤滥滦滨滩滬滯滲滴滷滾滿漁漂漆漏漓演漕漠漢漣漩漪漫漬漯漱漲漳漸漾漿潍潑潔潘潛潜潞潟潠潤潦潭潮潯潰潸潺潼澀澄澆澈澎澗澜澠澡澤澦澧澱澳澴澶澹激濁濂濃濒濕濘濛濟濠濡濤濩濫濬濮濯濰濱濺濾瀆瀉瀋瀏瀑瀕瀘瀚瀛瀝瀟瀨瀰瀲瀾灌灑灘灞灣灤火灭灯灰灵灶灸灼災灾灿炉炊炎炒炔炕炙炤炫炬炭炮炯炳炸点為炼炽烁烂烃烈烊烏烘烙烛烟烤烦烧烩烫烬热烯烷烹烽焉焊焕焙焚焜無焦焰然煆煉煌煎煖煙煜煞煤煥煦照煨煩煬煮煽熄熊熏熒熔熙熟熨熬熱熹熾燃燄燈燉燎燐燒燕燙燜營燠燥燦燧燬燭燮燴燸燻燼燾爆爍爐爛爨爪爬爭爰爱爵父爷爸爹爺爻爽爾牆片版牌牒牖牘牙牛牝牟牠牡牢牧物牯牲牴牵特牺牽犀犁犄犊犒犖犛犢犧犬犯状犹狀狂狄狈狎狐狗狙狞狠狡狩独狭狮狰狱狷狸狹狼狽猎猓猖猙猛猜猥猩猪猫献猴猶猷猾猿獄獅獎獐獗獨獭獰獲獵獷獸獺獻玀玄玆率玉王玖玛玟玥玨玩玫环现玲玳玷玻珀珊珍珐珞珠珪班珮現球琅理琉琊琍琐琛琢琥琦琨琪琯琳琴琵琶琺琼琿瑁瑕瑙瑚瑛瑜瑞瑟瑣瑤瑩瑪瑭瑯瑰瑶瑾璀璃璋璘璜璞璟璣璦璧璨璩環璽璿瓊瓏瓔瓖瓚瓜瓠瓢瓣瓤瓦瓮瓶瓷甄甌甍甕甘甚甜生產甥甦用甩甫甬甭田由甲申电男甸画甽畅畋界畎畏畔留畚畜畝畢略畦番畫異畴當畸畿疆疇疊疋疏疑疗疙疚疝疟疡疢疣疤疥疫疮疯疲疳疵疸疹疼疽疾痂病症痈痉痊痍痒痔痕痘痙痛痞痠痢痣痪痰痱痲痳痴痹痺痿瘀瘁瘉瘋瘍瘓瘟瘠瘡瘢瘤瘦瘧瘩瘪瘫瘴瘸瘺療癆癌癒癖癘癟癡癢癣癥癩癬癮癱癲癸登發白百皂的皆皇皈皋皎皑皓皖皚皮皰皱皴皺皿盂盃盅盆盈益盍盎盏盐监盒盔盖盗盘盛盜盞盟盡監盤盥盧盪目盯盲直相盹盼盾省眇眉看真眠眨眩眯眶眷眸眺眼眾着睁睏睛睜睞睡睢督睥睦睨睪睫睬睹睽睿瞄瞅瞇瞋瞌瞎瞑瞒瞞瞟瞠瞥瞧瞩瞪瞬瞭瞰瞳瞻瞼瞽瞿矇矓矗矚矛矜矢矣知矩矫短矮矯石矽矾矿码砂砌砍砒研砖砚砝砟砠砥砧砭砰砲破砷砸砾础硃硅硎硒硕硝硫硬确硯硷硼硿碉碌碍碎碑碓碗碘碟碣碧碩碰碱碳碴確碼碾磁磅磊磋磐磕磚磧磨磬磯磴磷磺礁礎礙礦礪礫礬示礼社祀祁祆祇祈祉祐祕祖祗祚祝神祟祠祥票祭祷祸祺祿禁禄禍禎福禦禧禪禮禱禳禹禺离禽禾禿秀私秃秆秈秉秋种科秒秘租秣秤秦秧秩积称秸移秽稀稅稈程稍税稔稗稚稜稞稟稠種稱稳稷稻稼稽稿穀穆穋穌積穎穗穠穡穢穩穫穴究穷穹空穿突窃窄窈窍窑窒窕窖窗窘窜窝窟窠窥窩窪窮窯窺窿竄竅竇竊立竖站竞竟章竣童竭端競竹竺竽竿笆笋笑笔笙笛笞笠符笨第笮笺笼筆等筋筍筏筐筑筒答策筛筠筧筮筵筷筹签简箄箇箋箍箏箔箕算箝箠管箩箭箱箴箸節篁範篆篇築篌篓篙篛篠篡篤篦篩篮篱篷篾簇簌簍簑簞簡簣簧簪簫簷簸簽簾簿籀籃籌籍籐籟籠籣籤籥籬籮籲米类籽粉粒粕粗粘粟粤粥粪粮粱粳粵粹粽精糊糕糖糙糜糝糞糟糠糢糧糯糰糸系糾紀紂約紅紆紇紉紊紋納紐純紕紗紙級紛紜素紡索紧紫紮累細紱紲紳紹紼絀終絃組絆結絕絛絞絡絢給絨絮絰統絲絳絹綁綏綑經綜綞綠綢綬維綰綱網綴綵綸綺綻綽綾綿緇緊緒緘緙線緝緞締緣編緩緬緯緲練緹緻縈縉縊縐縑縛縝縞縣縫縮縯縱縲縴縵縷縹總績縿繁繃繅繆繈繒織繕繙繚繞繡繩繪繫繭繳繹繼繽纂續纏纓纔纖纜纠红纤约级纪纫纬纯纱纲纳纵纶纷纸纹纺纽线练组绅细织终绊绍绎经绑绒结绕绘给绚络绝绞统绢绣绥绦继绩绪续绰绳维绵绷绸综绽绿缀缄缅缆缉缎缓缔缕编缘缚缝缠缨缩缮缴缶缸缺缽罄罈罌罐网罔罕罗罚罟罢罩罪置罰署罵罷罹羅羈羊羋羌美羔羚羞羡群羨義羯羲羶羸羹羼羽羿翁翅翌翎習翔翕翘翟翠翡翩翮翰翱翳翹翻翼耀老考耄者耆耋而耍耐耑耒耕耗耘耙耜耦耨耪耳耶耸耻耽耿聂聆聊聋职聒联聖聘聚聞聪聯聰聱聲聳聶職聽聾聿肃肄肅肆肇肉肋肌肓肖肘肚肛肝肠股肢肤肥肩肪肫肮肯肱育肴肺肾肿胀胁胃胄胆背胎胖胚胛胜胝胞胡胤胥胭胯胰胱胳胴胶胸胺胼能脂脅脆脈脉脊脏脐脑脓脖脚脣脤脩脫脯脰脱脸脹脾腆腊腋腌腎腐腑腓腔腕腥腦腫腮腰腱腳腴腸腹腺腻腾腿膀膂膈膊膏膘膚膛膜膝膠膨膩膳膺膽膾膿臀臂臃臆臉臍臏臘臚臟臢臣臥臧臨自臬臭至致臺臻臼臾舀舂舅舆與興舉舊舌舍舐舒舔舛舜舞舟舢舨航舫般舰舱舵舶舷船艇艋艘艙艦艮良艰艱色艳艷艺艾节芋芍芒芙芜芝芟芣芥芦芬芭芯芰花芳芷芸芹芻芽芾苇苍苏苑苒苓苔苗苛苜苞苟苣若苦苧苫苯英苹茁茂范茄茅茆茉茎茗茧茨茫茬茱茲茴茵茶茸茹荀荃荆草荊荏荐荒荔荚荡荣荤荧荫药荷荸荻荼莆莉莊莎莒莓莖莘莞莠莢莧莫莱莲获莹莽菁菅菇菊菌菏菔菜菟菠菩華菰菱菲菴菸菽萃萄萇萊萋萌萍萎萝萤营萧萨萬萱萵萸萼落葆葉著葛葡董葦葩葫葬葭葱葵葷蒂蒋蒐蒙蒜蒞蒲蒸蒼蒿蓀蓄蓆蓉蓊蓋蓑蓓蓖蓝蓟蓬蓮蓿蔆蔑蔓蔔蔗蔚蔡蔣蔥蔫蔬蔭蔷蔼蔽蕃蕈蕉蕊蕙蕞蕨蕩蕪蕭蕴蕾薄薇薊薑薔薛薜薦薨薩薪薯薰薹薺藉藍藏藐藕藝藤藥藩藪藷藹藺藻蘆蘇蘊蘋蘑蘗蘚蘭蘸蘿虎虏虐虑虔處虚虛虜虞號虧虫虱虹虺虻虽虾蚀蚁蚂蚊蚌蚓蚕蚜蚣蚤蚩蚪蚯蚱蚵蚶蛀蛄蛆蛇蛉蛊蛋蛐蛔蛙蛛蛞蛟蛤蛭蛮蛰蛹蛻蛾蜀蜂蜃蜆蜇蜈蜊蜒蜓蜕蜗蜘蜜蜡蜢蜥蜩蜴蜷蜻蜿蝇蝉蝌蝎蝓蝕蝗蝙蝠蝦蝨蝴蝶蝸螂螃融螞螟螢螫螳螺螻蟀蟆蟈蟋蟑蟒蟠蟬蟯蟲蟹蟻蟾蠅蠍蠔蠕蠟蠡蠢蠣蠱蠶蠹蠻血衅行衍術衔街衙衛衝衡衢衣补表衫衬衰衷衹衽袁袂袄袈袋袍袒袖袜袞被袭袱裁裂装裊裒裔裕裘裙補裝裟裡裤裨裯裳裴裸裹製褂複褊褐褒褓褕褚褡褥褪褫褲褶褸褻褽襄襖襞襟襠襤襪襬襯襲西要覃覆見規覓視覜覦親覬覲覺覽觀见观规觅视览觉角觔解触觴觸觼言訂訃計訊訌討訏訐訑訓訕訖託記訛訝訟訢訣訥訪設許訴訶診註証訾詁詆詐詔評詖詛詞詠詢詣試詨詩詫詬詭詮詰話該詳詹詻詼誅誇誉誊誌認誑誓誕誘誚語誠誡誣誤誥誦誧誨說誰課誶誹誼調諂諄談諉請諍諒論諛諜諦諧諫諭諮諱諳諶諷諸諺諼諾謀謁謂謄謊謎謐謗謙講謝謠謨謫謬謹譁譆證譎譏識譙譚譜譟警譫譬譯議譴護譽讀變讒讓讖讚讜计订讣认讥讨让讫训议讯记讲讳讶许讹论讼讽设访诀证评诅识诈诉诊诌词译试诗诚诛话诞诡询诣该详诧诫诬语误诱诲说诵请诸诺读诽课谁调谅谆谈谊谋谍谎谐谓谗谚谜谢谣谤谦谨谩谬谭谰谱谴谷谿豁豆豈豉豌豎豐豔豕豚象豢豪豫豬豭豳豹豺貂貉貊貌貍貓貝貞負財貢貧貨販貪貫責貯貲貳貴貶買貸費貼貽貿賀賁賂賃賄賅資賈賊賑賒賓賜賞賠賡賢賣賤賦質賬賭賴賸賺賻購賽贅贈贊贍贏贓贖贗贛贝贞负贡财责贤败账货质贩贪贫贬购贮贯贰贱贴贵贷贸费贺贼贾贿赁赂赃资赊赋赌赎赏赐赔赖赘赚赛赞赠赡赢赣赤赦赧赫赭走赳赴赵赶起趁超越趋趕趙趟趣趨足趴趺趾跃跆跋跌跎跑跚跛距跟跡跤跦跨跪路跳践跺跼踊踌踏踐踝踞踟踡踢踩踪踫踱踴踵踹蹂蹄蹈蹉蹊蹋蹕蹙蹟蹣蹤蹦蹬蹭蹲蹴蹶蹺蹼蹿躁躂躅躇躉躊躋躍躑躓躡躪身躬躯躲躺軀車軋軌軍軏軒軔軛軟軸軻軼軾較載輊輒輓輔輕輛輜輝輞輟輥輦輩輪輯輳輸輻輾輿轂轄轅轉轍轎轔轟轡车轧轨轩转轮软轰轴轻载轿较辅辆辈辉辊辐辑输辕辖辗辙辛辜辞辟辣辦辨辩辫辭辮辯辰辱農边辽达迁迂迄迅迆过迈迎运近返还这进远违连迟迢迤迥迦迨迪迫迭述迴迷迸迹迺追退送适逃逅逆选逊逍透逐递途逕逖逗這通逛逝逞速造逢連逮週進逵逶逸逻逼逾遁遂遇遊運遍過遏遐遑道達違遗遘遙遛遜遝遞遠遢遣遥遨適遭遮遲遴遵遷選遺遼遽避邀邁邂邃還邇邈邊邋邏邐邑邓邕邢那邦邪邮邯邱邵邶邸邹邻郁郃郊郎郑郝郡郢郧部郭郴郵郸都郾鄂鄉鄒鄗鄘鄙鄞鄧鄭鄰鄱鄴鄹酈酉酊酋酌配酒酗酚酝酞酣酥酩酪酬酮酱酴酵酶酷酸酿醃醇醉醋醒醚醛醜醞醣醫醬醮醱醴醺釀釁釅釆采釉释釋里重野量釐金釗釘釙釜針釣釦釧釩釭釵鈇鈉鈍鈐鈑鈔鈕鈞鈣鈴鈷鈸鈹鈽鈾鈿鉀鉅鉉鉋鉍鉑鉗鉚鉛鉤鉴鉸鉻鉼銀銅銑銓銖銘銜銨銬銲銳銷銻銼鋁鋅鋇鋒鋤鋪鋰鋸鋼錄錐錕錘錙錚錠錡錢錦錨錫錮錯錳錶鍊鍋鍍鍔鍚鍛鍥鍬鍰鍵鍾鎂鎊鎔鎖鎗鎘鎚鎢鎬鎮鎰鎳鏃鏈鏍鏑鏖鏗鏘鏜鏝鏟鏡鏢鏤鏨鏽鐃鐘鐫鐮鐲鐳鐵鐸鐺鑄鑑鑒鑠鑣鑤鑪鑰鑲鑷鑼鑽鑾鑿针钉钎钒钓钙钝钞钟钠钡钢钥钦钧钨钩钮钱钳钵钻钾铀铁铂铃铅铆铜铝铡铣铬铭铰铱铲银铸铺链销锁锄锅锈锋锌锐锑锗错锚锡锣锤锥锦锨锭键锯锰锹锻镀镁镇镊镍镐镑镜镣镭镰镶長长門閂閃閉開閎閏閑閒間閔閘閡閣閤閥閨閩閭閱閻闆闈闊闋闌闐闔闕闖關闡闢门闪闭问闯闰闲间闷闸闹闺闻闽阀阁阂阅阉阎阐阑阔阜队阡阪阬阮阱防阳阴阵阶阻阿陀陂附际陆陇陈陋陌降限陕陘陛陝陞陡院陣除陨险陪陬陰陲陳陴陵陶陷陸陽隄隅隆隊隋隍階随隐隔隕隘隙際障隧隨險隱隴隶隸隹隻难雀雁雄雅集雇雉雊雋雌雍雏雒雕雖雙雛雜雞離難雨雩雪雯雲零雷雹電雾需霄霆震霉霍霎霏霑霓霖霜霞霤霧霪霰露霸霹霽霾靂靄靈青靖静靛靜非靠靡面靦靨革靳靴靶靼鞅鞋鞍鞏鞘鞠鞣鞦鞭韁韃韆韉韋韌韓韜韦韧韩韭音韵韶韹韻響頁頂頃項順須頊頌預頑頒頓頗領頜頡頤頫頭頰頷頸頹頻顆題額顎顏顓願顛類顥顧顫顯顰顱页顶顷项顺须顽顾顿颁颂预颅领颇颈颊颐频颓颖颗题颜额颠颤颧風颯颱颳颶颺颼飄风飘飛飞食飢飧飩飪飭飯飲飴飼飽飾餃餅餉養餌餐餒餓餘餚餛餞餡館餮餵餽餾餿饅饉饑饒饕饗饜饞饥饭饮饯饰饱饲饵饶饺饼饿馁馅馆馈馋馏馒首香馥馨馬馭馮馱馳馴駁駐駑駒駕駙駛駝駟駢駭駱駿騁騎騖騙騫騰騵騷騾驀驃驅驍驕驗驚驛驟驢驥驪马驭驮驯驰驱驳驴驶驹驻驼驾骂骄骆骇骋验骏骑骗骚骡骤骨骯骰骷骸骼髁髏髑髒髓體髖高髡髦髭髮髯髻鬃鬆鬍鬚鬢鬣鬥鬧鬨鬱鬲鬼魁魂魄魅魍魎魏魑魔魘魚魯魷鮑鮪鮫鮭鮮鯀鯈鯉鯊鯖鯛鯧鯨鯽鰍鰓鰥鰭鰱鰻鰾鱉鱔鱖鱗鱟鱷鱸鱼鲁鲍鲜鲤鲸鳃鳖鳞鳥鳩鳳鳴鳶鴃鴆鴉鴒鴕鴛鴣鴦鴨鴻鴿鵑鵝鵠鵡鵪鵬鵲鶉鶯鶴鶸鷂鷓鷗鷥鷹鷺鸚鸛鸞鸟鸡鸣鸥鸦鸭鸯鸳鸵鸽鸿鹃鹅鹊鹏鹤鹰鹵鹹鹼鹽鹿麂麋麒麓麗麝麟麥麦麩麴麵麻麼麾黃黄黌黍黎黏黑黔默黛黜黝點黠黨黯黴黷鼇鼎鼓鼕鼙鼠鼬鼯鼴鼻鼾齊齋齐齒齜齟齡齣齦齧齪齬齲齷齿龄龋龍龐龔龙龚龜龟";
+let _han=null;
+function pageBroken(items,blankW,allW){
+  const txt=items.map(i=>i.s).join("").replace(/\s/g,""), g=(txt.match(GARB)||[]).length;
+  if(txt.length>=20&&g/txt.length>0.2) return "garbled";
+  const han=txt.match(/[\u3400-\u9fff]/g)||[];
+  if(han.length>=30){ _han=_han||new Set(COMMON_HAN); const rare=han.filter(c=>!_han.has(c)).length; if(rare/han.length>0.12) return "garbled"; }
+  if(allW>200&&blankW>allW*0.35) return "missing";
+  return "";
+}
 async function openPdf(buf,name,meta){
   meta=meta||{};
   if(!window.pdfjsLib) throw new Error("PDF 元件沒有載入，請確認網路後重新開啟");
   const myGen=++gen; resetUI(); io&&io.disconnect(); if(annOn) setAnn(false); doc=null; showView("pdf"); pagesEl.replaceChildren(); showLoading("正在開啟…");
   const keep=buf.slice(0);
-  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf),isEvalSupported:false}).promise;
-  const pages=[]; let all=[];
+  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf),isEvalSupported:false,cMapUrl:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",cMapPacked:true,standardFontDataUrl:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/"}).promise;
+  const pages=[]; let all=[]; refMode=false; let fontWatch=false;
   const rid0=meta.sample?"":(meta.id||("pdf:"+name+":"+keep.byteLength)), ocr=rid0?getJSON("yidu:ocr:"+rid0,null):null;
   for(let n=1;n<=pdf.numPages;n++){
     if(myGen!==gen) return;
@@ -1820,41 +1965,81 @@ async function openPdf(buf,name,meta){
     const page=await pdf.getPage(n), vp=page.getViewport({scale:1}), tc=await page.getTextContent();
     const items=[];
     /* 有些 PDF 會把一個字拆成好幾段（例如 ur｜ge｜ntly），同一行、緊貼在一起的片段先接回去 */
-    let last=null;
+    let last=null, blankW=0, allW=0;
     tc.items.forEach(it=>{
-      if(!it.str) return;
+      allW+=Math.abs(it.width||0);
+      if(!it.str){ blankW+=Math.abs(it.width||0); return; }
       const z=Math.abs(it.transform[3])||Math.abs(it.transform[0])||it.height||10, x=it.transform[4], y=it.transform[5], w=it.width||0;
       if(last&&!it.transform[1]&&!it.transform[2]&&!last.tr[1]&&!last.tr[2]&&Math.abs(y-last.y)<Math.min(z,last.z)*0.3&&Math.abs(z-last.z)<Math.max(z,last.z)*0.25){
         const gap=x-(last.x+last.w);
-        if(gap>-Math.min(z,last.z)*0.3&&gap<Math.min(z,last.z)*0.12){ last.s+=it.str; last.w=Math.max(last.w,x+w-last.x); return; }
+        if(gap>-Math.min(z,last.z)*0.3&&gap<Math.min(z,last.z)*0.12){ last.s+=fixRad(it.str); last.w=Math.max(last.w,x+w-last.x); return; }
       }
-      if(!it.str.trim()){ if(last&&!/\s$/.test(last.s)&&Math.abs(y-last.y)<last.z*0.3) last.s+=" "; return; }
-      last={s:it.str,x,y,w,z,tr:it.transform,fn:it.fontName,para:-1,el:null,r:null}; items.push(last);
+      if(!it.str.trim()){ if(it.str.length>1||Math.abs(it.width||0)>(Math.abs(it.transform[0])||10)*0.6) blankW+=Math.abs(it.width||0); if(last&&!/\s$/.test(last.s)&&Math.abs(y-last.y)<last.z*0.3) last.s+=" "; return; }
+      last={s:fixRad(it.str),x,y,w,z,tr:it.transform,fn:it.fontName,para:-1,el:null,r:null}; items.push(last);
     });
     items.forEach(it=>{ it.s=it.s.replace(/\s+$/,""); });
+    const miss=items.length?await missingGlyphs(page,tc.items):[];
+    miss.forEach(c=>items.push({s:"□",x:c.x,y:c.y,w:c.w,z:c.z,tr:[c.z,0,0,c.z,c.x,c.y],para:-1,el:null,r:null,miss:true}));
+    let broken=items.length?pageBroken(items,blankW,allW):"";
+    /* 前 4 頁檢查字型；只要有一頁字型壞掉，之後每一頁都檢查 */
+    if(!broken&&(n<=4||fontWatch)&&await badFontOn(page)){ broken="missing"; fontWatch=true; }
+    if(broken&&ocr&&Array.isArray(ocr[n-1])) items.length=0;
     if(!items.length&&ocr&&Array.isArray(ocr[n-1])) ocr[n-1].forEach(l=>{ const [s,x,y,w,z]=l; if(s&&String(s).trim()) items.push({s:String(s),x,y,w,z,tr:[z,0,0,z,x,y],para:-1,el:null,r:null,ocr:true}); });
     if(items.length&&items[0].ocr){ const zs=items.map(i=>i.z).sort((a,b)=>a-b), med=zs[Math.floor(zs.length/2)]; items.forEach(i=>{ if(Math.abs(i.z-med)<med*0.3){ i.z=med; i.tr=[med,0,0,med,i.x,i.y]; } }); }
-    const pg={n:n-1,page,w:vp.width,h:vp.height,items,el:null,task:null,rendered:false};
+    const pg={n:n-1,page,w:vp.width,h:vp.height,items,el:null,task:null,rendered:false,broken:items.length&&items[0].ocr?"":broken,miss:miss.length};
     pages.push(pg);
     if(!items.length) continue;
+    const cjk=cjkRatio(items)>0.3;
+    /* 頁首頁尾：頁面最上、最下一成的區域（edge），最後看有沒有在很多頁重複出現 */
+    for(const it of items){ if(it.y>vp.height*0.91||it.y<vp.height*0.08) it.edge=true; }
+    /* 確定是頁首頁尾的（hf）先拿出來另外處理：在頁緣區域，而且字級和正文不同、只有頁碼，或和正文隔了一大段 */
+    const bz0=bodyZOf(items.filter(i=>!i.edge).length?items.filter(i=>!i.edge):items,i=>i.s.length);
+    const inner=items.filter(i=>!i.edge); let topIn=-Infinity, botIn=Infinity; inner.forEach(i=>{ topIn=Math.max(topIn,i.y); botIn=Math.min(botIn,i.y); });
+    for(const it of items){ if(!it.edge) continue;
+      const far=it.y>vp.height/2?it.y-topIn>bz0*2.4:botIn-it.y>bz0*2.4;
+      const alone=!items.some(o=>o!==it&&Math.abs(o.y-it.y)<it.z*0.5&&!/^[\d\s\-–—|·．.]{1,9}$/.test(o.s));
+      if((alone&&/^[\d\s\-–—|·．.]{1,9}$/.test(it.s))||far) it.hf=true; }
+    const hfs=items.filter(i=>i.hf), body=items.filter(i=>!i.hf);
     const mid=vp.width/2; let lc=0,rc=0,tot=0;
-    for(const it of items){ tot+=it.s.length; if(it.x+it.w<mid+6) lc+=it.s.length; else if(it.x>mid-6) rc+=it.s.length; }
-    let groups=[items];
+    for(const it of body){ tot+=it.s.length; if(it.x+it.w<mid+6) lc+=it.s.length; else if(it.x>mid-6) rc+=it.s.length; }
+    let groups=[body];
     const colT=lc+rc;
     if(colT>tot*0.35&&lc>colT*0.2&&rc>colT*0.2){
       const L=[],R=[],Sp=[];
-      for(const it of items){ if(it.x+it.w<mid+6) L.push(it); else if(it.x>mid-6) R.push(it); else Sp.push(it); }
+      for(const it of body){ if(it.x+it.w<mid+6) L.push(it); else if(it.x>mid-6) R.push(it); else Sp.push(it); }
       let rTop=-Infinity; for(const it of R) rTop=Math.max(rTop,it.y);
       const gap=Math.max(12,(R[0]&&R[0].z)||10);
-      const head=Sp.filter(i=>i.y>rTop).concat(L.filter(i=>i.y>rTop+gap));
-      groups=[head,L.filter(i=>i.y<=rTop+gap),R,Sp.filter(i=>i.y<=rTop)];
+      /* 標題、摘要這種橫跨兩欄的在最上面，先讀；接著左欄、右欄 */
+      const head=Sp.filter(i=>i.y>rTop-gap*0.3).concat(L.filter(i=>i.y>rTop+gap*0.6));
+      const hs=new Set(head);
+      groups=[head,L.filter(i=>!hs.has(i)),R,Sp.filter(i=>!hs.has(i))];
     }
-    for(const g of groups) if(g.length) all=mergeInto(all,groupParas(g));
+    if(hfs.length) all=all.concat(groupParas(hfs,cjk));
+    let foot=[];
+    if(cjk){ /* 頁底的小字註腳：每一欄各自看，字比正文小一截、而且在那一欄正文最後一行下面 */
+      const bz=bodyZOf(body.filter(i=>!i.edge).length?body.filter(i=>!i.edge):body,i=>i.s.length);
+      /* 正文裡的註腳上標數字（小字、只有數字）不參與分行，免得把一行切成兩段 */
+      const sup=new Set(body.filter(i=>/^[\d,，\-–*]{1,6}$/.test(i.s.trim())&&i.z<bz*0.8));
+      for(const g of groups){ let low=Infinity; g.forEach(i=>{ if(Math.abs(i.z-bz)<0.6) low=Math.min(low,i.y); });
+        g.forEach(i=>{ if(i.z<bz*0.88&&i.y<low&&!sup.has(i)) foot.push(i); }); }
+      const fs=new Set(foot); groups=groups.map(g=>g.filter(i=>!fs.has(i)&&!sup.has(i)));
+    }
+    for(const g of groups) if(g.length) all=mergeInto(all,groupParas(g,cjk));
+    if(foot.length) all=all.concat(groupParas(foot,cjk).map(p=>(p.fn=true,p)));
   }
   if(myGen!==gen) return;
-  const count={}; all.forEach(p=>{ if(p.t.length<100) count[p.t]=(count[p.t]||0)+1; });
-  all=all.filter(p=>!(count[p.t]>=3)&&!/^\d{1,4}$/.test(p.t)&&p.t.length>1);
-  const paras=all.map((p,i)=>{ p.items.forEach(it=>it.para=i); return {t:fixCJK(p.t),zh:"",busy:false}; });
+  /* 頁首頁尾：去掉頁碼數字後，同樣的字在 3 頁以上（或兩成頁面以上）重複出現，就不算正文 */
+  const norm=t=>t.replace(/\d+/g,"#").replace(/\s+/g,"");
+  /* 第一頁的大字標題常和每頁的頁首同一句話：字比正文大很多的不刪 */
+  const zs=[]; all.forEach(p=>{ for(let k=0;k<Math.min(40,p.t.length);k++) zs.push(p.z); }); zs.sort((a,b)=>a-b); const docZ=zs.length?zs[Math.floor(zs.length/2)]:10;
+  const big=p=>p.z>=docZ*1.25;
+  const count={},exact={}; all.forEach(p=>{ if(p.t.length<100){ count[norm(p.t)]=(count[norm(p.t)]||0)+1; exact[p.t]=(exact[p.t]||0)+1; } });
+  const rep=k=>count[k]>=3&&count[k]>=Math.min(3,pdf.numPages*0.2);
+  /* 中文頁首有時和頁碼、英文縮寫黏在一起（例如「c63」）：只看中文字再數一次 */
+  const norm2=t=>t.replace(/[\dA-Za-z\s\p{P}]/gu,""), cnt2={}; all.forEach(p=>{ if(p.t.length<70){ const k=norm2(p.t); if(k.length>=6) cnt2[k]=(cnt2[k]||0)+1; } });
+  const hdr2=p=>{ if(p.t.length>=70) return false; const k=norm2(p.t); return k.length>=6&&cnt2[k]>=Math.max(3,pdf.numPages*0.3); };
+  all=all.filter(p=>big(p)||(!hdr2(p)&&!(exact[p.t]>=3&&(p.items.every(i=>i.edge||i.hf)||p.t.replace(/\s/g,"").length<=6))&&!(rep(norm(p.t))&&(p.items.every(i=>i.edge)||count[norm(p.t)]>=pdf.numPages*0.3))&&!/^[\d\s\-–—]{1,9}$/.test(p.t)&&p.t.length>1));
+  const paras=all.map((p,i)=>{ p.items.forEach(it=>it.para=i); return {t:stripFnNum(fixCJK(p.t)),zh:"",busy:false}; });
   const rid=meta.sample?"":(meta.id||("pdf:"+name+":"+keep.byteLength));
   doc={type:"pdf",name,src:meta.src||"",rid,key:"yidu:doc:"+(meta.src||name)+":"+paras.length,paras,pages,pdf,cur:0,maxW:Math.max(...pages.map(p=>p.w)),maxH:Math.max(...pages.map(p=>p.h))};
   restore(); loadMeta(); applyLang(); if(S.focus){ barsOff=true; document.body.classList.add("barsoff"); } $("#leftPanel").hidden=true; document.body.classList.remove("lpon"); showView("pdf");
@@ -1865,8 +2050,11 @@ async function openPdf(buf,name,meta){
   loadNote(doc);
   if(!meta.sample) saveRecent({id:rid,kind:"pdf",name,src:meta.src||"",data:keep.byteLength<60e6?keep:null,cloudId:meta.cloudId||"",key:doc.key,texts:paras.map(p=>p.t),pp});
   doc.raw=keep; doc.openMeta=meta;
-  const blank=pages.filter(pg=>!pg.items.length).length;
-  if(blank&&blank>=pages.length/2) showOcrBar(blank);
+  const blank=pages.filter(pg=>!pg.items.length).length, bad=pages.filter(pg=>pg.broken);
+  const missP=pages.filter(pg=>pg.miss&&!pg.broken);
+  if(bad.length) showBadBar(bad.map(pg=>pg.n+1));
+  else if(missP.length) showMissBar(missP);
+  else if(blank&&blank>=pages.length/2) showOcrBar(blank);
 }
 function buildPages(){
   io&&io.disconnect();
@@ -2041,6 +2229,7 @@ async function renderPage(pg){
   tl.appendChild(frag); pg.el.prepend(c); pg.el.appendChild(tl);
   const ic=document.createElement("canvas"); ic.className="ink"; pg.el.appendChild(ic);
   sizeCanvas(ic,pg.el.clientWidth,pg.el.clientHeight); pg.inkS=pageSurface(pg,ic); paintSurface(pg.inkS);
+  try{ citeLayer(pg); }catch(e){}
 }
 function hitItem(pageEl,cx,cy){
   const pg=doc.pages[+pageEl.dataset.p]; if(!pg||!pg.rendered) return null;
@@ -2053,6 +2242,19 @@ function hitItem(pageEl,cx,cy){
 
 /* ---- 掃描 PDF：用 AI 辨識文字（OCR），結果存起來，下次開啟不用再辨識 ---- */
 const P_OCR="This is an image of one page of a scanned document. Transcribe ALL of its text line by line, in reading order (for a two-column layout, finish the left column before the right one). Keep the original language, spelling and end-of-line hyphens; do not translate or summarize. Return ONLY a JSON array, no other text, like [{\"t\":\"text of the line\",\"b\":[ymin,xmin,ymax,xmax]}], where b is the bounding box of that line on the image, normalized to 0-1000. Return [] if the page has no text.";
+function showBadBar(ns){
+  const list=ns.length<=6?ns.join("、"):ns.slice(0,5).join("、")+" 等 "+ns.length;
+  $("#ocrTitle").textContent="第 "+list+" 頁的文字讀取不完整";
+  $("#ocrSub").textContent=navigator.onLine===false?"現在沒有網路，Pip 可能還沒下載到中文字型對照表。請連上網路後重新開啟這份 PDF，通常就能讀到完整文字。":"這幾頁的字型缺少文字資料，Pip 讀到的是亂碼或缺字。可以只用 AI 辨識這 "+ns.length+" 頁（每頁約 10–20 秒），其他頁不受影響。";
+  $("#ocrGo").disabled=false; $("#ocrGo").textContent="辨識這 "+ns.length+" 頁"; $("#ocrBar").hidden=false;
+}
+function showMissBar(ps){
+  const n=ps.reduce((a,p)=>a+p.miss,0), ns=ps.map(p=>p.n+1), list=ns.length<=6?ns.join("、"):ns.slice(0,5).join("、")+" 等 "+ns.length;
+  ps.forEach(p=>p.broken="miss");
+  $("#ocrTitle").textContent="有 "+n+" 個字 PDF 本身缺資料（第 "+list+" 頁）";
+  $("#ocrSub").textContent="這些字在 PDF 裡是畫出來的圖形，不是文字，Pip 用「□」標出位置。想補上的話，可以用 AI 辨識這 "+ns.length+" 頁。";
+  $("#ocrGo").disabled=false; $("#ocrGo").textContent="辨識這 "+ns.length+" 頁"; $("#ocrBar").hidden=false;
+}
 function showOcrBar(n){ $("#ocrTitle").textContent="這份 PDF 是掃描的圖片"; $("#ocrSub").textContent="Pip 讀不到裡面的文字。可以用 AI 辨識（"+n+" 頁，每頁約 10–20 秒），辨識完就能像一般 PDF 一樣點字翻譯。"; $("#ocrGo").disabled=false; $("#ocrGo").textContent="用 AI 辨識文字"; $("#ocrBar").hidden=false; }
 async function aiImage(prompt,b64,max){
   if(navigator.onLine===false) throw {code:"offline"};
@@ -2084,7 +2286,7 @@ function ocrLines(txt,vp){
 async function runOcr(){
   const d=doc; if(!d||d.type!=="pdf"||!d.raw) return;
   const rid=d.rid||("pdf:"+d.name+":"+d.raw.byteLength), key="yidu:ocr:"+rid, cache=getJSON(key,{})||{};
-  const todo=d.pages.filter(pg=>!pg.items.length&&!Array.isArray(cache[pg.n]));
+  const todo=d.pages.filter(pg=>(!pg.items.length||pg.broken)&&!Array.isArray(cache[pg.n]));
   $("#ocrGo").disabled=true;
   try{
     for(let i=0;i<todo.length;i++){
@@ -2633,10 +2835,10 @@ function renderArticle(){
   let h="";
   if(dual) h+='<div class="dualbar" id="dualbar"></div>';
   if(d.src) h+='<p class="src">來源：'+esc(d.src)+"</p>";
-  h+=d.paras.map((p,i)=>{ const en='<p class="ap'+(p.h?" h":"")+'" data-p="'+i+'" lang="en">'+esc(p.t)+"</p>"; return dual?'<div class="drow">'+en+'<div class="dz" data-z="'+i+'" lang="zh-Hant">'+(p.zh?esc(p.zh):'<span class="muted">'+(ZH()?"尚未整理":"尚未翻譯")+'</span>')+"</div></div>":en; }).join("");
+  h+=d.paras.map((p,i)=>{ const en='<p class="ap'+(p.h?" h":"")+'" data-p="'+i+'" lang="en">'+citeHTML(p.t,i)+"</p>"; return dual?'<div class="drow">'+en+'<div class="dz" data-z="'+i+'" lang="zh-Hant">'+(p.zh?esc(p.zh)+(ZH()?srcFn(i,p.zh):""):'<span class="muted">'+(ZH()?"尚未整理":"尚未翻譯")+'</span>')+"</div></div>":en; }).join("");
   articleEl.innerHTML=h; articleEl.style.fontSize=(18*zoom)+"px"; applyMarks(); if(dual) drawDualBar();
 }
-function updDz(i){ const z=articleEl.querySelector('.dz[data-z="'+i+'"]'); if(!z) return; const p=doc.paras[i]; z.innerHTML=p.zh?esc(p.zh):'<span class="muted">'+(ZH()?(p.busy?"整理中…":p.failed?"這段沒有整理成功":"尚未整理"):(p.busy?"翻譯中…":p.failed?"這段沒有翻成功":"尚未翻譯"))+"</span>"; }
+function updDz(i){ const z=articleEl.querySelector('.dz[data-z="'+i+'"]'); if(!z) return; const p=doc.paras[i]; z.innerHTML=p.zh?esc(p.zh)+(ZH()?srcFn(i,p.zh):""):'<span class="muted">'+(ZH()?(p.busy?"整理中…":p.failed?"這段沒有整理成功":"尚未整理"):(p.busy?"翻譯中…":p.failed?"這段沒有翻成功":"尚未翻譯"))+"</span>"; }
 function drawDualBar(){
   const b=$("#dualbar"); if(!b||!doc) return;
   const tot=doc.paras.length, done=doc.paras.filter(p=>p.zh).length;
@@ -2691,6 +2893,122 @@ articleEl.addEventListener("click",e=>{
   else if(a==="exit") exitDual();
 });
 
+/* ================= 點引用文獻 ================= */
+/* ===== 引用文獻：解析與比對（正式版會沿用這段） ===== */
+const YEAR_RE=/((?:19|20)\d{2}[a-z]?|forthcoming(?:\s+(?:19|20)\d{2})?|in press|即將出版)/i;
+function refKey(entry){
+  const t=entry.replace(/^\s*(\[\d+\]|\d+[.、])\s*/,"");
+  let first;
+  if(/^[㐀-鿿]/.test(t)) first=t.split(/[、，,（(]/)[0];
+  else first=t.split(/,|\.\s|\s\(/)[0];
+  const ym=t.match(/(?:^|[\s，,（(])((?:19|20)\d{2}[a-z]?)(?=[\s，,.。）)]|$)/)||t.match(/(forthcoming|in press)/i);
+  const num=(entry.match(/^\s*\[(\d+)\]|^\s*(\d+)[.、]\s/)||[]).slice(1).find(Boolean);
+  return {first:first.trim().toLowerCase(),year:ym?ym[1].toLowerCase():"",num:num?+num:null};
+}
+function buildRefIndex(refs){ return refs.map((t,i)=>Object.assign({t,i},refKey(t))); }
+/* 一段文字裡的每一個引用：回傳 [{a,b,keys:[{first,year}] | nums:[...] }] */
+function findCites(text){
+  const out=[];
+  // 括號裡有年份的：（Pereira et al. 2022）（Asker and Dinas 2019; Hagen et al. 2022）
+  const P=/[（(]([^（）()]{2,300})[）)]/g; let m;
+  while((m=P.exec(text))){
+    const inner=m[1]; if(!YEAR_RE.test(inner)) continue;
+    let pos=m.index+1;
+    for(const part of inner.split(/([;；])/)){
+      if(part===";"||part==="；"){ pos+=1; continue; }
+      const ym=part.match(YEAR_RE);
+      if(ym){
+        let auth=part.slice(0,ym.index).replace(/[,，\s]+$/,"").trim();
+        if(!auth){ // 只有年份：作者寫在括號前面，例如 Kahneman（2011）、Pennycook and Rand（2020）
+          const before=text.slice(0,m.index), bs=before.replace(/\s*(等人|等)\s*$/,"");
+          const am=bs.match(/([A-Z][A-Za-z'’\-]+(?:\s+(?:and|&)\s+[A-Z][A-Za-z'’\-]+|\s+et al\.?)?)\s*$/)||bs.match(/([\u3400-\u9fff]{2,4})\s*$/);
+          if(am){ auth=am[1]; const st=bs.length-am[0].length; out.push({a:st,b:m.index+m[0].length,keys:[{first:firstAuthor(auth),year:yearOf(ym[1])}]}); }
+        } else {
+          const lead=part.length-part.trimStart().length;
+          out.push({a:pos+lead,b:pos+part.trimEnd().length,keys:[{first:firstAuthor(auth),year:yearOf(ym[1])}]});
+        }
+      }
+      pos+=part.length;
+    }
+  }
+  // 數字引用：[12]、[3, 5–7]
+  const N=/\[(\d{1,3}(?:\s*[,–\-]\s*\d{1,3})*)\]/g;
+  while((m=N.exec(text))){ const nums=[]; m[1].split(",").forEach(s=>{ const r=s.split(/[–\-]/).map(x=>+x.trim()); if(r.length===2&&r[1]>=r[0]&&r[1]-r[0]<30) for(let k=r[0];k<=r[1];k++) nums.push(k); else nums.push(r[0]); }); out.push({a:m.index,b:m.index+m[0].length,nums}); }
+  return out.sort((x,y)=>x.a-y.a);
+}
+function firstAuthor(a){ return a.replace(/^(see|e\.g\.,?|cf\.|如|參見|請參見)\s*/i,"").split(/,|\s+and\s+|\s+&\s+|\s+et al\.?|、|等/)[0].trim().split(/\s+/).filter(w=>!/^[A-Z]\.?$/.test(w)).join(" ").replace(/^(Daniel|Matthew S\.?|[A-Z][a-z]+ [A-Z]\.)\s+/,"").toLowerCase(); }
+function yearOf(y){ const m=String(y).match(/(?:19|20)\d{2}[a-z]?/); return m?m[0].toLowerCase():(/forthcoming|in press|即將/i.test(y)?"forthcoming":""); }
+function matchCite(c,idx){
+  if(c.nums) return c.nums.map(n=>idx.find(r=>r.num===n)).filter(Boolean);
+  const res=[];
+  for(const k of c.keys){
+    const sameAuth=idx.filter(r=>r.first===k.first||(/^[\u3400-\u9fff]{2,}$/.test(r.first)&&k.first.endsWith(r.first))||r.first.endsWith(" "+k.first)||k.first.endsWith(" "+r.first)||(r.first.split(" ").pop()===k.first.split(" ").pop()&&k.first.length>2));
+    let hit=sameAuth.filter(r=>r.year===k.year||(k.year==="forthcoming"&&r.year==="forthcoming"));
+    if(!hit.length) hit=sameAuth.filter(r=>r.year&&r.year.slice(0,4)===k.year.slice(0,4));
+    if(!hit.length) hit=sameAuth.filter(r=>!r.year); /* 文獻被切成兩段、年份在下一段時 */
+    res.push(...hit);
+  }
+  return res;
+}
+
+/* 文件的參考文獻：找到「參考文獻／References」標題，到「附錄」為止 */
+function docCites(){
+  if(!doc) return {refs:[],idx:[],rs:-1};
+  if(doc._cx) return doc._cx;
+  let rs=-1; doc.paras.forEach((p,i)=>{ if(p.t.length<40&&REF_HEAD.test(p.t.replace(/\s/g,""))) rs=i; });
+  if(rs<0||rs<doc.paras.length*0.3) return doc._cx={refs:[],idx:[],rs:-1};
+  let re=doc.paras.length; for(let k=rs+1;k<doc.paras.length;k++){ if(doc.paras[k].t.length<40&&/^(附錄|附件|Appendix)/i.test(doc.paras[k].t)){ re=k; break; } }
+  const refs=[]; for(let k=rs+1;k<re;k++) if(doc.paras[k].t.length>15) refs.push({pid:k,t:doc.paras[k].t});
+  const idx=buildRefIndex(refs.map(r=>r.t)); idx.forEach((r,i)=>r.pid=refs[i].pid);
+  return doc._cx={refs,idx,rs};
+}
+/* 一段文字裡的引用 → 對到哪幾條文獻（回傳 [{a,b,pids}]） */
+function citesIn(text){ const cx=docCites(); if(!cx.idx.length) return []; return findCites(text).map(c=>({a:c.a,b:c.b,pids:[...new Set(matchCite(c,cx.idx).map(r=>r.pid))]})).filter(c=>c.pids.length); }
+/* PDF：在文字層上畫虛線底線 */
+function citeLayer(pg){
+  if(!pg.el) return; const old=pg.el.querySelector(".cl"); if(old) old.remove();
+  const cx=docCites(); if(!cx.idx.length) return;
+  const by={}; pg.items.forEach(it=>{ if(it.para>=0&&it.para<cx.rs&&it.el) (by[it.para]=by[it.para]||[]).push(it); });
+  const box=pg.el.getBoundingClientRect(), layer=document.createElement("div"); layer.className="cl"; let n=0;
+  for(const pid in by){
+    let S="", seg=[];
+    for(const it of by[pid]){ if(S){ const sep=/[㐀-鿿，。、；：）」]$/.test(S)&&/^[㐀-鿿（「]/.test(it.s)?"":" "; S+=sep; } seg.push({s:S.length,e:S.length+it.s.length,it}); S+=it.s; }
+    for(const c of citesIn(S)){
+      for(const g of seg){ const a=Math.max(c.a,g.s), b=Math.min(c.b,g.e); if(a>=b) continue; const tn=g.it.el.firstChild; if(!tn) continue;
+        const r=document.createRange(); try{ r.setStart(tn,a-g.s); r.setEnd(tn,b-g.s); }catch(e){ continue; }
+        for(const q of r.getClientRects()){ if(q.width<1) continue; const d=document.createElement("div"); d.className="citeul"; d.dataset.r=c.pids.join(","); d.dataset.t=S.slice(c.a,c.b);
+          d.style.cssText="left:"+(q.left-box.left)+"px;top:"+(q.top-box.top)+"px;width:"+q.width+"px;height:"+q.height+"px"; layer.appendChild(d); n++; } }
+    }
+  }
+  if(n) pg.el.appendChild(layer);
+}
+/* 文字文件：直接把引用包成可點的字 */
+function citeHTML(t,pid){
+  const cx=docCites(); if(!cx.idx.length||pid>=cx.rs) return esc(t);
+  let h="",p=0; for(const c of citesIn(t)){ h+=esc(t.slice(p,c.a))+'<span class="cite" data-r="'+c.pids.join(",")+'" data-t="'+esc(t.slice(c.a,c.b))+'">'+esc(t.slice(c.a,c.b))+"</span>"; p=c.b; } return h+esc(t.slice(p));
+}
+let citeBackPos=null;
+function openCite(el){
+  closePop(); document.querySelectorAll(".citeul.on,.cite.on").forEach(x=>x.classList.remove("on")); el.classList.add("on");
+  const ids=el.dataset.r?el.dataset.r.split(",").map(Number).filter(i=>doc.paras[i]):[], card=$("#citeCard");
+  let h='<div class="chd"><b>參考文獻</b><span>'+esc(el.dataset.t||"")+'</span><button class="cx" data-ca="x" aria-label="關閉">×</button></div>';
+  h+=ids.length?ids.map(i=>'<div class="ce">'+esc(doc.paras[i].t)+"</div>").join(""):'<div class="ce" style="color:var(--muted)">在這份文件的參考文獻裡找不到這一條。</div>';
+  if(ids.length) h+='<div class="cacts"><button class="pri" data-ca="go">跳到參考文獻</button><button data-ca="cp">複製這條</button></div>';
+  card.innerHTML=h; card.hidden=false; card._ids=ids; card._el=el;
+  const r=el.getBoundingClientRect(), W=card.offsetWidth, H=card.offsetHeight;
+  let x=Math.min(innerWidth-W-10,Math.max(10,r.left+r.width/2-W/2)), y=r.bottom+8; if(y+H>innerHeight-10) y=Math.max(10,r.top-H-8);
+  card.style.left=x+"px"; card.style.top=y+"px";
+}
+function closeCite(){ $("#citeCard").hidden=true; document.querySelectorAll(".citeul.on,.cite.on").forEach(x=>x.classList.remove("on")); }
+$("#citeCard").addEventListener("click",e=>{ const b=e.target.closest("[data-ca]"); if(!b) return; const card=$("#citeCard"), ids=card._ids||[];
+  if(b.dataset.ca==="x") closeCite();
+  else if(b.dataset.ca==="cp"){ const t=ids.map(i=>doc.paras[i].t).join("\n"); try{ navigator.clipboard.writeText(t).then(()=>toast("已複製這條文獻"),()=>toast("無法複製")); }catch(er){ toast("無法複製"); } }
+  else if(b.dataset.ca==="go"){ citeBackPos={top:viewer.scrollTop,left:viewer.scrollLeft,page:doc.type==="pdf"?curPage():0,doc}; closeCite(); goToPara(ids[0]); $("#citeBack").hidden=false; } });
+$("#citeBack").onclick=()=>{ const p=citeBackPos; $("#citeBack").hidden=true; citeBackPos=null; if(!p||p.doc!==doc) return;
+  if(doc.type==="pdf"&&PV.mode!=="scroll"&&!doc.dual) gotoPage(p.page,true); viewer.scrollTo({top:p.top,left:p.left}); };
+document.addEventListener("pointerdown",e=>{ if(!$("#citeCard").hidden&&!e.target.closest("#citeCard,.citeul,.cite")) closeCite(); },true);
+viewer.addEventListener("scroll",()=>{ if(!$("#citeCard").hidden) closeCite(); },{passive:true});
+
 /* ================= Interaction ================= */
 function hitPara(e){
   let pid=-1; const sp=e.target.closest(".tl span");
@@ -2702,6 +3020,7 @@ function hitPara(e){
 viewer.addEventListener("click",e=>{
   if(!doc||!reading()) return;
   if(annOn&&e.target.closest(".page")) return;
+  const ce=e.target.closest(".citeul,#article .cite"); if(ce){ openCite(ce); return; }
   if(isDeskR()&&dTab!=="tr"&&dTab!=="note"&&!$("#drawer").hidden&&hitPara(e)>=0) setDTab("tr");
   if(String(getSelection()).trim().length>1) return;
   let pid=-1;
@@ -2792,7 +3111,7 @@ $("#paneTools").addEventListener("click",e=>{
 /* ---- summary ---- */
 let sumCtl=null;
 function md(t){
-  let out="",inList=false; const inl=s=>linkRefs(esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>"));
+  let out="",inList=false; const inl=s=>linkRefs(esc(s).replace(/\*\*(.+?)\*\*/g,"<strong>$1</strong>"),s);
   for(let l of String(t).split("\n")){ l=l.trim();
     if(/^[-*•]\s+/.test(l)){ if(!inList){out+="<ul>";inList=true;} out+="<li>"+inl(l.replace(/^[-*•]\s+/,""))+"</li>"; continue; }
     if(inList){ out+="</ul>"; inList=false; }
@@ -3649,7 +3968,7 @@ function refText(limit){
   if(!doc) return ""; let out="", last=-1;
   for(let i=0;i<doc.paras.length;i++){
     let pre="";
-    if(doc.type==="pdf"){ const pg=doc.pp?doc.pp[i]:null; if(pg!=null&&pg!==last){ pre="〔p."+(pg+1)+"〕\n"; last=pg; } }
+    if(doc.type==="pdf"){ const pg=doc.pp?doc.pp[i]:null; if(pg!=null&&pg!==last){ pre="〔p."+(pg+1)+"〕\n"; last=pg; } pre+="〔第"+(i+1)+"段〕"; }
     else pre="〔第"+(i+1)+"段〕";
     out+=pre+doc.paras[i].t+"\n\n"; if(out.length>limit) break;
   }
@@ -3660,13 +3979,65 @@ function refChip(n){
   if(doc.type==="pdf"){ if(n<1||n>doc.pages.length) return "p."+n; return '<a class="plink" data-pg="'+n+'">p.'+n+"</a>"; }
   if(n<1||n>doc.paras.length) return "第"+n+"段"; return '<a class="plink" data-pid="'+(n-1)+'">第'+n+"段</a>";
 }
-function linkRefs(h){
+/* 原文對照：段落編號變成上標註腳，點下去看原文；摘要裡的數字、條件和原文對不上時變黃 */
+function srcFn(pid,q){ const w=q&&doc&&doc.paras[pid]?srcWarn(q,doc.paras[pid].t):false;
+  return '<button class="srcfn'+(w?" warn":"")+'" data-src="'+pid+'" data-q="'+esc(q||"")+'" aria-label="原文第'+(pid+1)+'段'+(w?"（可能和原文不一致）":"")+'">'+(w?"⚠":"")+(pid+1)+"</button>"; }
+function linkRefs(h,plain){
+  const q=plain?String(plain).replace(/[（(][^()（）]{1,40}[)）]/g,m=>/^[（(]\s*(pp?\.|第|頁|page)/i.test(m)&&/\d/.test(m)?"":m).replace(/\*\*/g,"").trim():"";
   return h.replace(/[（(]([^()（）<>]{1,40})[)）]/g,(m,inner)=>{
     if(!/^\s*(pp?\.|第|頁|page)/i.test(inner)||!/\d/.test(inner)) return m;
     const nums=[...inner.matchAll(/\d+/g)].map(x=>+x[0]).slice(0,4);
+    if(/^\s*第/.test(inner)&&/段/.test(inner)&&doc) return nums.filter(n=>n>=1&&n<=doc.paras.length).map(n=>srcFn(n-1,q)).join("")||m;
     return "（"+nums.map(refChip).join(" ")+"）";
   });
 }
+const SRC_CK=[
+ {k:/除非([^，；。]{2,12})/,syn:/除非|另有約定|書面約定|unless/i,n:"除非"},
+ {k:/但若([^，；。]{2,12})/,syn:/若|如果|啟用|開啟|只要|才能|可延長|if/i,n:"但若"},
+ {k:/不含([^，；。]{2,10})/,syn:/不含|不包括|不包含|另計|除了|扣除|exclud/i,n:"不含"},
+ {k:/不包括([^，；。]{2,10})/,syn:/不含|不包括|不包含|另計|除了|exclud/i,n:"不包括"},
+ {k:/([^，；。]{2,14})除外/,syn:/除外|例外|不在此限|不受|除了|except/i,n:"除外"},
+ {k:/最多([^，；。]{0,8})/,syn:/最多|最久|至多|最長|上限|不超過|at most|up to/i,n:"最多"},
+ {k:/至少([^，；。]{0,8})/,syn:/至少|最少|起碼|at least/i,n:"至少"},
+ {k:/\bunless\b([^,.;]{2,40})/i,syn:/除非|否則|除了|例外|unless|除外/i,n:"unless",en:1},
+ {k:/\bexcept(?: for| when| that)?\b([^,.;]{2,40})/i,syn:/除了|例外|除外|不包括|不含|except/i,n:"except",en:1},
+ {k:/\b(?:excluding|not including)\b([^,.;]{2,40})/i,syn:/不含|不包括|排除|不計|exclud/i,n:"excluding",en:1},
+ {k:/\b(?:only if|provided that)\b([^,.;]{2,40})/i,syn:/只有|才|前提|條件|only if|provided/i,n:"only if",en:1}
+];
+const srcNums=t=>(String(t).match(/\d[\d,]*(?:\.\d+)?/g)||[]).map(x=>x.replace(/,/g,"").replace(/\.0+$/,"")).filter(x=>x.length);
+function srcNumBad(q,para){ const pn=new Set(srcNums(para)); return [...new Set(srcNums(q))].filter(n=>!pn.has(n)); }
+function srcConds(para){ const out=[]; for(const c of SRC_CK){ const m=para.match(c.k); if(m) out.push({n:c.n,ph:m[0].trim(),obj:(m[1]||"").replace(/^(另有|使用者已|因)/,"").trim(),syn:c.syn,en:c.en}); } return out; }
+function srcCondMiss(q,para){ return srcConds(para).filter(c=>!c.syn.test(q)&&!(!c.en&&c.obj.length>=2&&q.includes(c.obj.slice(0,Math.min(4,c.obj.length))))).map(c=>c.ph); }
+function srcWarn(q,para){ return srcNumBad(q,para).length>0||srcCondMiss(q,para).length>0; }
+function srcHL(t){
+  let h=esc(t).replace(/(\d[\d,]*(?:\.\d+)?\s?(?:%|％|MB|GB|kg|km|天|日|個|分鐘|小時|年|月|元|萬|億|percent)?)/g,'<span class="snum">$1</span>');
+  return h.replace(/(除非|但若|但因|不含|不包括|除外|逾期|不予|最多|至少|上限|\bunless\b|\bexcept(?: for)?\b|\bexcluding\b|\bnot including\b|\bonly if\b|\bprovided that\b|\bat least\b|\bat most\b)/gi,'<span class="scond">$1</span>');
+}
+let srcCur=null;
+function openSrc(pid,q){ if(!doc||!doc.paras[pid]) return; srcCur={pid,q:q||"",extra:0}; drawSrc(); $("#srcSheet").hidden=false; }
+function closeSrc(){ $("#srcSheet").hidden=true; srcCur=null; }
+function drawSrc(){
+  const {pid,q,extra}=srcCur, P=doc.paras, loc=i=>"第"+(i+1)+"段"+(doc.type==="pdf"&&doc.pp&&doc.pp[i]!=null?" · p."+(doc.pp[i]+1):"");
+  let h='<div class="shd"><b>原文 · '+loc(pid)+' / 共 '+P.length+' 段</b><button class="sx" data-sa="x" aria-label="關閉">×</button></div>';
+  if(q){ const bad=srcNumBad(q,P[pid].t), cm=srcCondMiss(q,P[pid].t), cs=srcConds(P[pid].t), qn=[...new Set(srcNums(q))];
+    h+='<div class="sq"><div class="qs">'+(ZH()?"重點":"摘要")+'：「'+esc(q.length>120?q.slice(0,120)+"…":q)+'」</div>';
+    h+=bad.length?'<div class="qr w">⚠ <b>數字對不上：'+esc(bad.join("、"))+'</b>　這一段原文沒有這個數字</div>':'<div class="qr ok">✓ 數字都對'+(qn.length?"（"+esc(qn.join("、"))+"）":"（沒有數字）")+'</div>';
+    h+=cm.length?'<div class="qr w">⚠ <b>可能漏了條件：</b>'+cm.map(x=>"「"+esc(x)+"」").join("、")+'</div>':'<div class="qr ok">✓ 條件都有提到'+(cs.length?"（"+esc(cs.map(c=>c.n).join("、"))+"）":"（原文沒有條件句）")+'</div>';
+    h+='<div class="qn">自動核對只是提醒，請以原文為準。</div></div>'; }
+  for(let k=Math.max(0,pid-1-extra);k<pid;k++) h+='<div class="sctx"><small>'+loc(k)+'</small>'+esc(P[k].t)+'</div>';
+  h+='<div class="scur"><small>'+loc(pid)+'</small>'+srcHL(P[pid].t)+'</div>';
+  for(let k=pid+1;k<=Math.min(P.length-1,pid+1+extra);k++) h+='<div class="sctx"><small>'+loc(k)+'</small>'+esc(P[k].t)+'</div>';
+  h+='<div class="slg"><span><span class="snum">數字</span></span><span><span class="scond">條件／例外</span></span></div>';
+  h+='<div class="sacts"><button class="primary" data-sa="go">回到文件這段</button>'+((pid-1-extra>0||pid+1+extra<P.length-1)?'<button class="smore" data-sa="more">再多看一段</button>':"")+'</div>';
+  $("#srcPop").innerHTML=h; $("#srcPop").scrollTop=0;
+}
+$("#srcPop").addEventListener("click",e=>{ const b=e.target.closest("[data-sa]"); if(!b||!srcCur) return;
+  if(b.dataset.sa==="x") closeSrc();
+  else if(b.dataset.sa==="more"){ srcCur.extra++; drawSrc(); }
+  else if(b.dataset.sa==="go"){ const pid=srcCur.pid; closeSrc(); $("#mmView").hidden=true; if(innerWidth<900) $("#drawer").hidden=true; if(!reading()) goRead(); goToPara(pid); } });
+document.addEventListener("click",e=>{ const f=e.target.closest(".srcfn"); if(f){ e.preventDefault(); e.stopPropagation(); openSrc(+f.dataset.src,f.dataset.q||""); return; }
+  if(!$("#srcSheet").hidden&&!e.target.closest("#srcSheet")) closeSrc(); },true);
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("#srcSheet").hidden) closeSrc(); });
 
 /* ================= Mind map ================= */
 let mmSrc="all", mmZoom=1, mmBusy=null; const mmCol=new Set();
@@ -3786,7 +4157,8 @@ $("#mmBody").addEventListener("click",e=>{
   const t=e.target.closest(".mmt"); if(t){ const id=t.dataset.id; if(mmCol.has(id)) mmCol.delete(id); else mmCol.add(id); renderMap(); return; }
   const n=e.target.closest(".mmn"); if(!n) return;
   if(n.dataset.pid==null){ toast("這個節點對不到原文的位置。"); return; }
-  $("#mmView").hidden=true; if(!reading()) goRead(); goToPara(+n.dataset.pid);
+  const nt=[...n.querySelectorAll("text")].map(t=>t.textContent.trim()).filter(t=>!/^\d+$/.test(t)).join(" ").trim();
+  openSrc(+n.dataset.pid,nt);
 });
 document.querySelector(".mmhead .chips").addEventListener("click",e=>{ const b=e.target.closest("[data-mms]"); if(!b) return; mmSrc=b.dataset.mms; mmCol.clear(); renderMap(); });
 $("#mmRe").onclick=()=>genMap();
@@ -3813,20 +4185,20 @@ function mapOutline(n,depth,out){ out.push({type:"li",text:"　".repeat(Math.max
 /* ================= Export ================= */
 const safeName=n=>String(n||"Pip").replace(/\.(pdf|docx|txt|md)$/i,"").replace(/[\\/:*?"<>|]+/g," ").trim().slice(0,60)||"Pip";
 const isIOS=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
-const EXPI=[["notes","我的筆記"],["hl","重點＋中文翻譯"],["bm","書籤"],["sum","AI 摘要"],["map","心智圖"],["chat","問 Pip 對話"]];
+const EXPI=[["notes","我的筆記"],["hl","重點＋中文翻譯"],["cite","重點＋出處（APA／Chicago）"],["bm","書籤"],["sum","AI 摘要"],["map","心智圖"],["chat","問 Pip 對話"]];
 let expFmt=store.get("yidu:expfmt")||"docx", expFile=null;
 function expAvail(){
   const m=doc.meta, n=doc.note||{}, ink=(n.ink||[]).length, ann=Object.values(n.ann||{}).filter(a=>a&&a.length).length;
   const nt=(n.html&&htmlText(n.html)?1:0)+(n.html&&/<img/i.test(n.html)?1:0);
   return {notes:[Object.keys(m.notes).length+nt+ink+ann, [Object.keys(m.notes).length?Object.keys(m.notes).length+" 則段落筆記":"",nt?"筆記本":"",ink?"手寫":"",ann?ann+" 頁標註":""].filter(Boolean).join("、")],
-    hl:[Object.keys(m.hl).length,Object.keys(m.hl).length+" 段"], bm:[m.bm.length,m.bm.length+" 個"], sum:[n.sum?1:0,n.sum?"已產生":"還沒產生"],
+    hl:[Object.keys(m.hl).length,Object.keys(m.hl).length+" 段"], cite:[Object.keys(m.hl).length,Object.keys(m.hl).length?"可直接貼進報告":""], bm:[m.bm.length,m.bm.length+" 個"], sum:[n.sum?1:0,n.sum?"已產生":"還沒產生"],
     map:[n.mm&&(n.mm.all||n.mm.mine)?1:0,n.mm&&(n.mm.all||n.mm.mine)?"已產生":"還沒產生"], chat:[(doc.chat||[]).filter(x=>x.t).length,(doc.chat||[]).filter(x=>x.r==="u").length+" 個問題"]};
 }
 function openExport(){
   if(!doc){ toast("先打開一份文件。"); return; }
   closePop(); const av=expAvail(), last=getJSON("yidu:expsel",["notes","hl"]);
   $("#expItems").innerHTML=EXPI.map(([k,n])=>{ const [c,d]=av[k], on=c>0; return '<label class="'+(on?"":"off")+'"><input type="checkbox" data-ek="'+k+'"'+(on?"":" disabled")+(on&&last.includes(k)?" checked":"")+">"+n+"<small>"+esc(d||"沒有內容")+"</small></label>"; }).join("");
-  syncExpFmt(); $("#expMsg").textContent=""; $("#expSave").hidden=true; $("#expGo").disabled=false; expFile=null; $("#dlgExport").hidden=false;
+  syncExpFmt(); syncExpCite(); $("#expMsg").textContent=""; $("#expSave").hidden=true; $("#expGo").disabled=false; expFile=null; $("#dlgExport").hidden=false;
 }
 function syncExpFmt(){
   document.querySelectorAll("#expFmt [data-ef]").forEach(b=>b.classList.toggle("on",b.dataset.ef===expFmt));
@@ -3871,6 +4243,52 @@ function mdParts(t,out){
   return out;
 }
 async function imgSize(p){ if(p.w&&p.h) return p; try{ const im=await new Promise((res,rej)=>{ const i=new Image(); i.onload=()=>res(i); i.onerror=rej; i.src=p.url; }); p.w=im.naturalWidth; p.h=im.naturalHeight; }catch(e){ p.w=800; p.h=600; } return p; }
+/* ---- 重點＋出處（APA／Chicago） ---- */
+let ecFmt=store.get("yidu:citefmt")||"apa";
+const isZhS=t=>/[\u3400-\u9fff]/.test(t||"");
+function bibOf(){ return doc&&doc.meta?(doc.meta.bib=doc.meta.bib||{}):{}; }
+function bibPage(i){ /* PDF 第幾頁 → 期刊頁碼 */
+  if(!doc||doc.type!=="pdf"||!doc.pp||doc.pp[i]==null) return null;
+  const st=parseInt(String(bibOf().pages||"").match(/\d+/)||"",10); return isFinite(st)?st+doc.pp[i]:doc.pp[i]+1; }
+function citeIn(i){
+  const m=bibOf(), zh=isZhS(m.authors), A=String(m.authors||"").split(/[、，]|,\s*(?=[A-Z][a-z])| and | & /).map(x=>x.trim()).filter(Boolean);
+  let a; if(!A.length) a=zh?"作者":"Author"; else if(zh) a=A.length>2?A[0]+"等":A.join("、");
+  else { const sur=A.map(x=>x.includes(",")?x.split(",")[0].trim():x.split(/\s+/).pop()); a=sur.length>2?sur[0]+" et al.":sur.join(ecFmt==="apa"?" & ":" and "); }
+  const pg=bibPage(i), y=m.year||(zh?"年份":"n.d."), loc=pg!=null?pg:null;
+  if(ecFmt==="apa") return zh?"（"+a+"，"+y+(loc!=null?"，頁 "+loc:"，第 "+(i+1)+" 段")+"）":"("+a+", "+y+(loc!=null?", p. "+loc:", para. "+(i+1))+")";
+  return zh?"（"+a+" "+y+(loc!=null?", "+loc:"")+"）":"("+a+" "+y+(loc!=null?", "+loc:"")+")";
+}
+function citeRef(){
+  const m=bibOf(), zh=isZhS(m.title||m.authors), doi=m.doi?("https://doi.org/"+String(m.doi).replace(/^https?:\/\/(dx\.)?doi\.org\//,"")):"", pg=String(m.pages||"");
+  if(ecFmt==="apa") return zh? (m.authors||"")+"（"+(m.year||"")+"）。"+(m.title||"")+"。"+(m.journal||"")+(m.vol?"，"+m.vol:"")+(pg?"，"+pg.replace("-","–"):"")+"。"+doi
+                              : (m.authors||"")+" ("+(m.year||"n.d.")+"). "+(m.title||"")+". "+(m.journal||"")+(m.vol?", "+m.vol:"")+(pg?", "+pg.replace("-","–"):"")+". "+doi;
+  return zh? (m.authors||"")+"，"+(m.year||"")+"，〈"+(m.title||"")+"〉，《"+(m.journal||"")+"》"+(m.vol||"")+(pg?"："+pg:"")+"。"+(doi?" "+doi:"")
+           : (m.authors||"")+". "+(m.year||"n.d.")+". “"+(m.title||"")+".” "+(m.journal||"")+(m.vol?" "+m.vol:"")+(pg?": "+pg:"")+"."+(doi?" "+doi+".":"");
+}
+function citeLines(){
+  const ids=Object.keys(doc.meta.hl).map(Number).filter(i=>doc.paras[i]).sort((a,b)=>a-b);
+  return ids.map((i,k)=>{ const t=doc.paras[i].t.trim(), zh=isZhS(t); return (k+1)+". "+(zh?"「":"“")+t.replace(/[。.]$/,"")+(zh?"」":"”")+(zh?"":" ")+citeIn(i)+(zh?"。":"."); });
+}
+function citeText_(){ const m=bibOf(); return (m.title||doc.name)+"\n\n重點\n"+citeLines().join("\n")+"\n\n參考文獻\n"+citeRef(); }
+function syncExpCite(){
+  const ck=document.querySelector('#expItems [data-ek="cite"]'), on=!!(ck&&ck.checked); $("#expCite").hidden=!on; if(!on) return;
+  document.querySelectorAll("#ecFmt [data-cf]").forEach(b=>b.classList.toggle("on",b.dataset.cf===ecFmt));
+  const m=bibOf(); document.querySelectorAll("#ecMeta [data-bm]").forEach(i=>{ if(document.activeElement!==i) i.value=m[i.dataset.bm]||""; });
+  $("#ecOut").textContent=citeText_();
+}
+$("#expItems").addEventListener("change",()=>syncExpCite());
+$("#ecFmt").addEventListener("click",e=>{ const b=e.target.closest("[data-cf]"); if(!b) return; ecFmt=b.dataset.cf; store.set("yidu:citefmt",ecFmt); syncExpCite(); });
+$("#ecMeta").addEventListener("input",e=>{ const i=e.target.closest("[data-bm]"); if(!i) return; bibOf()[i.dataset.bm]=i.value.trim(); saveMeta(); $("#ecOut").textContent=citeText_(); });
+const P_BIB=head=>"下面是一份學術文件開頭和每頁頁首頁尾的文字。請找出這份文件的書目資訊，只輸出一個 JSON 物件，不要其他文字："+'{"authors":"作者（中文用「、」分隔；英文寫成 Wendt, A. 或多位作者用逗號分隔）","year":"年份","title":"篇名（含副標題）","journal":"期刊或出版者","vol":"卷（期），例如 29（1） 或 46(2)","pages":"頁碼範圍，例如 55-111","doi":"DOI，沒有就空字串"}'+"。找不到的欄位填空字串，不要猜。\n\n"+head;
+$("#ecAI").onclick=async()=>{
+  if(!doc) return; const b=$("#ecAI"); b.disabled=true; $("#ecMsg").textContent="讀取中…";
+  const head=doc.paras.slice(0,30).map(p=>p.t).join("\n").slice(0,4000)+(doc.type==="pdf"?"\n\n頁首頁尾："+doc.pages.slice(0,6).map(pg=>pg.items.filter(it=>it.edge||it.hf).map(it=>it.s).join(" ")).join(" ｜ ").slice(0,800):"");
+  try{ const t=await claude(P_BIB(head),{max:600}); const j=JSON.parse(t.slice(t.indexOf("{"),t.lastIndexOf("}")+1)); const m=bibOf();
+    ["authors","year","title","journal","vol","pages","doi"].forEach(k=>{ if(j[k]) m[k]=String(j[k]).trim(); }); saveMeta(); $("#ecMsg").textContent="已填入，請確認。"; syncExpCite(); }
+  catch(e){ $("#ecMsg").textContent=e&&e.code==="no_key"?"請先到設定貼上金鑰。":"讀取失敗，可以自己填。"; }
+  b.disabled=false;
+};
+$("#ecCopy").onclick=()=>{ try{ navigator.clipboard.writeText(citeText_()).then(()=>toast("已複製，可以直接貼進報告"),()=>toast("無法複製，請手動選取。")); }catch(e){ toast("無法複製，請手動選取。"); } };
 async function buildExport(sel){
   const m=doc.meta, n=doc.note||normNote({}), P=[], sn=i=>doc.paras[i]?doc.paras[i].t:"";
   const sec=t=>P.push({type:"h2",text:t});
@@ -3884,6 +4302,7 @@ async function buildExport(sel){
     sec("重點與中文翻譯");
     ids.forEach(i=>P.push({type:"quote",label:MKN[hlCol(m.hl[i])],color:hlCol(m.hl[i]),loc:locOf(i),en:sn(i),zh:(doc.paras[i]&&doc.paras[i].zh)||"（尚未翻譯）"}));
   }
+  if(sel.includes("cite")&&Object.keys(m.hl).length){ sec("重點與出處（"+(ecFmt==="apa"?"APA 第 7 版":"Chicago 作者-年份")+"）"); citeLines().forEach(l=>P.push({type:"p",text:l})); P.push({type:"h3",text:"參考文獻"}); P.push({type:"p",text:citeRef()}); }
   if(sel.includes("notes")){
     sec("我的筆記");
     const pn=Object.keys(m.notes).map(Number).sort((a,b)=>a-b);
