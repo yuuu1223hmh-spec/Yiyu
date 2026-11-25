@@ -515,6 +515,13 @@ body.sport #npRail .ipop{left:6px;top:100%;margin:6px 0 0}
 .mmbody{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y;padding:20px}
 .mmbody svg{display:block}
 .mmbody .mmn{cursor:pointer}
+.mmbody .mmn.sel>rect:first-child{fill:#F6E7C8;fill-opacity:1;stroke:#9B2F35;stroke-width:1.5}
+.mmact{display:flex;align-items:center;gap:8px;padding:8px max(12px,env(safe-area-inset-right,0px)) 8px max(12px,env(safe-area-inset-left,0px));background:var(--chrome);border-top:1px solid var(--line)}
+.mmact .mmat{flex:1;min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mmact button{font:inherit;font-size:14px;font-weight:700;border:1px solid var(--line);border-radius:4px;padding:4px 12px;background:var(--chrome);color:var(--ink);cursor:pointer;min-height:36px}
+.mmact button.pri{background:var(--accent);border-color:var(--accent);color:#fff}
+.mmact button:disabled{opacity:.5}
+.mmact .x{border:0;background:none;padding:4px 8px}
 .mmmsg{max-width:520px;margin:60px auto;text-align:center;color:var(--muted);font-size:15.5px;line-height:1.8;display:flex;flex-direction:column;align-items:center;gap:12px}
 .mmmsg svg{width:90px;height:108px}
 .mmfoot{margin:0;padding:6px 14px 10px;background:var(--chrome);border-top:1px dotted var(--line)}
@@ -1198,7 +1205,11 @@ body.zhdoc #article .ap{text-align:justify}
     <button class="x" id="mmClose" aria-label="關閉">✕</button>
   </div>
   <div class="mmbody" id="mmBody"></div>
-  <p class="hintline mmfoot">點節點跳到原文、點圓點收合或展開。頁碼都和原文核對過，對不上的就不顯示頁碼。</p>
+  <div class="mmact" id="mmAct" hidden>
+    <span class="mmat" id="mmActT"></span>
+    <button id="mmSrcB">看原文</button><button class="pri" id="mmGrow">AI 延伸</button><button class="x" id="mmActX" aria-label="取消選取">✕</button>
+  </div>
+  <p class="hintline mmfoot">點節點可以看原文或用 AI 往下延伸、點圓點收合或展開。頁碼都和原文核對過，對不上的就不顯示頁碼。</p>
 </div>
 <div class="dlg" id="dlgExport" hidden>
   <div class="dlgc" role="dialog" aria-labelledby="expTitle">
@@ -4042,7 +4053,7 @@ document.addEventListener("click",e=>{ const f=e.target.closest(".srcfn"); if(f)
 document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("#srcSheet").hidden) closeSrc(); });
 
 /* ================= Mind map ================= */
-let mmSrc="all", mmZoom=1, mmBusy=null; const mmCol=new Set();
+let mmSrc="all", mmZoom=1, mmBusy=null, mmSel=null, mmGrowing=false; const mmCol=new Set();
 const MMC=["#9B2F35","#27496D","#3C6E4F","#B8642A","#6B4A7A","#B58A1B","#8C5A6B"];
 const normQ=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
 function mineText(){
@@ -4114,10 +4125,13 @@ function mmTerms(ix,n){
   return {terms,exact,head};
 }
 const MM_MIN=0.42, MM_SHARE=2;   // 夠相關的門檻；同一段最多給幾個節點
-function mmAssign(tree){
+function mmAssign(tree,only){
   if(!doc||!doc.paras||!doc.paras.length) return;
   const ix=mmIndex(), nodes=[]; const walk=(n,d)=>{ n._d0=d; nodes.push(n); (n.c||[]).forEach(c=>walk(c,d+1)); }; walk(tree,0);
+  const used=new Map();
+  if(only) nodes.forEach(n=>{ if(!only.has(n)&&n.pid!=null) used.set(n.pid,(used.get(n.pid)||0)+1); });   // 只配新節點，舊節點的位置不動
   const cand=nodes.map(n=>{
+    if(only&&!only.has(n)) return [];
     n.pid=null; n.p=null;
     const tw=mmTerms(ix,n); if(!tw.terms.size&&!tw.exact) return [];
     const nt=n.t+" "+(n.q||""), ok=z=>z==="body"||(MM_SECT[z]&&MM_SECT[z].test(nt))||(n._d0===0&&z==="abs");
@@ -4129,8 +4143,7 @@ function mmAssign(tree){
   });
   // 先把最有把握的節點配好，同一段用過越多次就越往後排
   const order=nodes.map((n,k)=>k).sort((a,b)=>((cand[b][0]||[0,0])[1])-((cand[a][0]||[0,0])[1]));
-  const used=new Map();
-  for(const k of order){ const n=nodes[k]; let best=null, bv=0;
+  for(const k of order){ const n=nodes[k]; if(only&&!only.has(n)) continue; let best=null, bv=0;
     for(const [i,s] of cand[k]){ const u=used.get(i)||0; if(u>=MM_SHARE) continue; const v=s/(1+0.6*u); if(v>bv){ bv=v; best=i; } }
     if(best==null) continue;
     used.set(best,(used.get(best)||0)+1); n.pid=best;
@@ -4158,7 +4171,7 @@ async function genMap(){
     const a=t.indexOf("{"), b=t.lastIndexOf("}"); if(a<0||b<a) throw {code:"http",message:"心智圖格式有誤，請按「重新產生」"};
     let tree; try{ tree=JSON.parse(t.slice(a,b+1)); }catch(e){ throw {code:"http",message:"心智圖格式有誤，請按「重新產生」"}; }
     if(doc!==d) return;
-    verifyTree(tree,true); mmAssign(tree); d.note=d.note||normNote({key:d.key}); d.note.mm=d.note.mm||{}; d.note.mm[src]={tree,t:Date.now()}; saveNote(); mmCol.clear();
+    verifyTree(tree,true); mmAssign(tree); d.note=d.note||normNote({key:d.key}); d.note.mm=d.note.mm||{}; d.note.mm[src]={tree,t:Date.now()}; saveNote(); mmCol.clear(); mmSel=null;
   }catch(e){ if(doc===d&&mmSrc===src) $("#mmBody").innerHTML=mmMsg(errMsg(e)); mmBusy=null; return; }
   mmBusy=null; if(mmSrc===src&&!$("#mmView").hidden) renderMap();
 }
@@ -4208,7 +4221,7 @@ function mapSVG(tree,forImage){
     g+='<path d="M'+x1+","+y1+" H"+mx+" V"+y2+" H"+x2+'" fill="none" stroke="'+c._col+'" stroke-width="1.5"/>'; }); });
   walk(tree,n=>{
     const x=n._x, yy=n._y+off, d=n._d, col=n._col, fs=n._fs;
-    g+='<g class="mmn" data-id="'+n._id+'"'+(n.pid!=null?' data-pid="'+n.pid+'"':"")+'><rect x="'+x+'" y="'+yy+'" width="'+n._w+'" height="'+n._h+'" fill="#FBF7EF" fill-opacity="0.01"/>';
+    g+='<g class="mmn'+(!forImage&&n._id===mmSel?" sel":"")+'" data-id="'+n._id+'"'+(n.pid!=null?' data-pid="'+n.pid+'"':"")+'><rect x="'+x+'" y="'+yy+'" width="'+n._w+'" height="'+n._h+'" fill="#FBF7EF" fill-opacity="0.01"/>';
     if(d===0){
       g+='<rect x="'+x+'" y="'+yy+'" width="'+n._w+'" height="'+n._h+'" fill="#FBF7EF" stroke="'+INKC+'" stroke-width="1"/><rect x="'+(x+4)+'" y="'+(yy+4)+'" width="'+(n._w-8)+'" height="'+(n._h-8)+'" fill="none" stroke="'+INKC+'" stroke-width="1"/>';
       n._zl.forEach((l,i)=>{ g+=tx(x+n._w/2,yy+13+(i+1)*(fs+6)-5,l,fs,700,INKC,"middle"); });
@@ -4231,21 +4244,59 @@ function renderMap(){
   $("#mmZ").textContent=Math.round(mmZoom*100)+"%";
   const md0=mapData(mmSrc), box=$("#mmBody");
   $("#mmPng").disabled=!md0;
-  if(!md0){ if(mmBusy!==mmSrc) box.innerHTML=mmMsg(mmSrc==="mine"?"按「重新產生」用你畫的重點和筆記做一張心智圖。":"按「重新產生」做一張整篇文件的心智圖。"); return; }
+  if(!md0){ mmSel=null; $("#mmAct").hidden=true; if(mmBusy!==mmSrc) box.innerHTML=mmMsg(mmSrc==="mine"?"按「重新產生」用你畫的重點和筆記做一張心智圖。":"按「重新產生」做一張整篇文件的心智圖。"); return; }
   if(md0.tree._a!==2){ mmAssign(md0.tree); saveNote(); }  // 舊的心智圖用新規則重新對一次原文
   const {W,H,body}=mapSVG(md0.tree,false);
+  setTimeout(syncMmAct);
   box.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.round(W*mmZoom)+'" height="'+Math.round(H*mmZoom)+'" viewBox="0 0 '+W+" "+H+'">'+body+"</svg>";
 }
 $("#mmBody").addEventListener("click",e=>{
   const t=e.target.closest(".mmt"); if(t){ const id=t.dataset.id; if(mmCol.has(id)) mmCol.delete(id); else mmCol.add(id); renderMap(); return; }
-  const n=e.target.closest(".mmn"); if(!n) return;
-  if(n.dataset.pid==null){ toast("這個節點對不到原文的位置。"); return; }
-  const nt=[...n.querySelectorAll("text")].map(t=>t.textContent.trim()).filter(t=>!/^\d+$/.test(t)).join(" ").trim();
-  openSrc(+n.dataset.pid,nt);
+  const n=e.target.closest(".mmn"); if(!n){ if(mmSel&&!mmGrowing){ mmSel=null; renderMap(); } return; }
+  mmSel=n.dataset.id; renderMap();
 });
-document.querySelector(".mmhead .chips").addEventListener("click",e=>{ const b=e.target.closest("[data-mms]"); if(!b) return; mmSrc=b.dataset.mms; mmCol.clear(); renderMap(); });
+// 用節點路徑（r.0.2）找回節點
+const mmNode=(tree,id)=>{ if(!tree||!id) return null; let n=tree; for(const k of id.split(".").slice(1)){ n=n.c&&n.c[+k]; if(!n) return null; } return n; };
+const mmPath=(tree,id)=>{ const out=[]; let n=tree; out.push(n.t); for(const k of id.split(".").slice(1)){ n=n.c[+k]; out.push(n.t); } return out; };
+function syncMmAct(){
+  const md=mapData(mmSrc), n=md&&mmNode(md.tree,mmSel), bar=$("#mmAct");
+  if(!n){ mmSel=null; bar.hidden=true; return; }
+  bar.hidden=false; $("#mmActT").textContent=mmGrowing?"Pip 正在延伸「"+n.t+"」…":n.t;
+  $("#mmSrcB").disabled=n.pid==null||mmGrowing; $("#mmSrcB").textContent=n.pid==null?"沒有對應原文":"看原文";
+  $("#mmGrow").disabled=mmGrowing; $("#mmActX").disabled=mmGrowing;
+}
+$("#mmSrcB").onclick=()=>{ const md=mapData(mmSrc), n=md&&mmNode(md.tree,mmSel); if(n&&n.pid!=null) openSrc(n.pid,mmSplit(n.t).zh+" "+mmSplit(n.t).en); };
+$("#mmActX").onclick=()=>{ mmSel=null; renderMap(); };
+const P_GROW=(pdf)=>"以下是一張心智圖裡的一個節點，和它在文件裡的相關原文。請幫這個節點往下延伸 3 到 5 個子節點，把原文裡更細的概念、論點、證據或例子拆出來。只輸出 JSON，不要任何其他文字。格式：{\"c\":[{\"t\":\"節點文字\",\"p\":"+(pdf?"頁碼":"段落編號")+",\"q\":\"原文逐字摘錄\"}]}。\n規則：節點文字用台灣繁體中文，精簡（20 字以內），重要學術術語後面加英文；不要和「已經有的子節點」重複；只根據原文，不要加原文沒有的內容；p 填"+(pdf?"〔p.N〕標記的頁碼數字":"〔第N段〕標記的段落數字")+"，不確定填 null；q 必須逐字照抄原文，用文件本身的語言（中文文件抄中文 8 到 30 字，英文文件抄 5 到 15 個英文字），要從正文抄，找不到就填空字串。\n\n";
+async function growNode(){
+  const md=mapData(mmSrc), d=doc, src=mmSrc, id=mmSel, n=md&&mmNode(md.tree,id); if(!n||mmGrowing) return;
+  const pdf=d.type==="pdf", tag=i=>pdf&&d.pp?"〔p."+(d.pp[i]+1)+"〕〔第"+(i+1)+"段〕":"〔第"+(i+1)+"段〕";
+  // 原文：節點對到的那段前後各 3 段，再加上整份文件裡跟這個節點最像的幾段
+  const ix=mmIndex(), tw=mmTerms(ix,n), pick=new Set();
+  if(n.pid!=null) for(let i=Math.max(0,n.pid-3);i<=Math.min(d.paras.length-1,n.pid+3);i++) pick.add(i);
+  const sc=[]; for(let i=0;i<ix.n;i++) if(ix.zone[i]==="body") sc.push([i,mmScore(ix,n,i,tw)]);
+  sc.sort((a,b)=>b[1]-a[1]).slice(0,8).forEach(([i,s])=>{ if(s>0.2) pick.add(i); });
+  if(!pick.size){ toast("這個節點在原文裡找不到相關段落，沒辦法延伸。"); return; }
+  const text=[...pick].sort((a,b)=>a-b).map(i=>tag(i)+d.paras[i].t).join("\n\n").slice(0,24000);
+  const head="心智圖路徑："+mmPath(md.tree,id).join(" → ")+"\n要延伸的節點："+n.t+"\n已經有的子節點："+((n.c||[]).map(c=>c.t).join("、")||"（沒有）")+"\n\n相關原文：\n";
+  mmGrowing=true; syncMmAct();
+  try{
+    const t=await claude(P_GROW(pdf)+head+text,{max:1500});
+    const a=t.indexOf("{"), b=t.lastIndexOf("}"); if(a<0||b<a) throw {code:"http",message:"延伸的格式有誤，請再按一次「AI 延伸」"};
+    let r; try{ r=JSON.parse(t.slice(a,b+1)); }catch(e){ throw {code:"http",message:"延伸的格式有誤，請再按一次「AI 延伸」"}; }
+    const kids=(Array.isArray(r.c)?r.c:[]).slice(0,5).filter(c=>c&&c.t).map(c=>verifyTree({t:c.t,p:c.p,q:c.q,c:[]},true));
+    if(!kids.length) throw {code:"http",message:"Pip 沒有找到可以再拆開的內容。"};
+    if(doc!==d||!mapData(src)) return;
+    const have=new Set((n.c||[]).map(c=>mmSplit(c.t).zh)); const add=kids.filter(c=>!have.has(mmSplit(c.t).zh));
+    n.c=(n.c||[]).concat(add).slice(0,8); mmAssign(md.tree,new Set(add)); saveNote(); mmCol.delete(id);
+    toast("多了 "+add.length+" 個子節點");
+  }catch(e){ toast(errMsg(e)); }
+  finally{ mmGrowing=false; if(mmSrc===src&&!$("#mmView").hidden) renderMap(); }
+}
+$("#mmGrow").onclick=growNode;
+document.querySelector(".mmhead .chips").addEventListener("click",e=>{ const b=e.target.closest("[data-mms]"); if(!b) return; mmSrc=b.dataset.mms; mmSel=null; mmCol.clear(); renderMap(); });
 $("#mmRe").onclick=()=>genMap();
-$("#mmClose").onclick=()=>{ $("#mmView").hidden=true; };
+$("#mmClose").onclick=()=>{ $("#mmView").hidden=true; mmSel=null; };
 const mmSetZ=z=>{ mmZoom=Math.min(2.5,Math.max(0.3,Math.round(z*20)/20)); renderMap(); };
 $("#mmIn").onclick=()=>mmSetZ(mmZoom+0.15); $("#mmOut").onclick=()=>mmSetZ(mmZoom-0.15);
 $("#mmBody").addEventListener("wheel",e=>{ if(!e.ctrlKey) return; e.preventDefault(); mmSetZ(mmZoom*Math.exp(-e.deltaY/500)); },{passive:false});
