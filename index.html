@@ -266,6 +266,7 @@ body.side #viewer{margin-right:calc(var(--sideW) + 20px)}
 .dlgc .row{margin-top:14px;justify-content:flex-end}
 .dlgc button{font:inherit;font-size:15.5px;font-weight:700;border:1px solid var(--line);background:var(--chrome);color:var(--ink);border-radius:var(--r2);padding:8px 16px;cursor:pointer;box-shadow:var(--hard)}
 .dlgc .primary{background:var(--accent);color:var(--accent-ink)}
+.srcpop .primary,#citeBack{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
 
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(104px + env(safe-area-inset-bottom,0px));z-index:50;background:var(--ink);color:var(--desk);border:1px solid var(--line);padding:9px 16px;border-radius:4px;font-size:14.5px;max-width:min(90vw,460px);text-align:center}
 body.drop #viewer{outline:4px dashed var(--accent);outline-offset:-12px}
@@ -1956,7 +1957,7 @@ async function openPdf(buf,name,meta){
   if(!window.pdfjsLib) throw new Error("PDF 元件沒有載入，請確認網路後重新開啟");
   const myGen=++gen; resetUI(); io&&io.disconnect(); if(annOn) setAnn(false); doc=null; showView("pdf"); pagesEl.replaceChildren(); showLoading("正在開啟…");
   const keep=buf.slice(0);
-  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf),isEvalSupported:false,cMapUrl:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/",cMapPacked:true,standardFontDataUrl:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/standard_fonts/"}).promise;
+  const pdf=await pdfjsLib.getDocument({data:new Uint8Array(buf),isEvalSupported:false,cMapUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/",cMapPacked:true,standardFontDataUrl:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/standard_fonts/"}).promise;
   const pages=[]; let all=[]; refMode=false; let fontWatch=false;
   const rid0=meta.sample?"":(meta.id||("pdf:"+name+":"+keep.byteLength)), ocr=rid0?getJSON("yidu:ocr:"+rid0,null):null;
   for(let n=1;n<=pdf.numPages;n++){

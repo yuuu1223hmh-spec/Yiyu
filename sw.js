@@ -1,9 +1,9 @@
 // Pip：離線快取。App 本體優先抓最新版；字典、PDF 元件、繁體轉換和字型存起來重複使用。
-const V = "pip-v31";
+const V = "pip-v32";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 // 中文（繁、簡）和日韓 PDF 用的字型對照表：先存起來，第一次讀中文 PDF 時沒網路也讀得到
-const CMAP = "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/cmaps/";
+const CMAP = "https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/cmaps/";
 const CMAPS = ["Adobe-CNS1-UCS2", "UniCNS-UTF16-H", "UniCNS-UCS2-H", "B5pc-H", "ETen-B5-H", "HKscs-B5-H",
   "Adobe-GB1-UCS2", "UniGB-UTF16-H", "UniGB-UCS2-H", "GBK-EUC-H", "Adobe-Japan1-UCS2", "Adobe-Korea1-UCS2"].map(n => CMAP + n + ".bcmap");
 self.addEventListener("install", e => {
@@ -19,7 +19,7 @@ self.addEventListener("activate", e => {
       if (k === V) continue;
       const old = await caches.open(k);
       for (const r of await old.keys()) {
-        if (/cdnjs\.cloudflare\.com|dict\.json/.test(r.url) && !(await cur.match(r))) { const res = await old.match(r); if (res) await cur.put(r, res); }
+        if (/cdnjs\.cloudflare\.com|cdn\.jsdelivr\.net|dict\.json/.test(r.url) && !(await cur.match(r))) { const res = await old.match(r); if (res) await cur.put(r, res); }
       }
       await caches.delete(k);
     }
