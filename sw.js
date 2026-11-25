@@ -1,5 +1,5 @@
 // Pip：離線快取。App 本體優先抓最新版；字典、PDF 元件、繁體轉換和字型存起來重複使用。
-const V = "pip-v32";
+const V = "pip-v33";
 const SHELL = ["./", "./index.html", "./manifest.webmanifest", "./icon-192.png", "./icon-512.png", "./apple-touch-icon.png"];
 
 // 中文（繁、簡）和日韓 PDF 用的字型對照表：先存起來，第一次讀中文 PDF 時沒網路也讀得到

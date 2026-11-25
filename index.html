@@ -1905,7 +1905,8 @@ function mergeInto(all,next){
 
 /* 有些 PDF（Word、Mac 轉出）會把「一、用、民」存成長得一樣的部首符號（⼀⽤⺠），搜尋、查字、翻譯都會出錯：換回正常的字（一個字換一個字，長度不變） */
 const RAD2={"⺠":"民","⻄":"西","⻑":"長","⻝":"食","⻘":"青","⻤":"鬼","⺟":"母","⺩":"王","⻣":"骨","⻩":"黃","⻨":"麥","⻢":"马","⻛":"风","⻔":"门","⻅":"见","⻉":"贝","⻋":"车","⻓":"长","⻜":"飞","⻥":"鱼","⻚":"页","⻦":"鸟","⻬":"齐","⻰":"龙","⻳":"龟","⻆":"角","⺮":"竹","⺶":"羊","⻊":"足","⺼":"肉","⻌":"辶","⻍":"辶","⺇":"几","⺈":"刀","⺊":"卜","⺋":"卩","⺌":"小","⺍":"小","⺎":"兀","⺏":"尢","⺐":"尢","⺑":"尢","⺒":"巳","⺓":"幺","⺔":"彐","⺖":"心","⺗":"心","⺘":"手","⺙":"攴","⺛":"无","⺝":"月","⺞":"歹","⺡":"水","⺢":"水","⺣":"火","⺤":"爪","⺥":"爪","⺦":"丬","⺧":"牛","⺨":"犬","⺪":"疋","⺫":"目","⺬":"示","⺭":"示","⺯":"糸","⺰":"纟","⺱":"网","⺲":"网","⺳":"网","⺴":"网","⺵":"网","⺷":"羊","⺸":"羊","⺹":"老","⺺":"肀","⺻":"聿","⺽":"臼","⺾":"艸","⺿":"艸","⻀":"艸","⻁":"虎","⻂":"衣","⻃":"西","⻅":"见","⻆":"角","⻇":"角","⻈":"讠","⻉":"贝","⻎":"辶","⻏":"阝","⻐":"釒","⻑":"長","⻒":"镸","⻓":"长","⻔":"门","⻕":"阜","⻖":"阝","⻗":"雨","⻙":"韦","⻞":"首","⻟":"食","⻠":"饣","⻡":"食","⻢":"马","⻣":"骨","⻤":"鬼","⻥":"鱼","⻦":"鸟","⻧":"卤","⻨":"麦","⻪":"黾","⻫":"齐","⻭":"齿","⻮":"齿","⻯":"龙","⻱":"龟","⻲":"龟"};
-const fixRad=t=>/[\u2E80-\u2FDF]/.test(t)?t.replace(/[\u2F00-\u2FDF]/g,c=>c.normalize("NFKC")).replace(/[\u2E80-\u2EFF]/g,c=>RAD2[c]||c):t;
+// 部首字（⼀⽤⺠）和相容字（例如「參」「錄」的另一個編碼）換成一般的字，搜尋、翻譯、對原文才找得到
+const fixRad=t=>/[\u2E80-\u2FDF\uF900-\uFAFF]/.test(t)?t.replace(/[\u2F00-\u2FDF]/g,c=>c.normalize("NFKC")).replace(/[\u2E80-\u2EFF]/g,c=>RAD2[c]||c).replace(/[\uF900-\uFAFF]/g,c=>c.normalize("NFC")):t;
 /* 讀壞的頁面：PDF 有字，但字型缺對照資料，讀出來是亂碼或空白 */
 const GARB=/[-�\u0000-\u0008\u000E-\u001F\u007F-\u009Fɐ-ͯҀ-ԯ֐-᷿Ⰰ-ⷿꀀ-꯿]/g;
 /* 字型載入失敗時，PDF.js 會整段略過那些字（連空白都不留），所以要看這頁用到的字型有沒有壞掉 */
@@ -4051,15 +4052,95 @@ function mineText(){
   if(doc.note&&doc.note.html){ const tx=htmlText(doc.note.html); if(tx) parts.push("【我的筆記本】"+tx); }
   return parts.join("\n\n").slice(0,60000);
 }
-const P_MM=(mine,pdf)=>"請根據以下"+(mine?"使用者自己畫的重點和寫的筆記":"文件")+"產生一張心智圖。只輸出 JSON，不要任何其他文字。格式：{\"t\":\"中心主題\",\"c\":[{\"t\":\"節點文字\",\"p\":"+(pdf?"頁碼":"段落編號")+",\"q\":\"原文逐字摘錄\",\"c\":[]}]}。\n規則：節點文字用台灣繁體中文，精簡（20 字以內），重要學術術語在後面加英文，例如「委託理論 (delegation theory)」；主分支 4 到 7 個，每個主分支 2 到 5 個子節點，最多三層；p 填"+(pdf?"〔p.N〕標記的頁碼數字":"〔第N段〕標記的段落數字")+"，不確定填 null；q 是能支持這個節點的英文原文片段，必須逐字照抄原文，5 到 15 個英文字，找不到就填空字串。\n\n內容：\n";
-function verifyTree(n){
-  const pdf=doc.type==="pdf", q=normQ(n.q);
-  n.pid=null; let pnum=null;
-  if(q&&q.split(" ").length>=3){
-    const hits=[]; doc.paras.forEach((p,i)=>{ if(normQ(p.t).includes(q)) hits.push(i); });
-    if(hits.length){ let i=hits[0]; if(pdf&&n.p) { const same=hits.find(h=>doc.pp&&doc.pp[h]===n.p-1); if(same!=null) i=same; } n.pid=i; pnum=pdf?(doc.pp&&doc.pp[i]!=null?doc.pp[i]+1:null):i+1; }
+const P_MM=(mine,pdf)=>"請根據以下"+(mine?"使用者自己畫的重點和寫的筆記":"文件")+"產生一張心智圖。只輸出 JSON，不要任何其他文字。格式：{\"t\":\"中心主題\",\"c\":[{\"t\":\"節點文字\",\"p\":"+(pdf?"頁碼":"段落編號")+",\"q\":\"原文逐字摘錄\",\"c\":[]}]}。\n規則：節點文字用台灣繁體中文，精簡（20 字以內），重要學術術語在後面加英文，例如「委託理論 (delegation theory)」；主分支 4 到 7 個，每個主分支 2 到 5 個子節點，最多三層；p 填"+(pdf?"〔p.N〕標記的頁碼數字":"〔第N段〕標記的段落數字")+"，不確定填 null；q 是能支持這個節點的原文片段，必須逐字照抄，用文件本身的語言（中文文件抄中文 8 到 30 字，英文文件抄 5 到 15 個英文字）；要從正文抄，不要抄摘要、關鍵字、參考文獻或附錄，除非節點就是在講它們；找不到就填空字串。\n\n內容：\n";
+/* 心智圖節點 → 原文段落：先看文件主要語言，正文優先，摘要／關鍵字／參考文獻／附錄只在節點本身講它時才用 */
+const MM_IX=new WeakMap();
+const MM_CJK=/[㐀-鿿豈-﫿]/g;
+const MM_STOP=new Set("the of and to in a an is are was were be been for on with by as at from that this these those it its or not but which who whom their there they than then also into such can may more most other some any all each both between among about over under within without through during before after while when where how what why our we us his her he she them its has have had do does did will would should could".split(" "));
+const mmCjk=s=>(String(s).match(MM_CJK)||[]).length;
+const mmStem=w=>w.length>4?w.replace(/(ies)$/,"y").replace(/(ing|ed|es|s)$/,""):w;
+const mmWords=s=>String(s||"").toLowerCase().replace(/[^a-z0-9]+/g," ").trim().split(" ").filter(w=>w.length>=3&&!MM_STOP.has(w)).map(mmStem);
+const mmZhNorm=s=>String(s||"").replace(/[^㐀-鿿豈-﫿A-Za-z0-9]/g,"").toLowerCase();
+function mmBigrams(s){ const c=(String(s).match(MM_CJK)||[]); const out=new Set(); for(let i=0;i<c.length-1;i++) out.add(c[i]+c[i+1]); return out; }
+const plang=t=>{ const z=mmCjk(t), w=(String(t).match(/[A-Za-z]+/g)||[]).length; return z>=w?"zh":"en"; };
+// 段落屬於哪一區：body / abs（摘要）/ kw（關鍵字）/ ref（參考文獻）/ app（附錄）
+const MM_ZH=[["abs",/^(中文摘要|英文摘要|摘\s*要|abstract)\s*[】\]〕）)]?/i],["kw",/^(關\s*鍵\s*[字詞]|key\s*words?|index terms)\s*[】\]〕）)]?/i],
+  ["ref",/^(參\s*考\s*(文\s*獻|書\s*目|資\s*料)|引用文獻|references?|bibliography|works cited|literature cited)\s*[】\]〕）)]?\s*[:：]?\s*$/i],["app",/^(附\s*錄|appendix|appendices)/i]];
+// 標題前面的「壹、」「1.」「【」先拿掉再判斷，例如「壹、摘要」「【Abstract】」
+const MM_LEAD=/^[\s【\[〔（(]*((壹|貳|參|肆|伍|陸|柒|捌|玖|拾|[一二三四五六七八九十]+|\d+|[IVX]+)\s*[、.．]\s*)?[【\[〔（(]?\s*/;
+const MM_BODYHEAD=/^((壹|貳|參|肆|伍|陸|柒|捌|玖|拾)\s*[、.．]|[一二三四五六七八九十]+\s*[、.．]|第[一二三四五六七八九十\d]+[章節]|(\d+|[IVX]+)\s*[.．、]?\s*[A-Z㐀-鿿]|前\s*言|緒\s*論|introduction\b)/i;
+function mmIndex(){
+  const c0=MM_IX.get(doc); if(c0&&c0.n===doc.paras.length) return c0;
+  const N=doc.paras.length, zone=[], lang=[], big=[], wds=[], flat=[]; let z="body", zc=0, zh=0, en=0;
+  doc.paras.forEach((p,i)=>{
+    const t=fixRad(String(p.t||"")).trim(), head=t.slice(0,40).replace(MM_LEAD,"");
+    let hit=null; for(const [k,re] of MM_ZH) if(re.test(head)){ hit=k; break; }
+    if(hit==="ref"&&t.length>40) hit=null;                      // 「參考文獻」要是一段短標題
+    if(hit){ z=hit; zc=0; }
+    else if((z==="abs"||z==="kw")&&(MM_BODYHEAD.test(t.slice(0,40))&&t.length<60||zc>=6)) z="body"; // 摘要後遇到正文標題就回正文
+    
+    zone[i]=z; zc++;
+    lang[i]=plang(t); big[i]=mmBigrams(t); wds[i]=new Set(mmWords(t)); flat[i]=mmZhNorm(t);
+    if(z==="body"||zone[i]==="body"){ zh+=mmCjk(t); en+=(t.match(/[A-Za-z]+/g)||[]).length; }
+  });
+  const df=new Map(), add=k=>df.set(k,(df.get(k)||0)+1);
+  big.forEach(s=>s.forEach(add)); wds.forEach(s=>s.forEach(add));
+  const idf=k=>Math.log(1+N/((df.get(k)||0)+0.5));
+  const r={n:N,zone,lang,big,wds,flat,idf,df,dl:zh>=en?"zh":"en"}; MM_IX.set(doc,r); return r;
+}
+const MM_SECT={abs:/摘要|abstract/i,kw:/關鍵[字詞]|keywords?\b/i,ref:/參考文獻|references|bibliography/i,app:/附錄|appendix/i};
+function mmScore(ix,n,i,tw){
+  // tw = 這個節點的關鍵詞：主語言的權重 1，另一種語言（例如中文文件裡的英文副標）只當備用 0.4
+  let tot=0, got=0;
+  for(const [k,w] of tw.terms){ if(!ix.df.has(k)) continue;           // 整份文件都沒有的詞（例如英文論文裡節點的中文）不算
+    const v=w*ix.idf(k); tot+=v; if((k.length===2&&!/[a-z]/.test(k)?ix.big[i]:ix.wds[i]).has(k)) got+=v; }
+  let s=tot?got/tot:0;
+  if(tw.exact&&ix.flat[i].includes(tw.exact)) s+=1;
+  if(tw.head&&ix.flat[i].slice(0,60).includes(tw.head)) s*=1.2;     // 段落一開頭就在講這個詞（通常是定義它的那段）             // 原文逐字找到
+  if(ix.lang[i]!==ix.dl) s*=0.35;                                 // 跟文件主要語言不同的段落（例如中文報告裡的英文摘要）
+  if(n.ph){ const pdf=doc.type==="pdf"; if(pdf?(doc.pp&&doc.pp[i]===n.ph-1):i===n.ph-1) s*=1.15; }
+  const L=ix.flat[i].length; if(L<40) s*=0.55+L/90;                 // 只有標題的短段落，讓給有內容的段落
+  return s;
+}
+function mmTerms(ix,n){
+  const sp=mmSplit(fixRad(n.t)), q=fixRad(String(n.q||"")), terms=new Map(), put=(k,w)=>terms.set(k,Math.max(terms.get(k)||0,w));
+  const zhW=ix.dl==="zh"?1:0.4, enW=ix.dl==="en"?1:0.4;
+  mmBigrams(sp.zh).forEach(k=>put(k,zhW)); mmBigrams(q).forEach(k=>put(k,zhW*0.8));
+  mmWords(sp.en).forEach(k=>put(k,enW)); mmWords(q).forEach(k=>put(k,enW*0.8));
+  if(ix.dl==="en") mmWords(sp.zh).forEach(k=>put(k,enW));
+  const ql=plang(q), ex=mmZhNorm(q);
+  const exact=(ql==="zh"?mmCjk(q)>=6:mmWords(q).length>=3)&&ex.length>=6?ex:"";
+  const hz=mmZhNorm(sp.zh), he=mmZhNorm(sp.en), head=ix.dl==="zh"?(mmCjk(hz)>=2?hz:""):(he.length>=5?he:"");
+  return {terms,exact,head};
+}
+const MM_MIN=0.42, MM_SHARE=2;   // 夠相關的門檻；同一段最多給幾個節點
+function mmAssign(tree){
+  if(!doc||!doc.paras||!doc.paras.length) return;
+  const ix=mmIndex(), nodes=[]; const walk=(n,d)=>{ n._d0=d; nodes.push(n); (n.c||[]).forEach(c=>walk(c,d+1)); }; walk(tree,0);
+  const cand=nodes.map(n=>{
+    n.pid=null; n.p=null;
+    const tw=mmTerms(ix,n); if(!tw.terms.size&&!tw.exact) return [];
+    const nt=n.t+" "+(n.q||""), ok=z=>z==="body"||(MM_SECT[z]&&MM_SECT[z].test(nt))||(n._d0===0&&z==="abs");
+    const sec=Object.keys(MM_SECT).find(z=>MM_SECT[z].test(n.t));
+    if(sec&&!tw.exact){ for(let i=0;i<ix.n;i++) if(ix.zone[i]===sec&&ix.lang[i]===ix.dl&&ix.flat[i].length>40) return [[i,1]];
+      for(let i=0;i<ix.n;i++) if(ix.zone[i]===sec&&ix.flat[i].length>40) return [[i,1]]; }   // 節點就是在講摘要、參考文獻…：直接給那一區的第一段
+    const list=[]; for(let i=0;i<ix.n;i++){ if(!ok(ix.zone[i])) continue; const s=mmScore(ix,n,i,tw); if(s>=MM_MIN) list.push([i,s]); }
+    return list.sort((a,b)=>b[1]-a[1]).slice(0,6);
+  });
+  // 先把最有把握的節點配好，同一段用過越多次就越往後排
+  const order=nodes.map((n,k)=>k).sort((a,b)=>((cand[b][0]||[0,0])[1])-((cand[a][0]||[0,0])[1]));
+  const used=new Map();
+  for(const k of order){ const n=nodes[k]; let best=null, bv=0;
+    for(const [i,s] of cand[k]){ const u=used.get(i)||0; if(u>=MM_SHARE) continue; const v=s/(1+0.6*u); if(v>bv){ bv=v; best=i; } }
+    if(best==null) continue;
+    used.set(best,(used.get(best)||0)+1); n.pid=best;
+    n.p=doc.type==="pdf"?(doc.pp&&doc.pp[best]!=null?doc.pp[best]+1:null):best+1;
   }
-  n.p=pnum; n.c=Array.isArray(n.c)?n.c.slice(0,8):[]; n.t=String(n.t||"").slice(0,60); n.c.forEach(verifyTree); return n;
+  nodes.forEach(n=>delete n._d0); tree._a=2;
+}
+function verifyTree(n,fresh){
+  if(fresh){ const h=parseInt(n.p,10); n.ph=h>0?h:null; }
+  n.c=Array.isArray(n.c)?n.c.slice(0,8):[]; n.t=String(n.t||"").slice(0,60); n.c.forEach(c=>verifyTree(c,fresh)); return n;
 }
 function openMap(){
   if(!doc){ toast("先打開一份文件。"); return; }
@@ -4077,7 +4158,7 @@ async function genMap(){
     const a=t.indexOf("{"), b=t.lastIndexOf("}"); if(a<0||b<a) throw {code:"http",message:"心智圖格式有誤，請按「重新產生」"};
     let tree; try{ tree=JSON.parse(t.slice(a,b+1)); }catch(e){ throw {code:"http",message:"心智圖格式有誤，請按「重新產生」"}; }
     if(doc!==d) return;
-    verifyTree(tree); d.note=d.note||normNote({key:d.key}); d.note.mm=d.note.mm||{}; d.note.mm[src]={tree,t:Date.now()}; saveNote(); mmCol.clear();
+    verifyTree(tree,true); mmAssign(tree); d.note=d.note||normNote({key:d.key}); d.note.mm=d.note.mm||{}; d.note.mm[src]={tree,t:Date.now()}; saveNote(); mmCol.clear();
   }catch(e){ if(doc===d&&mmSrc===src) $("#mmBody").innerHTML=mmMsg(errMsg(e)); mmBusy=null; return; }
   mmBusy=null; if(mmSrc===src&&!$("#mmView").hidden) renderMap();
 }
@@ -4151,6 +4232,7 @@ function renderMap(){
   const md0=mapData(mmSrc), box=$("#mmBody");
   $("#mmPng").disabled=!md0;
   if(!md0){ if(mmBusy!==mmSrc) box.innerHTML=mmMsg(mmSrc==="mine"?"按「重新產生」用你畫的重點和筆記做一張心智圖。":"按「重新產生」做一張整篇文件的心智圖。"); return; }
+  if(md0.tree._a!==2){ mmAssign(md0.tree); saveNote(); }  // 舊的心智圖用新規則重新對一次原文
   const {W,H,body}=mapSVG(md0.tree,false);
   box.innerHTML='<svg xmlns="http://www.w3.org/2000/svg" width="'+Math.round(W*mmZoom)+'" height="'+Math.round(H*mmZoom)+'" viewBox="0 0 '+W+" "+H+'">'+body+"</svg>";
 }
